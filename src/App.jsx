@@ -23,6 +23,7 @@ import GenerarResenas from "./GenerarResenas";
 import GenerarCompras from "./GenerarCompras";
 import LoginEmpresa from "./LoginEmpresa";
 import LoginEmpleado from "./LoginEmpleado";
+import RegistroEmpresa from "./RegistroEmpresa";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="/login-empresa" element={<LoginEmpresa />} />
           <Route path="/login-empleado" element={<LoginEmpleado />} />
           <Route path="/registro" element={<Registro />} />
+          <Route path="/registro-empresa" element={<RegistroEmpresa />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/resenas" element={<Resenas />} />

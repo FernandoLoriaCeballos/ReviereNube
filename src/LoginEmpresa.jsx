@@ -24,7 +24,7 @@ function LoginEmpresa() {
 
       if (response.ok) {
         Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
-        navigate("/login-empleado");
+        navigate("/login-empleado", { state: { empresaId: data.id_empresa } });
       }
     } catch (error) {
       console.error("Error:", error);
@@ -43,8 +43,15 @@ function LoginEmpresa() {
           <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Iniciar Sesión</button>
         </form>
         {message && <p className="text-red-500 text-sm text-center">{message}</p>}
+
         <p className="text-sm text-center text-gray-300">
-          ¿No eres una empresa? <a href="/login" className="text-blue-400 hover:underline">Inicia sesión como usuario</a>
+          ¿No tienes una empresa registrada?{" "}
+          <a href="/registro-empresa" className="text-blue-400 hover:underline">Regístrala aquí</a>
+        </p>
+
+        <p className="text-sm text-center text-gray-300">
+          ¿No eres una empresa?{" "}
+          <a href="/login" className="text-blue-400 hover:underline">Inicia sesión como usuario</a>
         </p>
       </div>
     </div>
