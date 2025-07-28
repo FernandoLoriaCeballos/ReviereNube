@@ -107,7 +107,10 @@ function RegistroEmpresa() {
             type="url"
             placeholder="URL del logo (enlace a imagen)"
             value={logo_url}
-            onChange={(e) => setLogoUrl(e.target.value)}
+            onChange={(e) => {
+              setLogoUrl(e.target.value);
+              setPreviewError(false); // Reinicia el error cuando se modifica el enlace
+            }}
             required
             className="w-full px-3 py-2 text-white bg-[#334155] rounded-md"
           />
@@ -115,9 +118,10 @@ function RegistroEmpresa() {
           {/* Previsualización de imagen */}
           {logo_url && (
             <div className="flex flex-col items-center mt-2">
-              <div className="w-[240px] h-[180px] bg-white rounded overflow-hidden border border-gray-400 flex items-center justify-center">
+              <div className="w-[240px] h-[180px] bg-[#334155] rounded overflow-hidden border border-gray-600 flex items-center justify-center">
                 {!previewError ? (
                   <img
+                    key={logo_url} // Fuerza a React a recargar la imagen cuando cambia el enlace
                     src={logo_url}
                     alt="Previsualización del logo"
                     onLoad={handleImageLoad}
@@ -125,7 +129,7 @@ function RegistroEmpresa() {
                     className="object-contain w-full h-full"
                   />
                 ) : (
-                  <span className="text-red-500 text-sm p-2 text-center">URL de imagen inválida</span>
+                  <span className="text-red-400 text-sm p-2 text-center">URL de imagen inválida</span>
                 )}
               </div>
             </div>
