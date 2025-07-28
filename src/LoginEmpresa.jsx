@@ -1,4 +1,3 @@
-// LoginEmpresa.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -25,7 +24,7 @@ function LoginEmpresa() {
 
       if (response.ok) {
         Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
-        navigate("/landing", { state: { empresaId: data.id_empresa } });
+        navigate("/login-empleado");
       }
     } catch (error) {
       console.error("Error:", error);
