@@ -3,6 +3,8 @@ import axios from "axios";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -16,7 +18,7 @@ function Usuarios() {
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/usuarios");
+        const response = await axios.get(`${API_URL}/usuarios`);
         setUsuarios(response.data);
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -52,9 +54,9 @@ function Usuarios() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:3000/usuarios/${formData._id}`, formData);
+      await axios.put(`${API_URL}/usuarios/${formData._id}`, formData);
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/usuarios");
+      const response = await axios.get(`${API_URL}/usuarios`);
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
@@ -73,9 +75,9 @@ function Usuarios() {
 
   const handleAddUser = async () => {
     try {
-      await axios.post("http://localhost:3000/registro", formData);
+      await axios.post(`${API_URL}/registro`, formData);
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/usuarios");
+      const response = await axios.get(`${API_URL}/usuarios`);
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al agregar usuario:", error);
@@ -87,7 +89,7 @@ function Usuarios() {
     
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/usuarios/${id}`);
+        await axios.delete(`${API_URL}/usuarios/${id}`);
         setUsuarios(usuarios.filter((usuario) => usuario._id !== id));
       } catch (error) {
         console.error("Error al eliminar usuario:", error);

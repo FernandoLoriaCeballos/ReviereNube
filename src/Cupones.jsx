@@ -3,6 +3,8 @@ import axios from "axios";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Cupones = () => {
   const [cupones, setCupones] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -19,7 +21,7 @@ const Cupones = () => {
 
   const obtenerCupones = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/cupones");
+      const response = await axios.get(`${API_URL}/cupones`);
       setCupones(response.data);
     } catch (error) {
       console.error("Error al obtener los cupones:", error);
@@ -57,9 +59,9 @@ const Cupones = () => {
   const handleSave = async () => {
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:3000/cupones/${formData._id}`, formData);
+        await axios.put(`${API_URL}/cupones/${formData._id}`, formData);
       } else {
-        await axios.post("http://localhost:3000/cupones", formData);
+        await axios.post(`${API_URL}/cupones`, formData);
       }
       setShowForm(false);
       obtenerCupones();
@@ -88,7 +90,7 @@ const Cupones = () => {
     const isConfirmed = window.confirm("¿Estás seguro de que deseas eliminar este cupón?");
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/cupones/${_id}`);
+        await axios.delete(`${API_URL}/cupones/${_id}`);
         obtenerCupones();
       } catch (error) {
         console.error("Error al eliminar cupón:", error);

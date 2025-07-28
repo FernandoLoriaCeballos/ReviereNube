@@ -4,6 +4,8 @@ import "tailwindcss/tailwind.css";
 import moment from "moment-timezone";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function Resenas() {
   const [resenas, setResenas] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -19,7 +21,7 @@ function Resenas() {
   useEffect(() => {
     const fetchResenas = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/resenas");
+        const response = await axios.get(`${API_URL}/resenas`);
         setResenas(response.data);
       } catch (error) {
         console.error("Error al obtener reseñas:", error);
@@ -60,12 +62,12 @@ function Resenas() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:3000/resenas/${formData._id}`, {
+      await axios.put(`${API_URL}/resenas/${formData._id}`, {
         ...formData,
         fecha: moment.tz(formData.fecha, "America/Mexico_City").toISOString(),
       });
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/resenas");
+      const response = await axios.get(`${API_URL}/resenas`);
       setResenas(response.data);
     } catch (error) {
       console.error("Error al actualizar reseña:", error);
@@ -86,12 +88,12 @@ function Resenas() {
 
   const handleAddResena = async () => {
     try {
-      await axios.post("http://localhost:3000/resenas", {
+      await axios.post(`${API_URL}/resenas`, {
         ...formData,
         fecha: moment.tz(formData.fecha, "America/Mexico_City").toISOString(),
       });
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/resenas");
+      const response = await axios.get(`${API_URL}/resenas`);
       setResenas(response.data);
     } catch (error) {
       console.error("Error al agregar reseña:", error);
@@ -100,7 +102,7 @@ function Resenas() {
 
   const handleDeleteClick = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/resenas/${id}`);
+      await axios.delete(`${API_URL}/resenas/${id}`);
       setResenas(resenas.filter((resena) => resena._id !== id));
     } catch (error) {
       console.error("Error al eliminar reseña:", error);

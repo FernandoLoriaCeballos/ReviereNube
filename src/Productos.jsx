@@ -3,6 +3,8 @@ import axios from "axios";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function Productos() {
   const [productos, setProductos] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -19,7 +21,7 @@ function Productos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/productos");
+        const response = await axios.get(`${API_URL}/productos`);
         setProductos(response.data);
       } catch (error) {
         console.error("Error al obtener productos:", error);
@@ -58,9 +60,9 @@ function Productos() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:3000/productos/${formData._id}`, formData);
+      await axios.put(`${API_URL}/productos/${formData._id}`, formData);
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/productos");
+      const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
     } catch (error) {
       console.error("Error al actualizar producto:", error);
@@ -82,9 +84,9 @@ function Productos() {
 
   const handleAddProducto = async () => {
     try {
-      await axios.post("http://localhost:3000/productos", formData);
+      await axios.post(`${API_URL}/productos`, formData);
       setShowForm(false);
-      const response = await axios.get("http://localhost:3000/productos");
+      const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
     } catch (error) {
       console.error("Error al agregar producto:", error);
@@ -93,7 +95,7 @@ function Productos() {
 
   const handleDeleteClick = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/productos/${id}`);
+      await axios.delete(`${API_URL}/productos/${id}`);
       setProductos(productos.filter((producto) => producto._id !== id));
     } catch (error) {
       console.error("Error al eliminar producto:", error);

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import Cookies from "js-cookie";
-import { FaUser, FaShoppingCart, FaCopy } from 'react-icons/fa';
-import logo from './assets/img/logo.png';
+import Navbar from './components/Navbar'; // Asegúrate de que la ruta sea correcta
 import logoFooter from './assets/img/logo_footer.png';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const CuponCard = ({ cupon }) => {
   const [copiado, setCopiado] = useState(false);
@@ -70,7 +71,7 @@ const CuponesLanding = () => {
   }, []);
 
   const obtenerCupones = () => {
-    axios.get("http://localhost:3000/cupones")
+    axios.get(`${API_URL}/cupones`)
       .then((response) => {
         setCupones(response.data);
       })
@@ -80,14 +81,14 @@ const CuponesLanding = () => {
   };
 
   const obtenerCarrito = () => {
-    axios.get(`http://localhost:3000/carrito/${userId}`)
+    axios.get(`${API_URL}/carrito/${userId}`)
       .then((response) => {
         setCarrito(response.data.productos);
       })
       .catch((error) => {
         if (error.response && error.response.status === 404) {
-          axios.post(`http://localhost:3000/carrito/${userId}`, { productos: [] })
-            .then((response) => {
+          axios.post(`${API_URL}/carrito/${userId}`, { productos: [] })
+            .then(() => {
               setCarrito([]);
             })
             .catch((err) => {
@@ -103,9 +104,9 @@ const CuponesLanding = () => {
     const productoAEliminar = carrito[index];
     const nuevoCarrito = carrito.filter((_, i) => i !== index);
     setCarrito(nuevoCarrito);
-    axios.delete(`http://localhost:3000/carrito/${userId}/${productoAEliminar.id_producto}`)
-      .then((response) => {
-        console.log("Producto eliminado del carrito:", response.data);
+    axios.delete(`${API_URL}/carrito/${userId}/${productoAEliminar.id_producto}`)
+      .then(() => {
+        console.log("Producto eliminado del carrito");
       })
       .catch((error) => {
         console.error("Error al eliminar el producto del carrito:", error);
@@ -121,10 +122,10 @@ const CuponesLanding = () => {
       return item;
     });
     setCarrito(nuevoCarrito);
-    axios.put(`http://localhost:3000/carrito/${userId}/${productoAActualizar.id_producto}`, {
+    axios.put(`${API_URL}/carrito/${userId}/${productoAActualizar.id_producto}`, {
       cantidad
-    }).then((response) => {
-      console.log("Cantidad de producto actualizada:", response.data);
+    }).then(() => {
+      console.log("Cantidad de producto actualizada");
     }).catch((error) => {
       console.error("Error al actualizar la cantidad del producto en el carrito:", error);
     });
@@ -139,13 +140,13 @@ const CuponesLanding = () => {
       }))
     };
 
-    axios.post("http://localhost:3000/recibos", compra)
-      .then((response) => {
-        console.log("Compra realizada:", response.data);
+    axios.post(`${API_URL}/recibos`, compra)
+      .then(() => {
+        console.log("Compra realizada");
         setCarrito([]);
-        axios.put(`http://localhost:3000/carrito/${userId}`, { productos: [] })
-          .then((response) => {
-            console.log("Carrito vaciado:", response.data);
+        axios.put(`${API_URL}/carrito/${userId}`, { productos: [] })
+          .then(() => {
+            console.log("Carrito vaciado");
             setCarritoAbierto(false);
           })
           .catch((error) => {
@@ -176,47 +177,11 @@ const CuponesLanding = () => {
     <div className="bg-[#111827] font-['Montserrat'] min-h-screen flex flex-col">
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700&display=swap');
         `}
       </style>
-      <nav className="bg-[#111827] text-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Logo" className="w-[116px]" />
-          </Link>
-          <div className="hidden lg:flex items-center space-x-8">
-            <Link to="/inicio" className="hover:text-blue-500 uppercase">INICIO</Link>
-            <Link to="/quienessomos" className="hover:text-blue-500 uppercase">QUIÉNES SOMOS</Link>
-            <Link to="/landing" className="hover:text-blue-500 uppercase">CATÁLOGO DE PRODUCTOS</Link>
-            <Link to="/contacto" className="hover:text-blue-500 uppercase">CONTACTO</Link>
-            <Link to="/compras" className="hover:text-blue-500 uppercase"> MIS COMPRAS</Link>
-            {isLoggedIn ? (
-              <>
-                <button onClick={() => setCarritoAbierto(true)} className="text-2xl hover:text-blue-500">
-                  <FaShoppingCart />
-                </button>
-                <div className="relative">
-                  <button onClick={toggleDropdown} className="text-2xl hover:text-blue-500">
-                    <FaUser />
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-[#202938] rounded-md shadow-lg py-1 z-10">
-                      <button
-                        onClick={handleLogout}
-                        className="block px-4 py-2 text-sm text-white hover:bg-[#2d3748] w-full text-left"
-                      >
-                        Cerrar sesión
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <Link to="/login" className="hover:text-blue-500 uppercase">INICIAR SESIÓN</Link>
-            )}
-          </div>
-        </div>
-      </nav>
+
+      <Navbar /> {/* Se asegura la correcta integración de la Navbar */}
 
       <div className="overflow-hidden">
         <img
@@ -302,6 +267,13 @@ const CuponesLanding = () => {
           </div>
         </div>
       )}
+
+      <footer className="bg-[#111827] text-white py-4">
+        <div className="container mx-auto text-center">
+          <img src={logoFooter} alt="Logo Footer" className="w-40 mx-auto mb-4" />
+          <p className="text-gray-400 mt-4 font-light">© 2024 Reverie Todos los derechos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const HomeAdmin = () => {
   const [stats, setStats] = useState({
     usuarios: 0,
@@ -73,10 +75,10 @@ const HomeAdmin = () => {
     const fetchData = async () => {
       try {
         const [usuarios, productos, resenas, recibos] = await Promise.all([
-          axios.get("http://localhost:3000/usuarios"),
-          axios.get("http://localhost:3000/productos"),
-          axios.get("http://localhost:3000/resenas"),
-          axios.get("http://localhost:3000/recibos")
+          axios.get(`${API_URL}/usuarios`),
+          axios.get(`${API_URL}/productos`),
+          axios.get(`${API_URL}/resenas`),
+          axios.get(`${API_URL}/recibos`)
         ]);
 
         setStats({

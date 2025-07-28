@@ -21,6 +21,8 @@ import CuponesLanding from "./CuponesLanding"
 import GenerarUsuarios from "./GenerarUsuarios";
 import GenerarResenas from "./GenerarResenas";
 import GenerarCompras from "./GenerarCompras";
+import LoginEmpresa from "./LoginEmpresa";
+import LoginEmpleado from "./LoginEmpleado";
 
 const App = () => {
   return (
@@ -29,6 +31,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/login-empresa" element={<LoginEmpresa />} />
+          <Route path="/login-empleado" element={<LoginEmpleado />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/usuarios" element={<Usuarios />} />

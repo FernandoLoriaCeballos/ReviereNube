@@ -1,112 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from "axios";
-import Cookies from "js-cookie";
-import logo from './assets/img/logo.png';
+import Navbar from './components/Navbar';
 import logoFooter from './assets/img/logo_footer.png';
 
 import './assets/fonts/font-awesome.min.css';
 import './assets/fonts/simple-line-icons.min.css';
 
 function Contacto() {
-  const [carrito, setCarrito] = useState([]);
-  const [carritoAbierto, setCarritoAbierto] = useState(false);
-
-  useEffect(() => {
-    const id_usuario = Cookies.get("id_usuario");
-    if (id_usuario) {
-      obtenerCarrito(id_usuario);
-    }
-  }, []);
-
-  const obtenerCarrito = (id_usuario) => {
-    axios.get(`http://localhost:3000/carrito/${id_usuario}`)
-      .then((response) => {
-        setCarrito(response.data.productos);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 404) {
-          axios.post(`http://localhost:3000/carrito/${id_usuario}`, { productos: [] })
-            .then((response) => {
-              setCarrito([]);
-            })
-            .catch((err) => {
-              console.error("Error al crear un carrito vacío:", err);
-            });
-        } else {
-          console.error("Error al obtener el carrito:", error);
-        }
-      });
-  };
-
-  const eliminarDelCarrito = (index) => {
-    const id_usuario = Cookies.get("id_usuario");
-    const productoAEliminar = carrito[index];
-    console.log("Eliminando producto con ID:", productoAEliminar.id_producto, "del usuario con ID:", id_usuario);
-    const nuevoCarrito = carrito.filter((_, i) => i !== index);
-    setCarrito(nuevoCarrito);
-    axios.delete(`http://localhost:3000/carrito/${id_usuario}/${productoAEliminar.id_producto}`)
-      .then((response) => {
-        console.log("Producto eliminado del carrito:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el producto del carrito:", error);
-      });
-  };
-
-  const cambiarCantidad = (index, cantidad) => {
-    const id_usuario = Cookies.get("id_usuario");
-    const productoAActualizar = carrito[index];
-    const nuevoCarrito = carrito.map((item, i) => {
-      if (i === index) {
-        return { ...item, cantidad };
-      }
-      return item;
-    });
-    setCarrito(nuevoCarrito);
-    axios.put(`http://localhost:3000/carrito/${id_usuario}/${productoAActualizar.id_producto}`, {
-      cantidad
-    }).then((response) => {
-      console.log("Cantidad de producto actualizada:", response.data);
-    }).catch((error) => {
-      console.error("Error al actualizar la cantidad del producto en el carrito:", error);
-    });
-  };
-
-  const realizarCompra = () => {
-    const id_usuario = Cookies.get("id_usuario");
-    const compra = {
-      id_usuario,
-      productos: carrito.map(({ id_producto, cantidad }) => ({
-        id_producto,
-        cantidad
-      }))
-    };
-
-    console.log("Compra a realizar:", compra);
-
-    axios.post("http://localhost:3000/recibos", compra)
-      .then((response) => {
-        console.log("Compra realizada:", response.data);
-        setCarrito([]);
-        axios.put(`http://localhost:3000/carrito/${id_usuario}`, { productos: [] })
-          .then((response) => {
-            console.log("Carrito vaciado:", response.data);
-            setCarritoAbierto(false);
-          })
-          .catch((error) => {
-            console.error("Error al vaciar el carrito:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error al realizar la compra:", error);
-      });
-  };
-
-  const calcularTotal = () => {
-    return carrito.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0);
-  };
-
   return (
     <div className="bg-[#111827] font-['Montserrat']">
       <style>
@@ -114,20 +14,9 @@ function Contacto() {
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
         `}
       </style>
-      <nav className="bg-[#111827] text-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Logo" className="w-[116px]" />
-          </Link>
-          <div className="hidden lg:flex items-center space-x-8">
-            <Link to="/inicio" className="hover:text-blue-500 uppercase">INICIO</Link>
-            <Link to="/quienessomos" className="hover:text-blue-500 uppercase">QUIÉNES SOMOS</Link>
-            <Link to="/landing" className="hover:text-blue-500 uppercase">CATÁLOGO DE PRODUCTOS</Link>
-            <Link to="/contacto" className="hover:text-blue-500 uppercase">CONTACTO</Link>
-            <Link to="/compras" className="hover:text-blue-500 uppercase">MIS COMPRAS</Link>
-          </div>
-        </div>
-      </nav>
+      
+      {/* Integración de la nueva Navbar */}
+      <Navbar />
 
       <main className="page landing-page">
         <section className="px-[10%]">
@@ -179,73 +68,12 @@ function Contacto() {
         </section>
       </main>
 
-      {carritoAbierto && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-[#202938] p-8 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-white text-xl font-bold mb-6">Carrito de compras</h2>
-            {carrito.length === 0 ? (
-              <div>
-                <p className="text-white mb-6">El carrito está vacío.</p>
-                <button onClick={() => setCarritoAbierto(false)} className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition duration-300">
-                  Cerrar
-                </button>
-              </div>
-            ) : (
-              <>
-                <table className="w-full text-white mb-6">
-                  <thead>
-                    <tr>
-                      <th className="text-left pb-4">Producto</th>
-                      <th className="text-left pb-4">Precio</th>
-                      <th className="text-left pb-4">Cantidad</th>
-                      <th className="text-left pb-4">Subtotal</th>
-                      <th className="text-left pb-4">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {carrito.map((producto, index) => (
-                      <tr key={index} className="border-b border-gray-700">
-                        <td className="py-4 flex items-center">
-                          <img src={producto.foto} alt={producto.nombre} className="w-[106px] h-auto rounded-md mr-4" />
-                          {producto.nombre}
-                        </td>
-                        <td>${producto.precio}</td>
-                        <td>
-                          <input
-                            type="number"
-                            value={producto.cantidad}
-                            onChange={(e) => cambiarCantidad(index, parseInt(e.target.value))}
-                            className="w-16 bg-gray-700 text-white p-1 rounded"
-                            min="1"
-                          />
-                        </td>
-                        <td>${producto.precio * producto.cantidad}</td>
-                        <td>
-                          <button onClick={() => eliminarDelCarrito(index)} className="text-red-500 hover:text-red-700">
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="text-white text-xl font-bold mb-6">
-                  Total: ${calcularTotal()}
-                </div>
-                <div className="flex justify-between">
-                  <button onClick={realizarCompra} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition duration-300">
-                    Realizar compra
-                  </button>
-                  <button onClick={() => setCarritoAbierto(false)} className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition duration-300">
-                    Cerrar
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+      <footer className="bg-[#111827] text-white py-4">
+        <div className="container mx-auto text-center">
+          <img src={logoFooter} alt="Logo Footer" className="w-40 mx-auto mb-4" />
+          <p className="text-gray-400 mt-4 font-light">© 2024 Reverie Todos los derechos reservados.</p>
         </div>
-      )}
-
+      </footer>
     </div>
   );
 }

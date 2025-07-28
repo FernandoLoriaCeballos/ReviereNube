@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import "tailwindcss/tailwind.css";
 import logo from "./assets/img/logo.png";
-import { Workbox } from 'workbox-window';
 
 // URL del backend
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -12,52 +11,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      showNotification('Conectado a Internet');
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      showNotification('No tienes conexión a Internet');
-    };
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    // Solicitar permiso para mostrar notificaciones push
-    Notification.requestPermission().then((result) => {
-      if (result === 'granted') {
-        console.log('Permiso concedido para mostrar notificaciones');
-      } else {
-        console.log('Permiso denegado para mostrar notificaciones');
-      }
-    });
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Verificando conexión a Internet...");
-    console.log("isOnline:", isOnline);
-
-    if (!isOnline) {
-      // No hay conexión a Internet
-      console.log("No hay conexión a Internet");
-      showNotification('No se puede iniciar sesión sin conexión a Internet');
-      return;
-    }
-
-    console.log("Hay conexión a Internet, realizando inicio de sesión...");
 
     try {
       const response = await fetch(`${API_URL}/login`, {
@@ -71,40 +28,13 @@ function Login() {
       const data = await response.json();
       setMessage(data.message);
 
-      console.log("Respuesta del servidor:", data);
-
       if (response.ok) {
-        console.log("Inicio de sesión exitoso, redirigiendo a /landing...");
-        Cookies.set("id_usuario", data.id_usuario, { expires: 7 }); // Establece la cookie con una expiración de 7 días
-        navigate("/landing");
-      } else {
-        console.log("Error en el inicio de sesión");
+        Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
+        navigate("/landing", { state: { userId: data.id_usuario } });
       }
     } catch (error) {
       console.error("Error:", error);
       setMessage("Hubo un error al intentar iniciar sesión");
-    }
-  };
-
-  const showNotification = (message) => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        const options = {
-          body: message,
-          icon: logo,
-          vibrate: [200, 100, 200],
-          tag: message,
-          renotify: true,
-          actions: [
-            { action: 'confirm', title: 'OK', icon: logo },
-          ],
-        };
-        registration.showNotification('Reverie', options);
-      }).catch((error) => {
-        console.error('Error al mostrar la notificación:', error);
-      });
-    } else {
-      alert(message);
     }
   };
 
@@ -167,6 +97,12 @@ function Login() {
         {message && <p className="mt-2 text-sm text-center text-red-500">{message}</p>}
         <p className="mt-4 text-sm text-center text-gray-300">
           ¿No tienes una cuenta? <a href="/registro" className="text-blue-500 hover:text-blue-400">¡Regístrate!</a>
+        </p>
+        <p className="text-sm text-center text-gray-300">
+          ¿Eres una empresa? <a href="/login-empresa" className="text-blue-400 hover:underline">Inicia sesión como empresa</a>
+        </p>
+        <p className="text-sm text-center text-gray-300">
+          ¿Eres un empleado? <a href="/login-empleado" className="text-blue-400 hover:underline">Inicia sesión como empleado</a>
         </p>
       </div>
     </div>

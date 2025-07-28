@@ -3,6 +3,8 @@ import axios from "axios";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function Recibos() {
   const [recibos, setRecibos] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -21,7 +23,7 @@ function Recibos() {
 
   const fetchRecibos = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/recibos");
+      const response = await axios.get(`${API_URL}/recibos`);
       setRecibos(response.data);
     } catch (error) {
       console.error("Error al obtener recibos:", error);
@@ -30,7 +32,7 @@ function Recibos() {
 
   const fetchProductos = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/productos");
+      const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -39,7 +41,7 @@ function Recibos() {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/usuarios");
+      const response = await axios.get(`${API_URL}/usuarios`);
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
@@ -82,7 +84,7 @@ function Recibos() {
         })),
       };
 
-      await axios.post("http://localhost:3000/recibos", dataToSubmit);
+      await axios.post(`${API_URL}/recibos`, dataToSubmit);
 
       setFormData({ id_usuario: "", productos: [{ id_producto: "", cantidad: "" }] });
       fetchRecibos();

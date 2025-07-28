@@ -4,6 +4,8 @@ import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 import moment from 'moment-timezone';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Ofertas = () => {
   const [ofertas, setOfertas] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -25,7 +27,7 @@ const Ofertas = () => {
 
   const obtenerProductos = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/productos");
+      const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
@@ -34,7 +36,7 @@ const Ofertas = () => {
 
   const obtenerOfertas = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/ofertas");
+      const response = await axios.get(`${API_URL}/ofertas`);
       setOfertas(response.data);
     } catch (error) {
       console.error("Error al obtener las ofertas:", error);
@@ -104,9 +106,9 @@ const Ofertas = () => {
       };
 
       if (isEditing) {
-        await axios.put(`http://localhost:3000/ofertas/${formData._id}`, ofertaData);
+        await axios.put(`${API_URL}/ofertas/${formData._id}`, ofertaData);
       } else {
-        await axios.post("http://localhost:3000/ofertas", ofertaData);
+        await axios.post(`${API_URL}/ofertas`, ofertaData);
       }
 
       setShowForm(false);
@@ -143,7 +145,7 @@ const Ofertas = () => {
     const isConfirmed = window.confirm("¿Estás seguro de que deseas eliminar esta oferta?");
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/ofertas/${oferta._id}`);
+        await axios.delete(`${API_URL}/ofertas/${oferta._id}`);
         obtenerOfertas();
       } catch (error) {
         console.error("Error al eliminar la oferta:", error);

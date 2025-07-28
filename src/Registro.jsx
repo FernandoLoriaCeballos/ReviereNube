@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "tailwindcss/tailwind.css";
 import logo from "./assets/img/logo.png"; // Asegúrate de que la ruta del logo sea correcta
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function Registro() {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -16,7 +18,7 @@ function Registro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/registro', {
+      const response = await fetch(`${API_URL}/registro`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

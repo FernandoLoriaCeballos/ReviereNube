@@ -1,75 +1,62 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React, { useContext, useEffect, useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { CarritoContext } from './CarritoContext';
-import logo from './assets/img/logo.png';
+import Navbar from './components/Navbar';
 import logoFooter from './assets/img/logo_footer.png';
 
-function Carrito() {
-  const { carrito, eliminarDelCarrito, cambiarCantidad, vaciarCarrito, cuponAplicado, aplicarCupon } = useContext(CarritoContext);
+const Carrito = () => {
+  const {
+    carrito,
+    eliminarDelCarrito,
+    cambiarCantidad,
+    vaciarCarrito,
+    cuponAplicado,
+    aplicarCupon
+  } = useContext(CarritoContext);
+
   const [codigoCupon, setCodigoCupon] = useState('');
   const [totalConDescuento, setTotalConDescuento] = useState(0);
-  const userId = Cookies.get("id_usuario");
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
-  // Calcular el total del carrito sin descuento
-  const calcularTotal = () => {
-    const subtotal = carrito.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0);
-    Cookies.set('totalSinDescuento', subtotal.toFixed(2));
-    return subtotal;
-  };
+  const calcularTotal = () => carrito.reduce((total, producto) => total + (producto.precio * producto.cantidad), 0);
 
-  // Aplicar el descuento al total
-  const aplicarDescuento = (total, descuento) => {
-    const totalConDescuento = total - (total * descuento) / 100;
-    Cookies.set('totalConDescuento', totalConDescuento.toFixed(2));
-    setTotalConDescuento(totalConDescuento);
-  };
-
-  // Efecto para calcular el total al cambiar el carrito
   useEffect(() => {
     const total = calcularTotal();
     if (cuponAplicado) {
-      aplicarDescuento(total, cuponAplicado.descuento);
+      const descuento = total * cuponAplicado.descuento / 100;
+      setTotalConDescuento(total - descuento);
     } else {
-      Cookies.remove('totalConDescuento');
       setTotalConDescuento(total);
     }
   }, [carrito, cuponAplicado]);
 
-  // Aplicar el cupón
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleAplicarCupon = async () => {
-    const cupon = await aplicarCupon(codigoCupon);
-    if (cupon) {
-      alert(`Cupón aplicado: ${cupon.codigo} (${cupon.descuento}% de descuento)`);
-      setCodigoCupon('');
-      const total = parseFloat(Cookies.get('totalSinDescuento'));
-      aplicarDescuento(total, cupon.descuento);
-    } else {
-      alert("El cupón ingresado no es válido.");
+    try {
+      const cupon = await aplicarCupon(codigoCupon);
+      if (cupon) {
+        alert(`Cupón aplicado: ${cupon.codigo} (${cupon.descuento}% de descuento)`);
+        setCodigoCupon('');
+      } else {
+        alert("El cupón ingresado no es válido.");
+      }
+    } catch (error) {
+      console.error("Error al aplicar el cupón:", error);
+      alert("Hubo un error al aplicar el cupón.");
     }
   };
 
-  // Realizar la compra
   const realizarCompra = async () => {
     try {
-      const totalPagar = Cookies.get('totalConDescuento') || Cookies.get('totalSinDescuento');
-      
-      const compra = {
-        id_usuario: parseInt(userId),
-        productos: carrito.map(({ id_producto, cantidad }) => ({
-          id_producto,
-          cantidad
-        })),
-        cupon_aplicado: cuponAplicado,
-        total: parseFloat(totalPagar)
-      };
-
-      await axios.post("http://localhost:3000/recibos", compra);
-      vaciarCarrito();
-      Cookies.remove('totalSinDescuento');
-      Cookies.remove('totalConDescuento');
+      await vaciarCarrito();
       alert("Compra realizada exitosamente.");
     } catch (error) {
       console.error("Error al realizar la compra:", error);
@@ -77,141 +64,152 @@ function Carrito() {
     }
   };
 
-  // Cambiar la cantidad de un producto
-  const handleCambiarCantidad = (id_producto, cantidad) => {
-    if (cantidad === 0) {
-      eliminarDelCarrito(id_producto);
-    } else {
-      cambiarCantidad(id_producto, cantidad);
-    }
-  };
-
   return (
-    <div className="bg-[#111827] font-['Montserrat']">
+    <div className="bg-[#111827] font-['Montserrat'] min-h-screen">
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
         `}
       </style>
-      <nav className="bg-[#111827] text-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Logo" className="w-[116px]" />
-          </Link>
-          <div className="hidden lg:flex items-center space-x-8">
-            <Link to="/inicio" className="hover:text-blue-500 uppercase">INICIO</Link>
-            <Link to="/quienessomos" className="hover:text-blue-500 uppercase">QUIÉNES SOMOS</Link>
-            <Link to="/landing" className="hover:text-blue-500 uppercase">CATÁLOGO DE PRODUCTOS</Link>
-            <Link to="/contacto" className="hover:text-blue-500 uppercase">CONTACTO</Link>
-            <Link to="/carrito" className="text-2xl hover:text-blue-500">
-              <i className="fa fa-shopping-cart"></i>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      
+      <Navbar />
 
       <main className="container mx-auto px-4 pb-12">
         <h2 className="text-white text-xl font-bold mt-8 mb-6">Carrito de compras</h2>
 
         <div className="bg-[#202938] rounded-lg p-6">
-          <table className="w-full text-white">
-            <thead>
-              <tr>
-                <th className="text-left pb-4">Producto</th>
-                <th className="text-left pb-4">Precio</th>
-                <th className="text-left pb-4">Cantidad</th>
-                <th className="text-left pb-4">Subtotal</th>
-                <th className="text-left pb-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {carrito.map((producto, index) => (
-                <tr key={index} className="border-b border-gray-700">
-                  <td className="py-4 flex items-center">
-                    <img src={producto.foto} alt={producto.nombre} className="w-[106px] h-auto rounded-md mr-4" />
-                    {producto.nombre}
-                  </td>
-                  <td>${producto.precio}</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={producto.cantidad}
-                      onChange={(e) => handleCambiarCantidad(producto.id_producto, parseInt(e.target.value))}
-                      className="w-16 bg-gray-700 text-white p-1 rounded"
-                      min="0"
-                    />
-                  </td>
-                  <td>${producto.precio * producto.cantidad}</td>
-                  <td>
-                    <button onClick={() => eliminarDelCarrito(producto.id_producto)} className="text-red-500 hover:text-red-700">
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="bg-[#202938] mt-6 p-6 rounded-lg">
-          <div className="flex items-center mb-4">
-            <input
-              type="text"
-              placeholder="Código de cupón"
-              value={codigoCupon}
-              onChange={(e) => setCodigoCupon(e.target.value)}
-              className="bg-gray-700 text-white p-2 rounded mr-4"
-            />
-            <button onClick={handleAplicarCupon} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
-              Aplicar cupón
-            </button>
-          </div>
-          {cuponAplicado && (
-            <p className="text-white mb-4">Cupón aplicado: {cuponAplicado.codigo} ({cuponAplicado.descuento}% de descuento)</p>
+          {carrito.length === 0 ? (
+            <p className="text-white text-center py-10">El carrito está vacío.</p>
+          ) : (
+            <>
+              {!isMobileView && (
+                <table className="w-full text-white mb-4">
+                  <thead>
+                    <tr>
+                      <th className="text-left pb-4">Producto</th>
+                      <th className="text-left pb-4">Precio</th>
+                      <th className="text-left pb-4">Cantidad</th>
+                      <th className="text-left pb-4">Subtotal</th>
+                      <th className="text-left pb-4">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {carrito.map((producto, index) => (
+                      <tr key={index} className="border-b border-gray-700">
+                        <td className="py-4 flex items-center">
+                          <img src={producto.foto} alt={producto.nombre} className="w-[106px] h-auto rounded-md mr-4" />
+                          {producto.nombre}
+                        </td>
+                        <td>${producto.precio}</td>
+                        <td>
+                          <input
+                            type="number"
+                            value={producto.cantidad}
+                            onChange={(e) => cambiarCantidad(producto.id_producto, parseInt(e.target.value))}
+                            className="w-16 bg-gray-700 text-white p-1 rounded"
+                            min="1"
+                          />
+                        </td>
+                        <td>${(producto.precio * producto.cantidad).toFixed(2)}</td>
+                        <td>
+                          <button onClick={() => eliminarDelCarrito(producto.id_producto)} className="text-red-500 hover:text-red-700">
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {isMobileView && (
+                <div className="space-y-4">
+                  {carrito.map((producto, index) => (
+                    <div key={index} className="flex items-start border-b border-gray-700 py-4">
+                      <img src={producto.foto} alt={producto.nombre} className="w-20 h-auto rounded-md mr-4" />
+                      <div className="flex-grow">
+                        <span className="text-white">{producto.nombre}</span>
+                        <span className="text-gray-400 block">${producto.precio.toFixed(2)}</span>
+                        <div className="flex justify-between mt-1">
+                          <div className="flex flex-col items-start">
+                            <span className="text-gray-400 text-sm font-bold">Cantidad:</span>
+                            <input
+                              type="number"
+                              value={producto.cantidad}
+                              onChange={(e) => cambiarCantidad(producto.id_producto, parseInt(e.target.value))}
+                              className="w-16 bg-gray-700 text-white p-1 rounded"
+                              min="1"
+                            />
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <span className="text-gray-400 text-sm font-bold">Subtotal:</span>
+                            <span className="text-white">${(producto.precio * producto.cantidad).toFixed(2)}</span>
+                          </div>
+                          <button onClick={() => eliminarDelCarrito(producto.id_producto)} className="text-red-500 hover:text-red-700 ml-4">
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
-          <p className="text-white text-2xl">Total: ${totalConDescuento.toFixed(2)}</p>
         </div>
 
-        <div className="mt-6">
-          <PayPalScriptProvider options={{
-            "client-id": "AX1Pjuu9wMgzgvk42SJBkl9VSsrc2Xrc10bvmsnLzmnZFiak55inFnB-WOnS_1BhyMSUYI5IBQS_JP_g",
-            currency: "MXN"
-          }}>
-            <PayPalButtons
-              createOrder={(data, actions) => {
-                const totalPagar = Cookies.get('totalConDescuento') || Cookies.get('totalSinDescuento');
-                return actions.order.create({
-                  purchase_units: [{
-                    amount: {
-                      value: totalPagar
-                    }
-                  }]
-                });
-              }}
-              onApprove={(data, actions) => {
-                return actions.order.capture().then((details) => {
-                  console.log("Pago completado por " + details.payer.name.given_name);
-                  realizarCompra();
-                });
-              }}
-            />
-          </PayPalScriptProvider>
-        </div>
+        {carrito.length > 0 && (
+          <>
+            <div className="bg-[#202938] mt-6 p-6 rounded-lg">
+              <div className="flex flex-col sm:flex-row items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                <input
+                  type="text"
+                  placeholder="Código de cupón"
+                  value={codigoCupon}
+                  onChange={(e) => setCodigoCupon(e.target.value)}
+                  className="bg-gray-700 text-white p-2 rounded w-full sm:w-auto"
+                />
+                <button onClick={handleAplicarCupon} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
+                  Aplicar cupón
+                </button>
+              </div>
+              {cuponAplicado && (
+                <p className="text-white mb-4">Cupón aplicado: {cuponAplicado.codigo} ({cuponAplicado.descuento}% de descuento)</p>
+              )}
+              <p className="text-white text-2xl text-center sm:text-left">Total: ${totalConDescuento.toFixed(2)}</p>
+            </div>
+
+            <div className="mt-6">
+              <PayPalScriptProvider options={{
+                "client-id": "AX1Pjuu9wMgzgvk42SJBkl9VSsrc2Xrc10bvmsnLzmnZFiak55inFnB-WOnS_1BhyMSUYI5IBQS_JP_g",
+                currency: "MXN"
+              }}>
+                <PayPalButtons
+                  createOrder={(data, actions) => {
+                    return actions.order.create({
+                      purchase_units: [{
+                        amount: {
+                          value: totalConDescuento.toFixed(2)
+                        }
+                      }]
+                    });
+                  }}
+                  onApprove={(data, actions) => {
+                    return actions.order.capture().then((details) => {
+                      console.log("Pago completado por " + details.payer.name.given_name);
+                      realizarCompra();
+                    });
+                  }}
+                />
+              </PayPalScriptProvider>
+            </div>
+          </>
+        )}
       </main>
 
-      <footer className="bg-[#202938] py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-8 md:mb-0">
-              <img src={logoFooter} alt="Logo Footer" className="max-w-full h-auto" />
-            </div>
-            <div className="flex space-x-8">
-              <Link to="/" className="text-white text-sm hover:text-blue-500 uppercase">INICIO</Link>
-              <Link to="/quienes-somos" className="text-white text-sm hover:text-blue-500 uppercase">QUIÉNES SOMOS</Link>
-              <Link to="/landing" className="text-white text-sm hover:text-blue-500 uppercase">CATÁLOGO DE PRODUCTOS</Link>
-              <Link to="/contacto" className="text-white text-sm hover:text-blue-500 uppercase">CONTACTO</Link>
-            </div>
-          </div>
+      <footer className="bg-[#111827] text-white py-4">
+        <div className="container mx-auto text-center">
+          <img src={logoFooter} alt="Logo Footer" className="w-40 mx-auto mb-4" />
+          <p className="text-gray-400 mt-4 font-light">© 2024 Reverie Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

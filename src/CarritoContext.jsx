@@ -1,20 +1,31 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export const CarritoContext = createContext();
+
+export const useCarrito = () => {
+  const context = useContext(CarritoContext);
+  if (!context) {
+    throw new Error('useCarrito debe ser usado dentro de un CarritoProvider');
+  }
+  return context;
+};
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
   const [cuponAplicado, setCuponAplicado] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(Cookies.get("id_usuario") || null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!userId);
 
   const fetchCarrito = async (userId) => {
     if (userId) {
       setIsLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/carrito/${userId}`);
+        const response = await axios.get(`${API_URL}/carrito/${userId}`);
         setCarrito(response.data.productos || []);
         setCuponAplicado(response.data.cupon_aplicado || null);
       } catch (error) {
@@ -31,27 +42,26 @@ export const CarritoProvider = ({ children }) => {
 
   useEffect(() => {
     const currentUserId = Cookies.get("id_usuario");
-    if (currentUserId) {
-      setUserId(currentUserId);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (userId) {
-      fetchCarrito(userId);
-    }
-  }, [userId]);
+    setUserId(currentUserId);
+    setIsLoggedIn(!!currentUserId);
+    fetchCarrito(currentUserId);
+  }, [Cookies.get("id_usuario")]);
 
   const actualizarCarritoEnServidor = async () => {
-    if (userId) {
-      try {
-        await axios.put(`http://localhost:3000/carrito/${userId}`, {
-          productos: carrito,
-          cupon_aplicado: cuponAplicado
-        });
-      } catch (error) {
-        console.error("Error al actualizar el carrito en el servidor:", error);
+    if (!userId) return;
+
+    try {
+      const response = await axios.put(`${API_URL}/carrito/${userId}`, {
+        productos: carrito,
+        cupon_aplicado: cuponAplicado
+      });
+
+      if (response.data && response.data.productos) {
+        setCarrito(response.data.productos);
       }
+    } catch (error) {
+      console.error("Error al actualizar el carrito en el servidor:", error);
+      throw error;
     }
   };
 
@@ -60,18 +70,19 @@ export const CarritoProvider = ({ children }) => {
 
     try {
       const productoParaCarrito = {
-        id_producto: producto.id_producto || producto.id, // Maneja ambos casos
+        id_producto: producto.id_producto || producto.id,
         cantidad: 1,
         nombre: producto.nombre,
-        precio: producto.precioOferta || producto.precio, // Usa el precio de oferta si existe
-        foto: producto.foto || producto.imagen, // Maneja ambos casos de la URL de la imagen
-        esPromocion: !!producto.precioOferta // Marca como promoción si tiene precio de oferta
+        precio: producto.precioOferta || producto.precio,
+        foto: producto.foto || producto.imagen,
+        esPromocion: !!producto.precioOferta
       };
 
-      const response = await axios.post(`http://localhost:3000/carrito/${userId}`, productoParaCarrito);
+      const response = await axios.post(`${API_URL}/carrito/${userId}`, productoParaCarrito);
       setCarrito(response.data.productos);
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
+      throw error;
     }
   };
 
@@ -79,10 +90,11 @@ export const CarritoProvider = ({ children }) => {
     if (!userId) return;
 
     try {
-      const response = await axios.delete(`http://localhost:3000/carrito/${userId}/${id_producto}`);
+      const response = await axios.delete(`${API_URL}/carrito/${userId}/${id_producto}`);
       setCarrito(response.data.productos);
     } catch (error) {
       console.error("Error al eliminar del carrito:", error);
+      throw error;
     }
   };
 
@@ -90,22 +102,23 @@ export const CarritoProvider = ({ children }) => {
     if (!userId) return;
 
     try {
-      const response = await axios.put(`http://localhost:3000/carrito/${userId}/${id_producto}`, {
+      const response = await axios.put(`${API_URL}/carrito/${userId}/${id_producto}`, {
         cantidad
       });
       setCarrito(response.data.productos);
     } catch (error) {
       console.error("Error al cambiar la cantidad:", error);
+      throw error;
     }
   };
 
   const vaciarCarrito = async () => {
     if (!userId) return;
-  
+
     try {
-      await axios.put(`http://localhost:3000/carrito/${userId}`, { 
-        productos: [], 
-        cupon_aplicado: null 
+      await axios.put(`${API_URL}/carrito/${userId}`, {
+        productos: [],
+        cupon_aplicado: null
       });
       setCarrito([]);
       setCuponAplicado(null);
@@ -119,17 +132,20 @@ export const CarritoProvider = ({ children }) => {
     if (!userId) return null;
 
     try {
-      const response = await axios.post(`http://localhost:3000/carrito/${userId}/aplicar-cupon`, { 
-        codigo 
-      });
-      const cupon = response.data.cupon;
-      setCuponAplicado(cupon);
-      await actualizarCarritoEnServidor();
-      return cupon;
+      const response = await axios.post(`${API_URL}/carrito/${userId}/aplicar-cupon`, { codigo });
+
+      if (response.data && response.data.cupon) {
+        const cupon = response.data.cupon;
+        setCuponAplicado(cupon);
+        await actualizarCarritoEnServidor();
+        return cupon;
+      } else {
+        throw new Error('Cupón inválido');
+      }
     } catch (error) {
       console.error("Error al aplicar el cupón:", error);
       setCuponAplicado(null);
-      return null;
+      throw error;
     }
   };
 
@@ -137,12 +153,16 @@ export const CarritoProvider = ({ children }) => {
     <CarritoContext.Provider value={{
       carrito,
       cuponAplicado,
+      isLoggedIn,
+      setIsLoggedIn,
+      userId,
+      setUserId,
+      isLoading,
       agregarAlCarrito,
       eliminarDelCarrito,
       cambiarCantidad,
       vaciarCarrito,
-      aplicarCupon,
-      isLoading
+      aplicarCupon
     }}>
       {children}
     </CarritoContext.Provider>
