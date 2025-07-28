@@ -101,9 +101,6 @@ function Login() {
         <p className="text-sm text-center text-gray-300">
           ¿Eres una empresa? <a href="/login-empresa" className="text-blue-400 hover:underline">Inicia sesión como empresa</a>
         </p>
-        <p className="text-sm text-center text-gray-300">
-          ¿Eres un empleado? <a href="/login-empleado" className="text-blue-400 hover:underline">Inicia sesión como empleado</a>
-        </p>
       </div>
     </div>
   );
