@@ -6,7 +6,7 @@ import logo from "./assets/img/logo.png";
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function LoginEmpresa() {
-  const [email, setEmail] = useState("");
+  const [nombre_empresa, setNombreEmpresa] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function LoginEmpresa() {
       const response = await fetch(`${API_URL}/login/empresa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ nombre_empresa, password })
       });
       const data = await response.json();
       setMessage(data.message);
@@ -38,9 +38,28 @@ function LoginEmpresa() {
       <div className="w-full max-w-md p-8 space-y-8 bg-[#1E293B] rounded-lg shadow-xl">
         <h2 className="text-2xl font-bold text-white">Login Empresa</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-3 py-2 bg-[#334155] text-white rounded" />
-          <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-3 py-2 bg-[#334155] text-white rounded" />
-          <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Iniciar Sesión</button>
+          <input
+            type="text"
+            placeholder="Nombre de la empresa"
+            value={nombre_empresa}
+            onChange={(e) => setNombreEmpresa(e.target.value)}
+            required
+            className="w-full px-3 py-2 bg-[#334155] text-white rounded"
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-3 py-2 bg-[#334155] text-white rounded"
+          />
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Iniciar Sesión
+          </button>
         </form>
         {message && <p className="text-red-500 text-sm text-center">{message}</p>}
 
