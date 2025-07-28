@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
@@ -15,18 +17,26 @@ function Usuarios() {
     password: "",
   });
 
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/usuarios`);
-        setUsuarios(response.data);
-      } catch (error) {
-        console.error("Error al obtener usuarios:", error);
-      }
-    };
+  const navigate = useNavigate();
 
-    fetchUsuarios();
+  useEffect(() => {
+    const rol = Cookies.get("rol");
+    if (rol !== "admin") {
+      alert("Acceso denegado. No tienes permisos para ver esta página.");
+      navigate("/landing");
+    } else {
+      fetchUsuarios();
+    }
   }, []);
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/usuarios`);
+      setUsuarios(response.data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
 
   const handleEditClick = (index) => {
     const selectedUsuario = usuarios[index];
@@ -56,14 +66,13 @@ function Usuarios() {
     try {
       await axios.put(`${API_URL}/usuarios/${formData._id}`, formData);
       setShowForm(false);
-      const response = await axios.get(`${API_URL}/usuarios`);
-      setUsuarios(response.data);
+      fetchUsuarios();
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
     }
   };
 
-  const handleAgregarClick = async () => {
+  const handleAgregarClick = () => {
     setFormData({
       nombre: "",
       email: "",
@@ -77,8 +86,7 @@ function Usuarios() {
     try {
       await axios.post(`${API_URL}/registro`, formData);
       setShowForm(false);
-      const response = await axios.get(`${API_URL}/usuarios`);
-      setUsuarios(response.data);
+      fetchUsuarios();
     } catch (error) {
       console.error("Error al agregar usuario:", error);
     }
@@ -86,7 +94,6 @@ function Usuarios() {
 
   const handleDeleteClick = async (id) => {
     const isConfirmed = window.confirm("¿Estás seguro de que deseas eliminar este usuario?");
-    
     if (isConfirmed) {
       try {
         await axios.delete(`${API_URL}/usuarios/${id}`);
@@ -182,18 +189,18 @@ function Usuarios() {
               <form className="space-y-4">
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Nombre</label>
-                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" placeholder="Nombre del usuario" />
+                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Nombre del usuario" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Email</label>
-                  <input type="text" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" placeholder="Email del usuario" />
+                  <input type="text" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Email del usuario" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Contraseña</label>
-                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" placeholder="Contraseña" />
+                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Contraseña" />
                 </div>
                 <div className="flex justify-end">
-                  <button type="button" onClick={isEditing ? handleSave : handleAddUser} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                  <button type="button" onClick={isEditing ? handleSave : handleAddUser} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     {isEditing ? "Guardar" : "Agregar"}
                   </button>
                 </div>

@@ -4,7 +4,6 @@ import Cookies from "js-cookie";
 import "tailwindcss/tailwind.css";
 import logo from "./assets/img/logo.png";
 
-// URL del backend
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Login() {
@@ -19,9 +18,7 @@ function Login() {
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -30,7 +27,13 @@ function Login() {
 
       if (response.ok) {
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
-        navigate("/landing", { state: { userId: data.id_usuario } });
+        Cookies.set("rol", data.rol, { expires: 7 });
+
+        if (data.rol === "admin") {
+          navigate("/usuarios");
+        } else {
+          navigate("/landing");
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -43,10 +46,6 @@ function Login() {
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-          body {
-            font-family: 'Montserrat', sans-serif;
-          }
         `}
       </style>
       <img src={logo} alt="Reverie Logo" className="w-62 h-52 mb-8" />
@@ -56,30 +55,26 @@ function Login() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-bold text-white">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-bold text-white">Email</label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md"
               placeholder="Introduce tu Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-bold text-white">
-              Contraseña
-            </label>
+            <label htmlFor="password" className="block text-sm font-bold text-white">Contraseña</label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md"
               placeholder="Introduce tu Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -88,7 +83,7 @@ function Login() {
           <div>
             <button
               type="submit"
-              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
             >
               Iniciar Sesión
             </button>
