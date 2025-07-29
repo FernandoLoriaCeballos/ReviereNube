@@ -63,7 +63,12 @@ function Usuarios() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`${API_URL}/usuarios/${formData._id}`, formData);
+      await axios.put(`${API_URL}/usuarios/${formData._id}`, {
+        nombre: formData.nombre,
+        email: formData.email,
+        password: formData.password,
+        rol: formData.rol
+      });
       setShowForm(false);
       const response = await axios.get(`${API_URL}/usuarios`);
       setUsuarios(response.data);
@@ -119,6 +124,21 @@ function Usuarios() {
     ? ["superadmin", "admin_empresa", "empleado", "usuario"]
     : ["empleado"];
 
+  const getNombreRol = (rol) => {
+    switch (rol) {
+      case "superadmin":
+        return "Super Admin";
+      case "admin_empresa":
+        return "Administrador de Empresa";
+      case "empleado":
+        return "Empleado";
+      case "usuario":
+        return "Usuario";
+      default:
+        return rol;
+    }
+  };
+
   return (
     <div className="bg-[#111827] font-['Montserrat']">
       <style>
@@ -170,7 +190,7 @@ function Usuarios() {
                       <td className="px-6 py-4 font-medium whitespace-nowrap">{usuario.nombre}</td>
                       <td className="px-6 py-4">{usuario.email}</td>
                       <td className="px-6 py-4">{usuario.password}</td>
-                      <td className="px-6 py-4 capitalize">{usuario.rol}</td>
+                      <td className="px-6 py-4">{getNombreRol(usuario.rol)}</td>
                       <td className="px-6 py-4">{new Date(usuario.fecha_reg).toLocaleDateString()}</td>
                       <td className="px-6 py-4 space-x-2">
                         <button onClick={() => handleEditClick(index)} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -226,7 +246,7 @@ function Usuarios() {
                   <select name="rol" value={formData.rol} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
                     <option value="">Selecciona un rol</option>
                     {rolesDisponibles.map((rol) => (
-                      <option key={rol} value={rol}>{rol}</option>
+                      <option key={rol} value={rol}>{getNombreRol(rol)}</option>
                     ))}
                   </select>
                 </div>
