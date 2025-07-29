@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import "tailwindcss/tailwind.css";
 import logo from "./assets/img/logo.png";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -25,25 +25,38 @@ function Login() {
       const data = await response.json();
       setMessage(data.message);
 
+      console.log("🔒 Login response:", data);
+
       if (response.ok) {
-        // ✅ Guardar en cookies los datos importantes
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
 
-        // Guardar empresa_id si viene en la respuesta (para admin_empresa)
+        console.log("✅ Cookie id_usuario:", data.id_usuario);
+        console.log("✅ Cookie rol:", data.rol);
+
         if (data.empresa_id) {
           Cookies.set("id_empresa", data.empresa_id, { expires: 7 });
+          console.log("✅ Cookie id_empresa:", data.empresa_id);
+        } else {
+          console.warn("⚠️ No se recibió empresa_id en la respuesta.");
         }
 
-        // ✅ Redirigir según rol
-        if (data.rol === "superadmin" || data.rol === "admin_empresa") {
+        // Redirección según el rol
+        if (data.rol === "superadmin") {
+          console.log("➡️ Redirigiendo a /usuarios como superadmin");
+          navigate("/usuarios");
+        } else if (data.rol === "admin_empresa") {
+          console.log("➡️ Redirigiendo a /usuarios como admin_empresa");
           navigate("/usuarios");
         } else {
+          console.log("➡️ Redirigiendo a /landing como otro rol:", data.rol);
           navigate("/landing");
         }
+      } else {
+        console.error("❌ Error de login:", data.message);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ Error en la solicitud:", error);
       setMessage("Hubo un error al intentar iniciar sesión");
     }
   };
@@ -62,7 +75,9 @@ function Login() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-bold text-white">Email</label>
+            <label htmlFor="email" className="block text-sm font-bold text-white">
+              Email
+            </label>
             <input
               id="email"
               name="email"
@@ -75,7 +90,9 @@ function Login() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-bold text-white">Contraseña</label>
+            <label htmlFor="password" className="block text-sm font-bold text-white">
+              Contraseña
+            </label>
             <input
               id="password"
               name="password"
@@ -98,10 +115,16 @@ function Login() {
         </form>
         {message && <p className="mt-2 text-sm text-center text-red-500">{message}</p>}
         <p className="mt-4 text-sm text-center text-gray-300">
-          ¿No tienes una cuenta? <a href="/registro" className="text-blue-500 hover:text-blue-400">¡Regístrate!</a>
+          ¿No tienes una cuenta?{" "}
+          <a href="/registro" className="text-blue-500 hover:text-blue-400">
+            ¡Regístrate!
+          </a>
         </p>
         <p className="text-sm text-center text-gray-300">
-          ¿Eres una empresa? <a href="/login-empresa" className="text-blue-400 hover:underline">Inicia sesión como empresa</a>
+          ¿Eres una empresa?{" "}
+          <a href="/login-empresa" className="text-blue-400 hover:underline">
+            Inicia sesión como empresa
+          </a>
         </p>
       </div>
     </div>
