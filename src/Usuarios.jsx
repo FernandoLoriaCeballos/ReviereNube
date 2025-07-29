@@ -22,6 +22,7 @@ function Usuarios() {
   const rolActual = Cookies.get("rol");
   const empresaId = Cookies.get("id_empresa");
 
+  // ✅ Consola para depurar
   console.log("ROL:", rolActual);
   console.log("EMPRESA ID:", empresaId);
 
@@ -29,7 +30,7 @@ function Usuarios() {
     const fetchUsuarios = async () => {
       try {
         if (rolActual === "superadmin") {
-          const response = await axios.get(`${API_URL}/admin/todos-los-usuarios-con-empresa`);
+          const response = await axios.get(`${API_URL}/usuarios`);
           setUsuarios(response.data);
         } else if (rolActual === "admin_empresa" && empresaId) {
           const response = await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
@@ -99,7 +100,7 @@ function Usuarios() {
       setShowForm(false);
 
       const updatedList = rolActual === "superadmin"
-        ? await axios.get(`${API_URL}/admin/todos-los-usuarios-con-empresa`)
+        ? await axios.get(`${API_URL}/usuarios`)
         : await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
 
       setUsuarios(updatedList.data);
@@ -148,7 +149,7 @@ function Usuarios() {
       setShowForm(false);
 
       const updatedList = rolActual === "superadmin"
-        ? await axios.get(`${API_URL}/admin/todos-los-usuarios-con-empresa`)
+        ? await axios.get(`${API_URL}/usuarios`)
         : await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
 
       setUsuarios(updatedList.data);
@@ -218,9 +219,6 @@ function Usuarios() {
                     <th className="px-6 py-3">Email</th>
                     <th className="px-6 py-3">Contraseña</th>
                     <th className="px-6 py-3">Rol</th>
-                    {rolActual === "superadmin" && (
-                      <th className="px-6 py-3">Empresa</th>
-                    )}
                     <th className="px-6 py-3">Fecha de Registro</th>
                     <th className="px-6 py-3">Acciones</th>
                   </tr>
@@ -232,9 +230,6 @@ function Usuarios() {
                       <td className="px-6 py-4">{usuario.email}</td>
                       <td className="px-6 py-4">{usuario.password}</td>
                       <td className="px-6 py-4">{getNombreRol(usuario.rol)}</td>
-                      {rolActual === "superadmin" && (
-                        <td className="px-6 py-4">{usuario.nombre_empresa || "Desconocida"}</td>
-                      )}
                       <td className="px-6 py-4">{new Date(usuario.fecha_reg).toLocaleDateString()}</td>
                       <td className="px-6 py-4 space-x-2">
                         <button onClick={() => handleEditClick(index)} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
