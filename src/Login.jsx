@@ -29,12 +29,10 @@ function Login() {
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
 
-        // Guardar empresa_id si es admin_empresa
-        if (data.rol === "admin_empresa" && data.empresa_id) {
-          Cookies.set("id_empresa", data.empresa_id, { expires: 7 });
+        if (data.rol === "admin_empresa" && data.id_empresa) {
+          Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
         }
 
-        // Redirigir al panel de usuarios si es superadmin o admin_empresa
         if (data.rol === "superadmin" || data.rol === "admin_empresa") {
           navigate("/usuarios");
         } else {
@@ -49,16 +47,9 @@ function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#0F172A] font-['Montserrat']">
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-        `}
-      </style>
       <img src={logo} alt="Reverie Logo" className="w-62 h-52 mb-8" />
       <div className="w-full max-w-md p-8 space-y-8 bg-[#1E293B] rounded-lg shadow-xl">
-        <div className="flex flex-col justify-center h-full">
-          <h2 className="text-2xl font-bold text-white text-left mt-3">Inicio de Sesión</h2>
-        </div>
+        <h2 className="text-2xl font-bold text-white text-left mt-3">Inicio de Sesión</h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-bold text-white">Email</label>
@@ -86,14 +77,12 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Iniciar Sesión
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            Iniciar Sesión
+          </button>
         </form>
         {message && <p className="mt-2 text-sm text-center text-red-500">{message}</p>}
         <p className="mt-4 text-sm text-center text-gray-300">
