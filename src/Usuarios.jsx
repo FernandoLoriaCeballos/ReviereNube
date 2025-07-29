@@ -14,30 +14,37 @@ function Usuarios() {
     nombre: "",
     email: "",
     password: "",
-    rol: ""
+    rol: "",
+    empresa_id: ""
   });
 
   const rolActual = Cookies.get("rol");
+  const empresaId = Cookies.get("id_empresa");
 
   useEffect(() => {
     const fetchUsuarios = async () => {
-      if (rolActual !== "superadmin") return;
       try {
-        const response = await axios.get(`${API_URL}/usuarios`);
-        setUsuarios(response.data);
+        if (rolActual === "superadmin") {
+          const response = await axios.get(`${API_URL}/usuarios`);
+          setUsuarios(response.data);
+        } else if (rolActual === "admin_empresa") {
+          const response = await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
+          setUsuarios(response.data);
+        }
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
       }
     };
 
     fetchUsuarios();
-  }, [rolActual]);
+  }, [rolActual, empresaId]);
 
   const handleEditClick = (index) => {
     const selectedUsuario = usuarios[index];
     setFormData({
       ...selectedUsuario,
-      rol: selectedUsuario.rol || "usuario"
+      rol: selectedUsuario.rol || "usuario",
+      empresa_id: selectedUsuario.empresa_id || empresaId
     });
     setIsEditing(true);
     setShowForm(true);
@@ -49,7 +56,8 @@ function Usuarios() {
       nombre: "",
       email: "",
       password: "",
-      rol: ""
+      rol: "",
+      empresa_id: ""
     });
     setIsEditing(false);
   };
@@ -63,15 +71,22 @@ function Usuarios() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`${API_URL}/usuarios/${formData._id}`, {
+      const datos = {
         nombre: formData.nombre,
         email: formData.email,
         password: formData.password,
-        rol: formData.rol
-      });
+        rol: formData.rol,
+        empresa_id: rolActual === "admin_empresa" ? parseInt(empresaId) : formData.empresa_id
+      };
+
+      await axios.put(`${API_URL}/usuarios/${formData._id}`, datos);
       setShowForm(false);
-      const response = await axios.get(`${API_URL}/usuarios`);
-      setUsuarios(response.data);
+
+      const updatedList = rolActual === "superadmin"
+        ? await axios.get(`${API_URL}/usuarios`)
+        : await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
+
+      setUsuarios(updatedList.data);
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
     }
@@ -82,7 +97,8 @@ function Usuarios() {
       nombre: "",
       email: "",
       password: "",
-      rol: ""
+      rol: rolActual === "admin_empresa" ? "empleado" : "",
+      empresa_id: empresaId
     });
     setIsEditing(false);
     setShowForm(true);
@@ -90,19 +106,34 @@ function Usuarios() {
 
   const handleAddUser = async () => {
     try {
-      if (rolActual === "superadmin") {
+      const datos = {
+        nombre: formData.nombre,
+        email: formData.email,
+        password: formData.password
+      };
+
+      if (rolActual === "admin_empresa") {
+        await axios.post(`${API_URL}/registro/empleados-empresa`, datos, {
+          headers: {
+            rol: rolActual,
+            empresa_id: empresaId
+          }
+        });
+      } else if (rolActual === "superadmin") {
         await axios.post(`${API_URL}/registro/usuarios-superadmin`, formData, {
           headers: {
             rol: rolActual
           }
         });
-      } else {
-        await axios.post(`${API_URL}/registro`, formData);
       }
 
       setShowForm(false);
-      const response = await axios.get(`${API_URL}/usuarios`);
-      setUsuarios(response.data);
+
+      const updatedList = rolActual === "superadmin"
+        ? await axios.get(`${API_URL}/usuarios`)
+        : await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
+
+      setUsuarios(updatedList.data);
     } catch (error) {
       console.error("Error al agregar usuario:", error);
     }
@@ -141,12 +172,6 @@ function Usuarios() {
 
   return (
     <div className="bg-[#111827] font-['Montserrat']">
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-        `}
-      </style>
-
       <nav className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/HomeAdmin" className="flex items-center">
@@ -170,7 +195,7 @@ function Usuarios() {
           </a>
         </div>
 
-        {rolActual === "superadmin" ? (
+        {(rolActual === "superadmin" || rolActual === "admin_empresa") ? (
           <>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-[#202938] w-full sm:w-auto mb-8">
               <table className="w-full text-sm text-left text-white">
@@ -231,19 +256,19 @@ function Usuarios() {
               <form className="space-y-4">
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Nombre</label>
-                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
+                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight bg-gray-700 border-gray-600 text-white" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Email</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight bg-gray-700 border-gray-600 text-white" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Contraseña</label>
-                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
+                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight bg-gray-700 border-gray-600 text-white" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Rol</label>
-                  <select name="rol" value={formData.rol} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
+                  <select name="rol" value={formData.rol} onChange={handleChange} disabled={rolActual !== "superadmin"} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
                     <option value="">Selecciona un rol</option>
                     {rolesDisponibles.map((rol) => (
                       <option key={rol} value={rol}>{getNombreRol(rol)}</option>
