@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
+  const [empresas, setEmpresas] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +37,19 @@ function Usuarios() {
       }
     };
 
+    const fetchEmpresas = async () => {
+      if (rolActual === "superadmin") {
+        try {
+          const response = await axios.get(`${API_URL}/empresas`);
+          setEmpresas(response.data);
+        } catch (error) {
+          console.error("Error al obtener empresas:", error);
+        }
+      }
+    };
+
     fetchUsuarios();
+    fetchEmpresas();
   }, [rolActual, empresaId]);
 
   const handleEditClick = (index) => {
@@ -109,7 +122,9 @@ function Usuarios() {
       const datos = {
         nombre: formData.nombre,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        rol: formData.rol,
+        empresa_id: formData.empresa_id
       };
 
       if (rolActual === "admin_empresa") {
@@ -120,7 +135,7 @@ function Usuarios() {
           }
         });
       } else if (rolActual === "superadmin") {
-        await axios.post(`${API_URL}/registro/usuarios-superadmin`, formData, {
+        await axios.post(`${API_URL}/registro/usuarios-superadmin`, datos, {
           headers: {
             rol: rolActual
           }
@@ -157,16 +172,11 @@ function Usuarios() {
 
   const getNombreRol = (rol) => {
     switch (rol) {
-      case "superadmin":
-        return "Super Admin";
-      case "admin_empresa":
-        return "Administrador de Empresa";
-      case "empleado":
-        return "Empleado";
-      case "usuario":
-        return "Usuario";
-      default:
-        return rol;
+      case "superadmin": return "Super Admin";
+      case "admin_empresa": return "Administrador de Empresa";
+      case "empleado": return "Empleado";
+      case "usuario": return "Usuario";
+      default: return rol;
     }
   };
 
@@ -245,12 +255,7 @@ function Usuarios() {
           <div className="relative overflow-hidden shadow-lg bg-[#202938] sm:rounded-lg w-[500px] max-w-[90%]">
             <div className="flex justify-between items-center bg-gray-700 px-6 py-3">
               <h2 className="text-lg font-semibold text-white">{isEditing ? "Editar Usuario" : "Agregar Usuario"}</h2>
-              <button onClick={handleCloseForm} className="text-white hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" className="feather feather-x w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+              <button onClick={handleCloseForm} className="text-white hover:text-gray-200">✕</button>
             </div>
             <div className="p-6">
               <form className="space-y-4">
@@ -275,6 +280,21 @@ function Usuarios() {
                     ))}
                   </select>
                 </div>
+
+                {rolActual === "superadmin" && formData.rol === "admin_empresa" && (
+                  <div>
+                    <label className="block text-white text-sm font-bold mb-2">Empresa</label>
+                    <select name="empresa_id" value={formData.empresa_id} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
+                      <option value="">Selecciona una empresa</option>
+                      {empresas.map((empresa) => (
+                        <option key={empresa.id_empresa} value={empresa.id_empresa}>
+                          {empresa.nombre_empresa}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex justify-end">
                   <button type="button" onClick={isEditing ? handleSave : handleAddUser} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
                     {isEditing ? "Guardar" : "Agregar"}
