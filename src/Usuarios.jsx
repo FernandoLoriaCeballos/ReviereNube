@@ -30,9 +30,10 @@ function Usuarios() {
     const fetchUsuarios = async () => {
       try {
         if (rolActual === "superadmin") {
-          const response = await axios.get(`${API_URL}/usuarios`);
-          setUsuarios(response.data);
-        } else if (rolActual === "admin_empresa" && empresaId) {
+  const response = await axios.get(`${API_URL}/todos-usuarios-empleados`);
+  setUsuarios(response.data);
+}
+ else if (rolActual === "admin_empresa" && empresaId) {
           const response = await axios.get(`${API_URL}/empleados/empresa/${empresaId}`);
           setUsuarios(response.data);
         }
