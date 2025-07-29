@@ -29,7 +29,13 @@ function Login() {
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
 
-        if (data.rol === "admin") {
+        // Guardar empresa_id si es admin_empresa
+        if (data.rol === "admin_empresa" && data.empresa_id) {
+          Cookies.set("id_empresa", data.empresa_id, { expires: 7 });
+        }
+
+        // Redirigir al panel de usuarios si es superadmin o admin_empresa
+        if (data.rol === "superadmin" || data.rol === "admin_empresa") {
           navigate("/usuarios");
         } else {
           navigate("/landing");
