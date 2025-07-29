@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import logo from './assets/img/logo.png';
 
@@ -15,32 +14,31 @@ function Usuarios() {
     nombre: "",
     email: "",
     password: "",
+    rol: ""
   });
 
-  const navigate = useNavigate();
+  const rolActual = Cookies.get("rol");
 
   useEffect(() => {
-    const rol = Cookies.get("rol");
-    if (rol !== "admin") {
-      alert("Acceso denegado. No tienes permisos para ver esta página.");
-      navigate("/landing");
-    } else {
-      fetchUsuarios();
-    }
-  }, []);
+    const fetchUsuarios = async () => {
+      if (rolActual !== "superadmin") return;
+      try {
+        const response = await axios.get(`${API_URL}/usuarios`);
+        setUsuarios(response.data);
+      } catch (error) {
+        console.error("Error al obtener usuarios:", error);
+      }
+    };
 
-  const fetchUsuarios = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/usuarios`);
-      setUsuarios(response.data);
-    } catch (error) {
-      console.error("Error al obtener usuarios:", error);
-    }
-  };
+    fetchUsuarios();
+  }, [rolActual]);
 
   const handleEditClick = (index) => {
     const selectedUsuario = usuarios[index];
-    setFormData(selectedUsuario);
+    setFormData({
+      ...selectedUsuario,
+      rol: selectedUsuario.rol || "usuario"
+    });
     setIsEditing(true);
     setShowForm(true);
   };
@@ -51,6 +49,7 @@ function Usuarios() {
       nombre: "",
       email: "",
       password: "",
+      rol: ""
     });
     setIsEditing(false);
   };
@@ -66,7 +65,8 @@ function Usuarios() {
     try {
       await axios.put(`${API_URL}/usuarios/${formData._id}`, formData);
       setShowForm(false);
-      fetchUsuarios();
+      const response = await axios.get(`${API_URL}/usuarios`);
+      setUsuarios(response.data);
     } catch (error) {
       console.error("Error al actualizar usuario:", error);
     }
@@ -77,6 +77,7 @@ function Usuarios() {
       nombre: "",
       email: "",
       password: "",
+      rol: ""
     });
     setIsEditing(false);
     setShowForm(true);
@@ -84,9 +85,19 @@ function Usuarios() {
 
   const handleAddUser = async () => {
     try {
-      await axios.post(`${API_URL}/registro`, formData);
+      if (rolActual === "superadmin") {
+        await axios.post(`${API_URL}/registro/usuarios-superadmin`, formData, {
+          headers: {
+            rol: rolActual
+          }
+        });
+      } else {
+        await axios.post(`${API_URL}/registro`, formData);
+      }
+
       setShowForm(false);
-      fetchUsuarios();
+      const response = await axios.get(`${API_URL}/usuarios`);
+      setUsuarios(response.data);
     } catch (error) {
       console.error("Error al agregar usuario:", error);
     }
@@ -104,6 +115,10 @@ function Usuarios() {
     }
   };
 
+  const rolesDisponibles = rolActual === "superadmin"
+    ? ["superadmin", "admin_empresa", "empleado", "usuario"]
+    : ["empleado"];
+
   return (
     <div className="bg-[#111827] font-['Montserrat']">
       <style>
@@ -111,6 +126,7 @@ function Usuarios() {
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
         `}
       </style>
+
       <nav className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/HomeAdmin" className="flex items-center">
@@ -129,48 +145,54 @@ function Usuarios() {
 
       <section className="flex flex-col justify-center items-center min-h-screen bg-[#111827] py-16">
         <div className="w-full max-w-7xl px-4 mb-8 flex justify-start">
-          <a
-            href="/landing"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
+          <a href="/landing" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Volver Modo Usuario
           </a>
         </div>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-[#202938] w-full sm:w-auto mb-8">
-          <table className="w-full text-sm text-left text-white">
-            <thead className="text-xs uppercase bg-gray-700 text-white">
-              <tr>
-                <th scope="col" className="px-6 py-3">Nombre</th>
-                <th scope="col" className="px-6 py-3">Email</th>
-                <th scope="col" className="px-6 py-3">Contraseña</th>
-                <th scope="col" className="px-6 py-3">Fecha de Registro</th>
-                <th scope="col" className="px-6 py-3">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {usuarios.map((usuario, index) => (
-                <tr key={index} className="border-b border-gray-700 hover:bg-[#1e293b]">
-                  <td className="px-6 py-4 font-medium whitespace-nowrap">{usuario.nombre}</td>
-                  <td className="px-6 py-4">{usuario.email}</td>
-                  <td className="px-6 py-4">{usuario.password}</td>
-                  <td className="px-6 py-4">{new Date(usuario.fecha_reg).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 space-x-2">
-                    <button onClick={() => handleEditClick(index)} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                      Editar
-                    </button>
-                    <button onClick={() => handleDeleteClick(usuario._id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
-        <button onClick={handleAgregarClick} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Agregar Usuario
-        </button>
+        {rolActual === "superadmin" ? (
+          <>
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-[#202938] w-full sm:w-auto mb-8">
+              <table className="w-full text-sm text-left text-white">
+                <thead className="text-xs uppercase bg-gray-700 text-white">
+                  <tr>
+                    <th className="px-6 py-3">Nombre</th>
+                    <th className="px-6 py-3">Email</th>
+                    <th className="px-6 py-3">Contraseña</th>
+                    <th className="px-6 py-3">Rol</th>
+                    <th className="px-6 py-3">Fecha de Registro</th>
+                    <th className="px-6 py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.map((usuario, index) => (
+                    <tr key={index} className="border-b border-gray-700 hover:bg-[#1e293b]">
+                      <td className="px-6 py-4 font-medium whitespace-nowrap">{usuario.nombre}</td>
+                      <td className="px-6 py-4">{usuario.email}</td>
+                      <td className="px-6 py-4">{usuario.password}</td>
+                      <td className="px-6 py-4 capitalize">{usuario.rol}</td>
+                      <td className="px-6 py-4">{new Date(usuario.fecha_reg).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 space-x-2">
+                        <button onClick={() => handleEditClick(index)} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                          Editar
+                        </button>
+                        <button onClick={() => handleDeleteClick(usuario._id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <button onClick={handleAgregarClick} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Agregar Usuario
+            </button>
+          </>
+        ) : (
+          <p className="text-white text-xl">No tienes permisos para ver esta sección.</p>
+        )}
       </section>
 
       {showForm && (
@@ -179,7 +201,7 @@ function Usuarios() {
             <div className="flex justify-between items-center bg-gray-700 px-6 py-3">
               <h2 className="text-lg font-semibold text-white">{isEditing ? "Editar Usuario" : "Agregar Usuario"}</h2>
               <button onClick={handleCloseForm} className="text-white hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x w-6 h-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="feather feather-x w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -189,18 +211,27 @@ function Usuarios() {
               <form className="space-y-4">
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Nombre</label>
-                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Nombre del usuario" />
+                  <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Email</label>
-                  <input type="text" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Email del usuario" />
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
                 </div>
                 <div>
                   <label className="block text-white text-sm font-bold mb-2">Contraseña</label>
-                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-700 border-gray-600 text-white" placeholder="Contraseña" />
+                  <input type="text" name="password" value={formData.password} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none bg-gray-700 border-gray-600 text-white" />
+                </div>
+                <div>
+                  <label className="block text-white text-sm font-bold mb-2">Rol</label>
+                  <select name="rol" value={formData.rol} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
+                    <option value="">Selecciona un rol</option>
+                    {rolesDisponibles.map((rol) => (
+                      <option key={rol} value={rol}>{rol}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex justify-end">
-                  <button type="button" onClick={isEditing ? handleSave : handleAddUser} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  <button type="button" onClick={isEditing ? handleSave : handleAddUser} className="bg-[#2563eb] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
                     {isEditing ? "Guardar" : "Agregar"}
                   </button>
                 </div>
