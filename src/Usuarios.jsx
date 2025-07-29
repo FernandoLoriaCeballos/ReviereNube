@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
-  const [empresas, setEmpresas] = useState([]); // NUEVO
+  const [empresas, setEmpresas] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -182,8 +182,7 @@ function Usuarios() {
 
   return (
     <div className="bg-[#111827] font-['Montserrat']">
-      {/* ... navbar y tabla como antes ... */}
-
+      {/* ... navbar y tabla ... */}
       {showForm && (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
           <div className="relative overflow-hidden shadow-lg bg-[#202938] sm:rounded-lg w-[500px] max-w-[90%]">
@@ -217,10 +216,17 @@ function Usuarios() {
                 {rolActual === "superadmin" && formData.rol === "admin_empresa" && (
                   <div>
                     <label className="block text-white text-sm font-bold mb-2">Empresa</label>
-                    <select name="empresa_id" value={formData.empresa_id} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
+                    <select
+                      name="empresa_id"
+                      value={formData.empresa_id}
+                      onChange={handleChange}
+                      className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white"
+                    >
                       <option value="">Selecciona una empresa</option>
                       {empresas.map((empresa) => (
-                        <option key={empresa.id_empresa} value={empresa.id_empresa}>{empresa.nombre_empresa}</option>
+                        <option key={empresa.id_empresa} value={empresa.id_empresa}>
+                          {empresa.nombre_empresa}
+                        </option>
                       ))}
                     </select>
                   </div>
