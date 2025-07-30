@@ -89,7 +89,7 @@ function Usuarios() {
         email: formData.email,
         password: formData.password,
         rol: formData.rol,
-        empresa_id: rolActual === "admin_empresa" ? parseInt(empresaId) : formData.empresa_id
+        id_empresa: rolActual === "admin_empresa" ? parseInt(empresaId) : formData.empresa_id
       };
 
       await axios.put(`${API_URL}/usuarios/${formData._id}`, datos);
@@ -124,7 +124,7 @@ function Usuarios() {
         email: formData.email,
         password: formData.password,
         rol: formData.rol,
-        empresa_id: formData.empresa_id
+        id_empresa: formData.empresa_id
       };
 
       if (rolActual === "admin_empresa") {
@@ -182,6 +182,7 @@ function Usuarios() {
 
   return (
     <div className="bg-[#111827] font-['Montserrat']">
+      {/* ... navbar ... */}
       <nav className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/HomeAdmin" className="flex items-center">
@@ -283,7 +284,7 @@ function Usuarios() {
                   </select>
                 </div>
 
-                {rolActual === "superadmin" && formData.rol === "admin_empresa" && (
+                {rolActual === "superadmin" && ["admin_empresa", "empleado"].includes(formData.rol) && (
                   <div>
                     <label className="block text-white text-sm font-bold mb-2">Empresa</label>
                     <select name="empresa_id" value={formData.empresa_id} onChange={handleChange} className="shadow border rounded w-full py-2 px-3 bg-gray-700 text-white">
