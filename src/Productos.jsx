@@ -202,7 +202,6 @@ function Productos() {
             <img src={logo} alt="Logo" className="w-[116px]" />
           </a>
           <div className="hidden lg:flex items-center space-x-8">
-            <a href="/HomeAdmin" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">HOME</a>
             <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
             <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
             <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">EMPRESAS</a>
