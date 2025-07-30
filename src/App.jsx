@@ -24,6 +24,7 @@ import GenerarCompras from "./GenerarCompras";
 import LoginEmpresa from "./LoginEmpresa";
 import LoginEmpleado from "./LoginEmpleado";
 import RegistroEmpresa from "./RegistroEmpresa";
+import Empresas from "./Empresas"; // Agregar esta importación
 
 const App = () => {
   return (
@@ -53,7 +54,8 @@ const App = () => {
           <Route path="/Ofertas" element={<Ofertas />} />
           <Route path="/cuponeslanding" element={<CuponesLanding />} />
           <Route path="/generar-resenas" element={<GenerarResenas />} />
-          <Route path="/generar-compras" element={<GenerarCompras />} /> 
+          <Route path="/generar-compras" element={<GenerarCompras />} />
+          <Route path="/empresas" element={<Empresas />} /> {/* Agregar esta ruta */}
         </Routes>
       </Router>
     </CarritoProvider>
