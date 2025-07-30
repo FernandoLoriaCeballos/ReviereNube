@@ -108,7 +108,8 @@ function Login() {
           ¿No tienes una cuenta? <a href="/registro" className="text-blue-500 hover:text-blue-400">¡Regístrate!</a>
         </p>
         <p className="text-sm text-center text-gray-300">
-          ¿Eres una empresa? <a href="/login-empresa" className="text-blue-400 hover:underline">Inicia sesión como empresa</a>
+          ¿No tienes una empresa registrada?{" "}
+          <a href="/registro-empresa" className="text-blue-400 hover:underline">Regístrala aquí</a>
         </p>
       </div>
     </div>
