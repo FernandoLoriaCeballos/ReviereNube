@@ -96,7 +96,7 @@ const Landing = () => {
   );
 
   return (
-    <div className="bg-[#111827] font-['Montserrat'] min-h-screen flex flex-col">
+    <div className="bg-gray-50 font-['Montserrat'] min-h-screen flex flex-col">
       <Navbar />
       <LandingDesign 
         ofertas={ofertas}
@@ -105,11 +105,11 @@ const Landing = () => {
       />
       
       {showWelcomeModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-[#202938] rounded-lg shadow-lg p-2 max-w-md mx-auto relative">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl p-2 max-w-md mx-auto relative">
             <button
               onClick={() => setShowWelcomeModal(false)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 font-['Montserrat']"
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 font-['Montserrat'] text-2xl"
             >
               ×
             </button>
@@ -126,7 +126,7 @@ const Landing = () => {
 
       {showAddedModal && addedProduct && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-[#202938] rounded-lg shadow-lg p-6 max-w-md mx-auto flex items-center space-x-4">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md mx-auto flex items-center space-x-4 border border-gray-200">
             <div className="flex-shrink-0">
               <img 
                 src={addedProduct.foto} 
@@ -135,10 +135,10 @@ const Landing = () => {
               />
             </div>
             <div className="flex-grow">
-              <h3 className="text-white text-lg font-semibold font-['Montserrat']">{addedProduct.nombre}</h3>
-              <p className="text-blue-400 text-sm font-['Montserrat']">Se agregó al carrito</p>
+              <h3 className="text-gray-800 text-lg font-semibold font-['Montserrat']">{addedProduct.nombre}</h3>
+              <p className="text-green-600 text-sm font-['Montserrat'] font-medium">✓ Se agregó al carrito</p>
             </div>
-            <div className="flex-shrink-0 text-blue-400">
+            <div className="flex-shrink-0 text-green-500">
               <FaCheckCircle size={24} />
             </div>
           </div>
@@ -147,14 +147,14 @@ const Landing = () => {
 
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-[#202938] rounded-lg shadow-lg p-6 relative max-w-md mx-auto">
+          <div className="bg-white rounded-lg shadow-xl p-6 relative max-w-md mx-auto border border-gray-200">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 font-['Montserrat']"
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 font-['Montserrat'] text-2xl"
             >
               ×
             </button>
-            <p className="text-white text-lg text-center font-['Montserrat']">{modalMessage}</p>
+            <p className="text-gray-800 text-lg text-center font-['Montserrat']">{modalMessage}</p>
           </div>
         </div>
       )}
