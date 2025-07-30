@@ -10,6 +10,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); // "error" o "success"
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,6 +28,7 @@ function Login() {
       console.log("📥 Login response:", data);
 
       if (response.ok) {
+        setAlertType("success");
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
 
@@ -38,79 +40,124 @@ function Login() {
         }
 
         // Redirección según el rol
-        switch (data.rol) {
-          case "superadmin":
-          case "admin_empresa":
-            console.log("➡️ Redirigiendo a /usuarios");
-            navigate("/usuarios");
-            break;
-          case "empleado":
-            console.log("➡️ Redirigiendo a /productos");
-            navigate("/productos");
-            break;
-          case "usuario":
-          default:
-            console.log("➡️ Redirigiendo a /landing");
-            navigate("/landing");
-        }
+        setTimeout(() => {
+          switch (data.rol) {
+            case "superadmin":
+            case "admin_empresa":
+              console.log("➡️ Redirigiendo a /usuarios");
+              navigate("/usuarios");
+              break;
+            case "empleado":
+              console.log("➡️ Redirigiendo a /productos");
+              navigate("/productos");
+              break;
+            case "usuario":
+            default:
+              console.log("➡️ Redirigiendo a /landing");
+              navigate("/landing");
+          }
+        }, 1500);
       } else {
+        setAlertType("error");
         console.warn("❌ Login fallido:", data.message);
       }
     } catch (error) {
       console.error("Error en el login:", error);
       setMessage("Hubo un error al intentar iniciar sesión");
+      setAlertType("error");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0F172A] font-['Montserrat']">
-      <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');`}
-      </style>
-      <img src={logo} alt="Reverie Logo" className="w-62 h-52 mb-8" />
-      <div className="w-full max-w-md p-8 space-y-8 bg-[#1E293B] rounded-lg shadow-xl">
-        <h2 className="text-2xl font-bold text-white text-left mt-3">Inicio de Sesión</h2>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
+      <img src={logo} alt="Logo" className="w-[116px] mb-8" />
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-800 text-center">Inicio de Sesión</h2>
+        
+        {/* Componente de alerta personalizada */}
+        {message && (
+          <div className={`p-4 rounded-lg border-l-4 ${
+            alertType === "error" 
+              ? "bg-red-50 border-red-500 text-red-700" 
+              : "bg-green-50 border-green-500 text-green-700"
+          } flex items-center`}>
+            <div className="flex-shrink-0 mr-3">
+              {alertType === "error" ? (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium">{message}</p>
+            </div>
+            <button 
+              onClick={() => {setMessage(""); setAlertType("");}}
+              className="ml-3 flex-shrink-0 text-lg hover:opacity-70"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-bold text-white">Email</label>
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+              Email <span className="text-red-500">*</span>
+            </label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md"
+              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="Introduce tu Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-bold text-white">Contraseña</label>
+            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+              Contraseña <span className="text-red-500">*</span>
+            </label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              className="w-full px-3 py-2 mt-1 text-white bg-[#334155] rounded-md"
+              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="Introduce tu Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div>
-            <button type="submit" className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            <button 
+              type="submit" 
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
+            >
               Iniciar Sesión
             </button>
           </div>
         </form>
-        {message && <p className="mt-2 text-sm text-center text-red-500">{message}</p>}
-        <p className="mt-4 text-sm text-center text-gray-300">
-          ¿No tienes una cuenta? <a href="/registro" className="text-blue-500 hover:text-blue-400">¡Regístrate!</a>
-        </p>
-        <p className="text-sm text-center text-gray-300">
-          ¿No tienes una empresa registrada?{" "}
-          <a href="/registro-empresa" className="text-blue-400 hover:underline">Regístrala aquí</a>
-        </p>
+        
+        <div className="text-sm text-gray-600 text-center">
+          <span className="text-red-500">*</span> Campos obligatorios
+        </div>
+
+        <div className="text-center space-y-2">
+          <p className="text-sm text-gray-600">
+            ¿No tienes una cuenta? <a href="/registro" className="text-red-500 hover:text-red-600 font-medium">¡Regístrate!</a>
+          </p>
+          <p className="text-sm text-gray-600">
+            ¿No tienes una empresa registrada?{" "}
+            <a href="/registro-empresa" className="text-red-500 hover:text-red-600 font-medium">Regístrala aquí</a>
+          </p>
+        </div>
       </div>
     </div>
   );
