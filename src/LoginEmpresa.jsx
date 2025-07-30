@@ -19,12 +19,24 @@ function LoginEmpresa() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre_empresa, password })
       });
+
       const data = await response.json();
       setMessage(data.message);
+      console.log("📥 LoginEmpresa response:", data);
 
       if (response.ok) {
-        Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
+        if (data.id_empresa) {
+          Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
+          console.log("✅ Cookie id_empresa seteada:", data.id_empresa);
+        } else {
+          console.warn("⚠️ No se recibió id_empresa en la respuesta");
+        }
+
+        // Redirigir a login de empleados
+        console.log("➡️ Redirigiendo a /login-empleado con empresaId:", data.id_empresa);
         navigate("/login-empleado", { state: { empresaId: data.id_empresa } });
+      } else {
+        console.warn("❌ Login de empresa fallido:", data.message);
       }
     } catch (error) {
       console.error("Error:", error);

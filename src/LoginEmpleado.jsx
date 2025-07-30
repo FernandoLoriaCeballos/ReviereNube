@@ -29,11 +29,22 @@ function LoginEmpleado() {
 
       const data = await response.json();
       setMessage(data.message);
+      console.log("📥 LoginEmpleado response:", data);
 
       if (response.ok) {
         Cookies.set("id_empleado", data.id_empleado, { expires: 7 });
         Cookies.set("id_empresa", data.id_empresa, { expires: 7 });
+        Cookies.set("rol", data.rol, { expires: 7 });
+
+        console.log("✅ Cookies seteadas:", {
+          id_empleado: data.id_empleado,
+          id_empresa: data.id_empresa,
+          rol: data.rol
+        });
+
         navigate("/usuarios");
+      } else {
+        console.warn("❌ Error al iniciar sesión como empleado:", data.message);
       }
     } catch (error) {
       console.error("Error:", error);
