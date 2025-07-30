@@ -94,7 +94,7 @@ function Usuarios() {
         email: formData.email,
         password: formData.password,
         rol: formData.rol,
-        empresa_id: rolActual === "admin_empresa" ? parseInt(empresaId) : parseInt(formData.empresa_id)
+        empresa_id: ["admin_empresa", "empleado"].includes(formData.rol) ? parseInt(formData.empresa_id) : null
       };
 
       await axios.put(`${API_URL}/usuarios/${formData._id}`, datos);
