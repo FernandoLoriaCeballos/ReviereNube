@@ -19,6 +19,8 @@ function Empresas() {
     telefono: "",
     logo: ""
   });
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); // "error" o "success"
 
   const rolActual = Cookies.get("rol");
 
@@ -39,6 +41,10 @@ function Empresas() {
 
   // Función de validación común
   const validarCampos = () => {
+    // Limpiar alertas previas
+    setAlertMessage("");
+    setAlertType("");
+
     // Validar que todos los campos obligatorios estén completos
     const camposRequeridos = ['nombre_empresa', 'email', 'password', 'descripcion', 'telefono'];
     const camposVacios = camposRequeridos.filter(campo => !formData[campo].trim());
@@ -53,21 +59,24 @@ function Empresas() {
       };
       
       const camposFaltantes = camposVacios.map(campo => nombresCampos[campo]).join(', ');
-      alert(`Por favor, completa los siguientes campos obligatorios: ${camposFaltantes}`);
+      setAlertMessage(`Por favor, completa los siguientes campos obligatorios: ${camposFaltantes}`);
+      setAlertType("error");
       return false;
     }
 
     // Validación adicional para el email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert('Por favor, ingresa un email válido.');
+      setAlertMessage('Por favor, ingresa un email válido.');
+      setAlertType("error");
       return false;
     }
 
     // Validación adicional para el teléfono
     const telefonoRegex = /^[\d\s\-\+\(\)]+$/;
     if (!telefonoRegex.test(formData.telefono)) {
-      alert('Por favor, ingresa un teléfono válido (solo números, espacios, guiones, paréntesis y signo +).');
+      setAlertMessage('Por favor, ingresa un teléfono válido (solo números, espacios, guiones, paréntesis y signo +).');
+      setAlertType("error");
       return false;
     }
 
@@ -101,6 +110,8 @@ function Empresas() {
       logo: ""
     });
     setIsEditing(false);
+    setAlertMessage("");
+    setAlertType("");
   };
 
   const handleChange = (e) => {
@@ -126,16 +137,24 @@ function Empresas() {
       };
 
       await axios.put(`${API_URL}/empresas/${formData._id}`, datos);
-      setShowForm(false);
-
+      
       // Recargar la lista de empresas
       const updatedList = await axios.get(`${API_URL}/empresas`);
       setEmpresas(updatedList.data);
       
-      alert('Empresa actualizada exitosamente.');
+      setAlertMessage('Empresa actualizada exitosamente.');
+      setAlertType("success");
+      
+      // Cerrar el modal después de un breve delay
+      setTimeout(() => {
+        setShowForm(false);
+        setAlertMessage("");
+        setAlertType("");
+      }, 2000);
     } catch (error) {
       console.error("Error al actualizar empresa:", error);
-      alert("Error al actualizar la empresa. Verifica los datos e intenta nuevamente.");
+      setAlertMessage("Error al actualizar la empresa. Verifica los datos e intenta nuevamente.");
+      setAlertType("error");
     }
   };
 
@@ -151,6 +170,8 @@ function Empresas() {
     });
     setIsEditing(false);
     setShowForm(true);
+    setAlertMessage("");
+    setAlertType("");
   };
 
   const handleAddEmpresa = async () => {
@@ -169,16 +190,24 @@ function Empresas() {
       };
 
       await axios.post(`${API_URL}/empresas`, datos);
-      setShowForm(false);
-
+      
       // Recargar la lista de empresas
       const updatedList = await axios.get(`${API_URL}/empresas`);
       setEmpresas(updatedList.data);
       
-      alert('Empresa agregada exitosamente.');
+      setAlertMessage('Empresa agregada exitosamente.');
+      setAlertType("success");
+      
+      // Cerrar el modal después de un breve delay
+      setTimeout(() => {
+        setShowForm(false);
+        setAlertMessage("");
+        setAlertType("");
+      }, 2000);
     } catch (error) {
       console.error("Error al agregar empresa:", error);
-      alert("Error al agregar la empresa. Verifica los datos e intenta nuevamente.");
+      setAlertMessage("Error al agregar la empresa. Verifica los datos e intenta nuevamente.");
+      setAlertType("error");
     }
   };
 
@@ -308,6 +337,36 @@ function Empresas() {
               <button onClick={handleCloseForm} className="text-white hover:text-gray-200 text-2xl">✕</button>
             </div>
             <div className="p-6">
+              {/* Componente de alerta personalizada */}
+              {alertMessage && (
+                <div className={`mb-4 p-4 rounded-lg border-l-4 ${
+                  alertType === "error" 
+                    ? "bg-red-50 border-red-500 text-red-700" 
+                    : "bg-green-50 border-green-500 text-green-700"
+                } flex items-center`}>
+                  <div className="flex-shrink-0 mr-3">
+                    {alertType === "error" ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{alertMessage}</p>
+                  </div>
+                  <button 
+                    onClick={() => {setAlertMessage(""); setAlertType("");}}
+                    className="ml-3 flex-shrink-0 text-lg hover:opacity-70"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
               <form className="space-y-4">
                 <div>
                   <label className="block text-gray-700 text-sm font-bold mb-2">
