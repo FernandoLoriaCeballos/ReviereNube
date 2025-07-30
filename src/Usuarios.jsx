@@ -12,6 +12,7 @@ function Usuarios() {
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
+    _id: "",
     nombre: "",
     email: "",
     password: "",
@@ -55,9 +56,12 @@ function Usuarios() {
   const handleEditClick = (index) => {
     const selectedUsuario = usuarios[index];
     setFormData({
-      ...selectedUsuario,
+      _id: selectedUsuario._id,
+      nombre: selectedUsuario.nombre,
+      email: selectedUsuario.email,
+      password: selectedUsuario.password,
       rol: selectedUsuario.rol || "usuario",
-      empresa_id: selectedUsuario.empresa_id || empresaId
+      empresa_id: selectedUsuario.empresa_id || ""
     });
     setIsEditing(true);
     setShowForm(true);
@@ -66,6 +70,7 @@ function Usuarios() {
   const handleCloseForm = () => {
     setShowForm(false);
     setFormData({
+      _id: "",
       nombre: "",
       email: "",
       password: "",
@@ -89,7 +94,7 @@ function Usuarios() {
         email: formData.email,
         password: formData.password,
         rol: formData.rol,
-        id_empresa: rolActual === "admin_empresa" ? parseInt(empresaId) : formData.empresa_id
+        empresa_id: rolActual === "admin_empresa" ? parseInt(empresaId) : parseInt(formData.empresa_id)
       };
 
       await axios.put(`${API_URL}/usuarios/${formData._id}`, datos);
@@ -107,6 +112,7 @@ function Usuarios() {
 
   const handleAgregarClick = () => {
     setFormData({
+      _id: "",
       nombre: "",
       email: "",
       password: "",
