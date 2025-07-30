@@ -12,7 +12,6 @@ function Empresas() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     _id: "",
-    id_empresa: "",
     nombre_empresa: "",
     email: "",
     password: "",
@@ -42,7 +41,6 @@ function Empresas() {
     const selectedEmpresa = empresas[index];
     setFormData({
       _id: selectedEmpresa._id,
-      id_empresa: selectedEmpresa.id_empresa,
       nombre_empresa: selectedEmpresa.nombre_empresa,
       email: selectedEmpresa.email,
       password: selectedEmpresa.password,
@@ -58,7 +56,6 @@ function Empresas() {
     setShowForm(false);
     setFormData({
       _id: "",
-      id_empresa: "",
       nombre_empresa: "",
       email: "",
       password: "",
@@ -79,7 +76,6 @@ function Empresas() {
   const handleSave = async () => {
     try {
       const datos = {
-        id_empresa: formData.id_empresa,
         nombre_empresa: formData.nombre_empresa,
         email: formData.email,
         password: formData.password,
@@ -103,7 +99,6 @@ function Empresas() {
   const handleAgregarClick = () => {
     setFormData({
       _id: "",
-      id_empresa: "",
       nombre_empresa: "",
       email: "",
       password: "",
@@ -118,7 +113,6 @@ function Empresas() {
   const handleAddEmpresa = async () => {
     try {
       const datos = {
-        id_empresa: formData.id_empresa,
         nombre_empresa: formData.nombre_empresa,
         email: formData.email,
         password: formData.password,
@@ -163,11 +157,8 @@ function Empresas() {
           <div className="hidden lg:flex items-center space-x-8">
             <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
             <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
-            <a href="/resenas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RESEÑAS</a>
-            <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
-            <a href="/Ofertas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">OFERTAS</a>
-            <a href="/cupones" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">CUPONES</a>
             <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">EMPRESAS</a>
+            <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
           </div>
         </div>
       </nav>
@@ -269,17 +260,6 @@ function Empresas() {
             </div>
             <div className="p-6">
               <form className="space-y-4">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">ID Empresa</label>
-                  <input 
-                    type="number" 
-                    name="id_empresa" 
-                    value={formData.id_empresa} 
-                    onChange={handleChange} 
-                    className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" 
-                    placeholder="Ingresa el ID de la empresa"
-                  />
-                </div>
                 <div>
                   <label className="block text-gray-700 text-sm font-bold mb-2">Nombre de la Empresa</label>
                   <input 

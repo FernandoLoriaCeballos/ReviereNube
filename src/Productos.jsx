@@ -116,12 +116,10 @@ function Productos() {
           </a>
           <div className="hidden lg:flex items-center space-x-8">
           <a href="/HomeAdmin" className="hover:text-blue-500 uppercase">Home</a>
-            <a href="/usuarios" className="hover:text-blue-500 uppercase">USUARIOS</a>
-            <a href="/productos" className="hover:text-blue-500 uppercase">PRODUCTOS</a>
-            <a href="/resenas" className="hover:text-blue-500 uppercase">RESEÑAS</a>
-            <a href="/recibos" className="hover:text-blue-500 uppercase">RECIBOS</a>
-            <a href="/Ofertas" className="hover:text-blue-500 uppercase">OFERTAS</a>
-            <a href="/cupones" className="hover:text-blue-500 uppercase">CUPONES</a>
+            <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
+            <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
+            <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">EMPRESAS</a>
+            <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
           </div>
         </div>
       </nav>
