@@ -37,6 +37,43 @@ function Empresas() {
     fetchEmpresas();
   }, [rolActual]);
 
+  // Función de validación común
+  const validarCampos = () => {
+    // Validar que todos los campos obligatorios estén completos
+    const camposRequeridos = ['nombre_empresa', 'email', 'password', 'descripcion', 'telefono'];
+    const camposVacios = camposRequeridos.filter(campo => !formData[campo].trim());
+    
+    if (camposVacios.length > 0) {
+      const nombresCampos = {
+        nombre_empresa: 'Nombre de la Empresa',
+        email: 'Email',
+        password: 'Contraseña',
+        descripcion: 'Descripción',
+        telefono: 'Teléfono'
+      };
+      
+      const camposFaltantes = camposVacios.map(campo => nombresCampos[campo]).join(', ');
+      alert(`Por favor, completa los siguientes campos obligatorios: ${camposFaltantes}`);
+      return false;
+    }
+
+    // Validación adicional para el email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Por favor, ingresa un email válido.');
+      return false;
+    }
+
+    // Validación adicional para el teléfono
+    const telefonoRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!telefonoRegex.test(formData.telefono)) {
+      alert('Por favor, ingresa un teléfono válido (solo números, espacios, guiones, paréntesis y signo +).');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleEditClick = (index) => {
     const selectedEmpresa = empresas[index];
     setFormData({
@@ -74,6 +111,10 @@ function Empresas() {
   };
 
   const handleSave = async () => {
+    if (!validarCampos()) {
+      return; // Detener la ejecución si la validación falla
+    }
+
     try {
       const datos = {
         nombre_empresa: formData.nombre_empresa,
@@ -90,6 +131,8 @@ function Empresas() {
       // Recargar la lista de empresas
       const updatedList = await axios.get(`${API_URL}/empresas`);
       setEmpresas(updatedList.data);
+      
+      alert('Empresa actualizada exitosamente.');
     } catch (error) {
       console.error("Error al actualizar empresa:", error);
       alert("Error al actualizar la empresa. Verifica los datos e intenta nuevamente.");
@@ -111,6 +154,10 @@ function Empresas() {
   };
 
   const handleAddEmpresa = async () => {
+    if (!validarCampos()) {
+      return; // Detener la ejecución si la validación falla
+    }
+
     try {
       const datos = {
         nombre_empresa: formData.nombre_empresa,
@@ -127,6 +174,8 @@ function Empresas() {
       // Recargar la lista de empresas
       const updatedList = await axios.get(`${API_URL}/empresas`);
       setEmpresas(updatedList.data);
+      
+      alert('Empresa agregada exitosamente.');
     } catch (error) {
       console.error("Error al agregar empresa:", error);
       alert("Error al agregar la empresa. Verifica los datos e intenta nuevamente.");
@@ -261,7 +310,9 @@ function Empresas() {
             <div className="p-6">
               <form className="space-y-4">
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Nombre de la Empresa</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Nombre de la Empresa <span className="text-red-500">*</span>
+                  </label>
                   <input 
                     type="text" 
                     name="nombre_empresa" 
@@ -272,7 +323,9 @@ function Empresas() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Email <span className="text-red-500">*</span>
+                  </label>
                   <input 
                     type="email" 
                     name="email" 
@@ -283,7 +336,9 @@ function Empresas() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Contraseña <span className="text-red-500">*</span>
+                  </label>
                   <input 
                     type="text" 
                     name="password" 
@@ -294,7 +349,9 @@ function Empresas() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Descripción <span className="text-red-500">*</span>
+                  </label>
                   <textarea 
                     name="descripcion" 
                     value={formData.descripcion} 
@@ -305,7 +362,9 @@ function Empresas() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Teléfono</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Teléfono <span className="text-red-500">*</span>
+                  </label>
                   <input 
                     type="tel" 
                     name="telefono" 
@@ -338,6 +397,10 @@ function Empresas() {
                       />
                     </div>
                   )}
+                </div>
+
+                <div className="text-sm text-gray-600 mt-4">
+                  <span className="text-red-500">*</span> Campos obligatorios
                 </div>
 
                 <div className="flex justify-end pt-4">
