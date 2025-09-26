@@ -15,7 +15,6 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
@@ -39,21 +38,17 @@ function Login() {
           console.warn("⚠️ No se recibió empresa_id en la respuesta.");
         }
 
-        // Redirección según el rol
         setTimeout(() => {
           switch (data.rol) {
             case "superadmin":
             case "admin_empresa":
-              console.log("➡️ Redirigiendo a /usuarios");
               navigate("/usuarios");
               break;
             case "empleado":
-              console.log("➡️ Redirigiendo a /productos");
               navigate("/productos");
               break;
             case "usuario":
             default:
-              console.log("➡️ Redirigiendo a /landing");
               navigate("/landing");
           }
         }, 1500);
@@ -68,19 +63,44 @@ function Login() {
     }
   };
 
+  // NUEVO: Función para OAuth
+  const handleSocialLogin = (provider) => {
+    let clientId = "";
+    let redirectUri = `${window.location.origin}/auth/callback/${provider}`;
+    let authUrl = "";
+
+    switch (provider) {
+      case "google":
+        clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile`;
+        break;
+      case "github":
+        clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+        authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+        break;
+      case "linkedin":
+        clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
+        authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=r_liteprofile%20r_emailaddress`;
+        break;
+      default:
+        return;
+    }
+
+    window.location.href = authUrl;
+  };
+
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
       <img src={logo} alt="Logo" className="w-[116px] mb-8" />
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl border border-gray-200">
         <h2 className="text-2xl font-bold text-gray-800 text-center">Inicio de Sesión</h2>
-        
-        {/* Componente de alerta personalizada */}
+
         {message && (
-          <div className={`p-4 rounded-lg border-l-4 ${
-            alertType === "error" 
-              ? "bg-red-50 border-red-500 text-red-700" 
-              : "bg-green-50 border-green-500 text-green-700"
-          } flex items-center`}>
+          <div className={`p-4 rounded-lg border-l-4 ${alertType === "error"
+            ? "bg-red-50 border-red-500 text-red-700"
+            : "bg-green-50 border-green-500 text-green-700"
+            } flex items-center`}>
             <div className="flex-shrink-0 mr-3">
               {alertType === "error" ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -95,8 +115,8 @@ function Login() {
             <div className="flex-1">
               <p className="text-sm font-medium">{message}</p>
             </div>
-            <button 
-              onClick={() => {setMessage(""); setAlertType("");}}
+            <button
+              onClick={() => { setMessage(""); setAlertType(""); }}
               className="ml-3 flex-shrink-0 text-lg hover:opacity-70"
             >
               ✕
@@ -136,15 +156,37 @@ function Login() {
             />
           </div>
           <div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
             >
               Iniciar Sesión
             </button>
           </div>
         </form>
-        
+
+        {/* NUEVO: Botones de login social */}
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={() => handleSocialLogin("google")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+          >
+            <img src="/icons/google.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
+          </button>
+          <button
+            onClick={() => handleSocialLogin("github")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white hover:bg-gray-800"
+          >
+            <img src="/icons/github.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con GitHub
+          </button>
+          <button
+            onClick={() => handleSocialLogin("linkedin")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-700 text-white hover:bg-blue-800"
+          >
+            <img src="/icons/linkedin.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con LinkedIn
+          </button>
+        </div>
+
         <div className="text-sm text-gray-600 text-center">
           <span className="text-red-500">*</span> Campos obligatorios
         </div>
