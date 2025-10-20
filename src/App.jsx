@@ -31,14 +31,10 @@ const App = () => {
     <CarritoProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login-empresa" element={<LoginEmpresa />} />
-          <Route path="/login-empleado" element={<LoginEmpleado />} />
+          <Route path="/" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/registro-empresa" element={<RegistroEmpresa />} />
-          <Route path="/productos" element={<Productos />} />
           <Route path="/usuarios" element={<Usuarios />} />
+          <Route path="/productos" element={<Productos />} />
           <Route path="/resenas" element={<Resenas />} />
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/recibos" element={<Recibos />} />
