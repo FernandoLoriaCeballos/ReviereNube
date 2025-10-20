@@ -91,19 +91,20 @@ function Login() {
           console.warn("⚠️ No se recibió empresa_id en la respuesta.");
         }
 
-        // Redirige inmediatamente después del login exitoso
-        switch (data.rol) {
-          case "superadmin":
-          case "admin_empresa":
-            navigate("/usuarios", { replace: true });
-            break;
-          case "empleado":
-            navigate("/productos", { replace: true });
-            break;
-          case "usuario":
-          default:
-            navigate("/landing", { replace: true });
-        }
+        setTimeout(() => {
+          switch (data.rol) {
+            case "superadmin":
+            case "admin_empresa":
+              navigate("/usuarios");
+              break;
+            case "empleado":
+              navigate("/productos");
+              break;
+            case "usuario":
+            default:
+              navigate("/landing");
+          }
+        }, 1500);
       } else {
         setAlertType("error");
         console.warn("❌ Login fallido:", data.message);
@@ -118,43 +119,41 @@ function Login() {
   // NUEVO: Función para OAuth
   const handleSocialLogin = (provider) => {
     let clientId = "";
-    let redirectUri = `http://localhost:5173/`;
+    let redirectUri = `${window.location.origin}/auth/callback/${provider}`;
     let authUrl = "";
 
-    if (provider === "google") {
-      clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile`;
-    } else if (provider === "microsoft") {
-      clientId = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
-      const scope = "openid email profile";
-      // Usa /common porque tu app ya es multi-tenant
-      authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${encodeURIComponent(scope)}`;
-    } else {
-      return;
+    switch (provider) {
+      case "google":
+        clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile`;
+        break;
+      case "github":
+        clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+        authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+        break;
+      case "linkedin":
+        clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
+        authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=r_liteprofile%20r_emailaddress`;
+        break;
+      default:
+        return;
     }
-    localStorage.setItem("oauth_provider", provider);
+
     window.location.href = authUrl;
   };
 
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center min-h-screen bg-gray-100 overflow-hidden">
-      {/* Fondo desenfocado */}
-      <div className="absolute inset-0 bg-gray-100/80 backdrop-blur-sm z-0"></div>
-      <div className="relative z-10 flex flex-col items-center w-full max-w-md p-10 space-y-8 bg-white rounded-2xl shadow-2xl border border-gray-100">
-        <img src={logo} alt="Logo" className="w-28 mb-2" />
-        <h2 className="text-3xl font-extrabold text-gray-800 text-center mb-2">Iniciar Sesión</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
+      <img src={logo} alt="Logo" className="w-[116px] mb-8" />
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-800 text-center">Inicio de Sesión</h2>
 
-        {loading && (
-          <div className="w-full flex justify-center items-center py-4">
-            <span className="text-gray-500">Procesando autenticación...</span>
-          </div>
-        )}
-
-        {!loading && message && (
+        {message && (
           <div className={`p-4 rounded-lg border-l-4 ${alertType === "error"
             ? "bg-red-50 border-red-500 text-red-700"
             : "bg-green-50 border-green-500 text-green-700"
-            } flex items-center w-full`}>
+            } flex items-center`}>
             <div className="flex-shrink-0 mr-3">
               {alertType === "error" ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -178,94 +177,70 @@ function Login() {
           </div>
         )}
 
-        {!loading && (
-          <>
-            <form className="space-y-5 w-full" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                  placeholder="Introduce tu Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">
-                  Contraseña <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
-                  placeholder="Introduce tu Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div>
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
-                >
-                  Iniciar Sesión
-                </button>
-              </div>
-            </form>
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="Introduce tu Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+              Contraseña <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="Introduce tu Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+        </form>
 
-            <div className="flex items-center w-full my-2">
-              <div className="flex-grow border-t border-gray-200"></div>
-              <span className="mx-3 text-gray-400 text-xs font-semibold">o ingresa con</span>
-              <div className="flex-grow border-t border-gray-200"></div>
-            </div>
+        {/* NUEVO: Botones de login social */}
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={() => handleSocialLogin("google")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+          >
+            <img src="/icons/google.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
+          </button>
+          <button
+            onClick={() => handleSocialLogin("github")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white hover:bg-gray-800"
+          >
+            <img src="/icons/github.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con GitHub
+          </button>
+          <button
+            onClick={() => handleSocialLogin("linkedin")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-700 text-white hover:bg-blue-800"
+          >
+            <img src="/icons/linkedin.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con LinkedIn
+          </button>
+        </div>
 
-            <div className="flex flex-col gap-3 w-full">
-              <button
-                onClick={() => handleSocialLogin("google")}
-                className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition text-gray-700 font-semibold"
-              >
-                <span className="mr-2">
-                  {/* Google SVG */}
-                  <svg className="w-5 h-5" viewBox="0 0 48 48">
-                    <g>
-                      <path fill="#4285F4" d="M24 9.5c3.54 0 6.7 1.22 9.2 3.23l6.88-6.88C35.64 2.13 30.18 0 24 0 14.82 0 6.73 5.8 2.69 14.09l8.06 6.26C12.6 13.98 17.85 9.5 24 9.5z" />
-                      <path fill="#34A853" d="M46.1 24.55c0-1.64-.15-3.22-.43-4.74H24v9.01h12.42c-.54 2.92-2.18 5.39-4.65 7.06l7.18 5.59C43.93 37.01 46.1 31.33 46.1 24.55z" />
-                      <path fill="#FBBC05" d="M10.75 28.35a14.5 14.5 0 010-8.7l-8.06-6.26A23.97 23.97 0 000 24c0 3.97.97 7.73 2.69 11.09l8.06-6.26z" />
-                      <path fill="#EA4335" d="M24 48c6.18 0 11.36-2.05 15.14-5.59l-7.18-5.59c-2 1.34-4.56 2.13-7.96 2.13-6.15 0-11.4-4.48-13.25-10.5l-8.06 6.26C6.73 42.2 14.82 48 24 48z" />
-                      <path fill="none" d="M0 0h48v48H0z" />
-                    </g>
-                  </svg>
-                </span>
-                Iniciar sesión con Google
-              </button>
-              <button
-                onClick={() => handleSocialLogin("microsoft")}
-                className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition font-semibold"
-              >
-                <span className="mr-2">
-                  {/* Microsoft SVG */}
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <rect fill="#F35325" x="1" y="1" width="10" height="10" />
-                    <rect fill="#81BC06" x="13" y="1" width="10" height="10" />
-                    <rect fill="#05A6F0" x="1" y="13" width="10" height="10" />
-                    <rect fill="#FFBA08" x="13" y="13" width="10" height="10" />
-                  </svg>
-                </span>
-                Iniciar sesión con Microsoft
-              </button>
-            </div>
-          </>
-        )}
-
-        <div className="text-xs text-gray-500 text-center mt-4">
+        <div className="text-sm text-gray-600 text-center">
           <span className="text-red-500">*</span> Campos obligatorios
         </div>
 

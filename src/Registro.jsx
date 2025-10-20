@@ -79,6 +79,11 @@ function Registro() {
     }
   };
 
+  //Redirección segura al backend
+  const handleSocialRegister = (provider) => {
+    window.location.href = `${API_URL}/auth/${provider}`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
       <img src={logo} alt="Logo" className="w-[116px] mb-8" />
@@ -169,6 +174,28 @@ function Registro() {
             </button>
           </div>
         </form>
+
+        {/* 🔹 Botones sociales (redirigen al backend) */}
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={() => handleSocialRegister("google")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+          >
+            <img src="/icons/google.svg" className="w-5 h-5 mr-2" /> Registrar con Google
+          </button>
+          <button
+            onClick={() => handleSocialRegister("github")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white hover:bg-gray-800"
+          >
+            <img src="/icons/github.svg" className="w-5 h-5 mr-2" /> Registrar con GitHub
+          </button>
+          <button
+            onClick={() => handleSocialRegister("linkedin")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-700 text-white hover:bg-blue-800"
+          >
+            <img src="/icons/linkedin.svg" className="w-5 h-5 mr-2" /> Registrar con LinkedIn
+          </button>
+        </div>
 
         <div className="text-sm text-gray-600 text-center">
           <span className="text-red-500">*</span> Campos obligatorios
