@@ -1,0 +1,95 @@
+/* Contenedor principal */
+.sucursales-container {
+    background: transparent; /* eliminado degradado */
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 1200px;
+    margin: 20px auto;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Título */
+.sucursales-container h1 {
+    color: #000000;
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* Selector */
+.sucursales-container select,
+.sucursales-select {
+    display: block;
+    margin: 0 auto 18px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db; /* gris suave */
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    min-width: 180px;
+}
+
+/* Hover sutil */
+.sucursales-container select:hover,
+.sucursales-select:hover {
+    border-color: #f57c00;
+}
+
+/* Card responsiva para el inventario (similar a Productos.jsx) */
+.inventario-section {
+    margin-top: 12px;
+    padding: 0; /* el card interior tendrá padding si lo requiere */
+    border-radius: 12px;
+    background-color: transparent; /* contenedor exterior transparente */
+}
+
+/* Card interna que envuelve el componente Inventario para darle fondo blanco, sombra y responsividad */
+.inventario-card {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    background: #ffffff; /* tarjeta blanca para la UI interna */
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #e5e7eb; /* gris suave */
+    box-sizing: border-box;
+}
+
+/* Ajustes para que el card sea scrollable horizontalmente si la tabla excede ancho */
+.inventario-card .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive: reducir padding y adaptar tamaños en pantallas pequeñas */
+@media (max-width: 768px) {
+    .sucursales-container {
+        padding: 12px;
+        margin: 10px;
+    }
+    .sucursales-container h1 {
+        font-size: 1.25rem;
+    }
+    .sucursales-select {
+        width: 100%;
+        max-width: 420px;
+    }
+    .inventario-card {
+        border-radius: 10px;
+    }
+}
+
+/* Pequeñas mejoras visuales para inputs internos si los hubiera */
+.sucursales-container input,
+.sucursales-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+}

@@ -26,6 +26,9 @@ import LoginEmpleado from "./LoginEmpleado";
 import RegistroEmpresa from "./RegistroEmpresa";
 import Empresas from "./Empresas"; // Agregar esta importación
 
+
+import Sucursales from "./components/Sucursales"; //Marielle
+
 const App = () => {
   return (
     <CarritoProvider>
@@ -56,10 +59,19 @@ const App = () => {
           <Route path="/generar-resenas" element={<GenerarResenas />} />
           <Route path="/generar-compras" element={<GenerarCompras />} />
           <Route path="/empresas" element={<Empresas />} /> {/* Agregar esta ruta */}
+
+
+          {/*MARIELLE*/}
+          <Route path="/sucursales" element={<Sucursales />} /> {/* Ruta para Sucursales */}
+
+
         </Routes>
       </Router>
     </CarritoProvider>
   );
 };
+
+
+
 
 export default App;
