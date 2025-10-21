@@ -1,3 +1,4 @@
+// Registro.jsx
 import React, { useState } from "react";
 import "tailwindcss/tailwind.css";
 import logo from "./assets/img/logo.png";
@@ -11,35 +12,27 @@ function Registro() {
     password: ''
   });
   const [message, setMessage] = useState("");
-  const [alertType, setAlertType] = useState(""); // "error" o "success"
+  const [alertType, setAlertType] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validarCampos = () => {
-    // Limpiar alertas previas
     setMessage("");
     setAlertType("");
 
-    // Validar que todos los campos obligatorios estén completos
     const camposRequeridos = ['nombre', 'email', 'password'];
     const camposVacios = camposRequeridos.filter(campo => !formData[campo].trim());
-    
+
     if (camposVacios.length > 0) {
-      const nombresCampos = {
-        nombre: 'Nombre',
-        email: 'Email',
-        password: 'Contraseña'
-      };
-      
+      const nombresCampos = { nombre: 'Nombre', email: 'Email', password: 'Contraseña' };
       const camposFaltantes = camposVacios.map(campo => nombresCampos[campo]).join(', ');
       setMessage(`Por favor, completa los siguientes campos obligatorios: ${camposFaltantes}`);
       setAlertType("error");
       return false;
     }
 
-    // Validación adicional para el email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setMessage('Por favor, ingresa un email válido.');
@@ -47,7 +40,6 @@ function Registro() {
       return false;
     }
 
-    // Validación adicional para la contraseña
     if (formData.password.length < 6) {
       setMessage('La contraseña debe tener al menos 6 caracteres.');
       setAlertType("error");
@@ -59,17 +51,13 @@ function Registro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validarCampos()) {
-      return; // Detener la ejecución si la validación falla
-    }
+
+    if (!validarCampos()) return;
 
     try {
       const response = await fetch(`${API_URL}/registro`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       const data = await response.json();
@@ -91,19 +79,22 @@ function Registro() {
     }
   };
 
+  //Redirección segura al backend
+  const handleSocialRegister = (provider) => {
+    window.location.href = `${API_URL}/auth/${provider}`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
       <img src={logo} alt="Logo" className="w-[116px] mb-8" />
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl border border-gray-200">
         <h2 className="text-2xl font-bold text-gray-800 text-center">Registrar Usuario</h2>
-        
-        {/* Componente de alerta personalizada */}
+
         {message && (
-          <div className={`p-4 rounded-lg border-l-4 ${
-            alertType === "error" 
-              ? "bg-red-50 border-red-500 text-red-700" 
-              : "bg-green-50 border-green-500 text-green-700"
-          } flex items-center`}>
+          <div className={`p-4 rounded-lg border-l-4 ${alertType === "error"
+            ? "bg-red-50 border-red-500 text-red-700"
+            : "bg-green-50 border-green-500 text-green-700"
+            } flex items-center`}>
             <div className="flex-shrink-0 mr-3">
               {alertType === "error" ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -118,8 +109,8 @@ function Registro() {
             <div className="flex-1">
               <p className="text-sm font-medium">{message}</p>
             </div>
-            <button 
-              onClick={() => {setMessage(""); setAlertType("");}}
+            <button
+              onClick={() => { setMessage(""); setAlertType(""); }}
               className="ml-3 flex-shrink-0 text-lg hover:opacity-70"
             >
               ✕
@@ -183,7 +174,29 @@ function Registro() {
             </button>
           </div>
         </form>
-        
+
+        {/* 🔹 Botones sociales (redirigen al backend) */}
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={() => handleSocialRegister("google")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+          >
+            <img src="/icons/google.svg" className="w-5 h-5 mr-2" /> Registrar con Google
+          </button>
+          <button
+            onClick={() => handleSocialRegister("github")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white hover:bg-gray-800"
+          >
+            <img src="/icons/github.svg" className="w-5 h-5 mr-2" /> Registrar con GitHub
+          </button>
+          <button
+            onClick={() => handleSocialRegister("linkedin")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-700 text-white hover:bg-blue-800"
+          >
+            <img src="/icons/linkedin.svg" className="w-5 h-5 mr-2" /> Registrar con LinkedIn
+          </button>
+        </div>
+
         <div className="text-sm text-gray-600 text-center">
           <span className="text-red-500">*</span> Campos obligatorios
         </div>
