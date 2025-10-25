@@ -19,6 +19,7 @@ function Inventario({ sucursalId }) {
         // Asumiendo que tu API requiere estos campos para el POST/PUT
         descripcion: "", 
         categoria: "",
+        id_empresa: sucursalId !== 0 ? sucursalId : "", // Inicializar con sucursalId si está seleccionada
     });
     const [editandoId, setEditandoId] = useState(null);
     const [filtro, setFiltro] = useState("");
@@ -29,37 +30,40 @@ function Inventario({ sucursalId }) {
     const [productoSeleccionado, setProductoSeleccionado] = useState(null); 
     // NUEVO: cantidad a aumentar cuando se selecciona un producto existente
     const [aumentarCantidad, setAumentarCantidad] = useState(0);
+    const [empresas, setEmpresas] = useState([]); // Nuevo estado para empresas
 
     // 1. FUNCIÓN DE LECTURA (GET /productos)
     const fetchProductos = async () => {
         setCargando(true);
         try {
-            // El endpoint para obtener todos los productos es /productos
-            const response = await axios.get(`${API_URL}/productos`); 
+            // Si hay sucursalId (empresa seleccionada), filtrar por ella
+            const url = sucursalId !== 0 
+                ? `${API_URL}/productos?id_empresa=${sucursalId}`
+                : `${API_URL}/productos`;
             
-            // Si sucursalId es 0 (vista general), se muestran todos los productos sin filtrar
-            // Si sucursalId es > 0, se aplicará un filtro simple en el frontend (no óptimo, pero funcional)
-            let productosAPI = response.data;
-            
-            if (sucursalId !== 0) {
-                 // **NOTA**: Ya que la API no tiene GET /productos?sucursal=X, 
-                 // y tu modelo Producto no tiene campo 'sucursal', este filtro es un ejemplo.
-                 // Si Producto tiene un campo sucursal/sede, AJÚSTALO AQUÍ:
-                 // productosAPI = productosAPI.filter(p => p.sucursal === sucursalId); 
-            }
-
-            setProductos(productosAPI);
+            const response = await axios.get(url);
+            setProductos(response.data);
         } catch (error) {
             console.error("Error al obtener productos:", error);
-            alert("No se pudo cargar el inventario. Verifique la conexión con la API y el endpoint /productos.");
             setProductos([]);
         } finally {
             setCargando(false);
         }
     };
 
+    // NUEVO: Función para cargar empresas
+    const fetchEmpresas = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/empresas`);
+            setEmpresas(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            console.error("Error al obtener empresas:", error);
+        }
+    };
+
     // Carga inicial y recarga al cambiar la vista de sucursal
     useEffect(() => {
+        fetchEmpresas();
         fetchProductos();
     }, [sucursalId]);
 
@@ -120,6 +124,7 @@ function Inventario({ sucursalId }) {
                 precio: precioFinal,
                 descripcion: nuevoProducto.descripcion,
                 categoria: nuevoProducto.categoria,
+                id_empresa: nuevoProducto.id_empresa || null, // Usar el id_empresa del form
             };
             try {
                 const idProducto = productoSeleccionado?._id || editandoId;
@@ -168,6 +173,7 @@ function Inventario({ sucursalId }) {
             precio: parseFloat(nuevoProducto.precio || "0"),
             descripcion: nuevoProducto.descripcion,
             categoria: nuevoProducto.categoria,
+            id_empresa: sucursalId !== 0 ? sucursalId : null, // Asignar empresa si está seleccionada
         };
 
         try {
@@ -203,16 +209,15 @@ function Inventario({ sucursalId }) {
 
     // Función para preparar la edición, compatible con la API (_id)
     const prepararEdicion = (producto) => {
-        // Asignamos el ID de la API ('_id') a 'editandoId'
         setEditandoId(producto._id); 
         setProductoSeleccionado(producto); 
-        // Llenar el formulario (en edición queremos reflejar los valores actuales)
         setNuevoProducto({
             nombre: producto.nombre || "",
-            cantidad: producto.stock || "", // Usar 'stock' de la API para el campo 'cantidad' del formulario
+            cantidad: producto.stock || "",
             precio: producto.precio || "",
             descripcion: producto.descripcion || "",
-            categoria: producto.categoria || ""
+            categoria: producto.categoria || "",
+            id_empresa: producto.id_empresa || "", // Añadir id_empresa existente
         });
         setAumentarCantidad(0);
         setMostrarModal(true); 
@@ -231,6 +236,13 @@ function Inventario({ sucursalId }) {
             (p.sucursal && String(p.sucursal).includes(termino)) // Si tuvieran sucursal
         );
     });
+
+    // Función auxiliar para obtener nombre de empresa
+    const getNombreEmpresa = (id_empresa) => {
+        if (!id_empresa) return 'General';
+        const empresa = empresas.find(e => e.id_empresa === id_empresa || e._id === id_empresa);
+        return empresa ? empresa.nombre_empresa : `Empresa ${id_empresa}`;
+    };
 
     return (
         <div className="inventario-container">
@@ -271,7 +283,7 @@ function Inventario({ sucursalId }) {
                                 : "Agregar nuevo producto"}
                         </h3>
                         
-                        {/* NOMBRE: input con datalist (autocompletado) */}
+                        {/* NOMBRE: input con datalist */}
                         <input
                             type="text"
                             placeholder="Nombre"
@@ -300,7 +312,7 @@ function Inventario({ sucursalId }) {
                                 setNuevoProducto({ ...nuevoProducto, categoria: e.target.value })
                             }
                         />
-                        {/* Campo Stock (cantidad) - muestra el valor actual o el ingresado */}
+                        {/* Campo Stock */}
                         <input
                             type="number"
                             placeholder="Stock (Cantidad)"
@@ -308,7 +320,6 @@ function Inventario({ sucursalId }) {
                             onChange={(e) =>
                                 setNuevoProducto({ ...nuevoProducto, cantidad: e.target.value })
                             }
-                            // deshabilitar edición/selección si se seleccionó un producto y no estamos en modo edición
                             disabled={productoSeleccionado && editandoId === null}
                             onMouseDown={(e) => (productoSeleccionado && editandoId === null) && e.preventDefault()}
                         />
@@ -320,10 +331,42 @@ function Inventario({ sucursalId }) {
                             onChange={(e) =>
                                 setNuevoProducto({ ...nuevoProducto, precio: e.target.value })
                             }
-                            // deshabilitar edición/selección si se seleccionó un producto y no estamos en modo edición
                             disabled={productoSeleccionado && editandoId === null}
                             onMouseDown={(e) => (productoSeleccionado && editandoId === null) && e.preventDefault()}
                         />
+
+                        {/* Selector de empresa movido aquí y estilizado */}
+                        <div className="empresa-selector">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Empresa(s)
+                            </label>
+                            <select
+                                multiple
+                                value={Array.isArray(nuevoProducto.id_empresa) ? nuevoProducto.id_empresa : [nuevoProducto.id_empresa].filter(Boolean)}
+                                onChange={(e) => {
+                                    const values = Array.from(e.target.selectedOptions, option => option.value);
+                                    setNuevoProducto({
+                                        ...nuevoProducto,
+                                        id_empresa: values.length === 1 ? values[0] : values
+                                    });
+                                }}
+                                className="w-full p-2 border rounded mb-4 min-h-[100px]"
+                                disabled={sucursalId !== 0}
+                            >
+                                {empresas.map((emp) => (
+                                    <option 
+                                        key={emp._id} 
+                                        value={emp.id_empresa || emp._id}
+                                        className="p-2 hover:bg-gray-100"
+                                    >
+                                        {emp.nombre_empresa}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Mantén presionado Ctrl (Cmd en Mac) para seleccionar múltiples empresas
+                            </p>
+                        </div>
 
                         {/* NUEVO: campo para aumentar cantidad solo relevante si hay producto seleccionado */}
                         {productoSeleccionado && editandoId === null && (
@@ -345,7 +388,12 @@ function Inventario({ sucursalId }) {
                         )}
 
                         <div className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md">
-                            <button onClick={handleSubmit} style={{ display: "block", margin: "0 auto" }}>
+                            <button 
+                                onClick={handleSubmit}
+                                disabled={!nuevoProducto.id_empresa && sucursalId === 0}
+                                title={!nuevoProducto.id_empresa && sucursalId === 0 ? "Seleccione una empresa" : ""}
+                                style={{ display: "block", margin: "0 auto" }}
+                            >
                                 {editandoId !== null ? "Actualizar" : (productoSeleccionado ? "Actualizar stock" : "Agregar")}
                             </button>
 
@@ -377,6 +425,7 @@ function Inventario({ sucursalId }) {
                 <th className="px-6 py-4 font-semibold">Precio</th>
                 <th className="px-6 py-4 font-semibold">Stock</th>
                 <th className="px-6 py-4 font-semibold">Categoría</th>
+                <th className="px-6 py-4 font-semibold">Empresa</th>
                 <th className="px-6 py-4 font-semibold">Foto</th>
                 <th className="px-6 py-4 font-semibold">Acciones</th>
               </tr>
@@ -403,6 +452,11 @@ function Inventario({ sucursalId }) {
                   <td className="px-6 py-4">
                     <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                       {producto.categoria}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                      {getNombreEmpresa(producto.id_empresa)}
                     </span>
                   </td>
                   <td className="px-6 py-4">

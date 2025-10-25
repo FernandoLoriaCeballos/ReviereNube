@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { CarritoProvider } from './CarritoContext';
 import Registro from "./Registro";
 import Login from "./Login";
@@ -24,50 +24,42 @@ import GenerarCompras from "./GenerarCompras";
 import LoginEmpresa from "./LoginEmpresa";
 import LoginEmpleado from "./LoginEmpleado";
 import RegistroEmpresa from "./RegistroEmpresa";
-import Empresas from "./Empresas"; // Agregar esta importación
-
+import Empresas from "./Empresas";
 
 import Sucursales from "./components/Sucursales"; //Marielle
 
 const App = () => {
   return (
     <CarritoProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/usuarios" element={<Usuarios />} />
-          <Route path="/productos" element={<Productos />} />
-          <Route path="/resenas" element={<Resenas />} />
-          <Route path="/catalogo" element={<Catalogo />} />
-          <Route path="/recibos" element={<Recibos />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/compras" element={<ComprasRealizadas />} />
-          <Route path="/Cupones" element={<Cupones />} />
-          <Route path="/inicio" element={<Inicio />} />
-          <Route path="/quienessomos" element={<QuienesSomos />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/HomeAdmin" element={<HomeAdmin />} />
-          <Route path="/carrito" element={<Carrito />} />
-          <Route path="/generar-usuarios" element={<GenerarUsuarios />} />
-          <Route path="/Ofertas" element={<Ofertas />} />
-          <Route path="/cuponeslanding" element={<CuponesLanding />} />
-          <Route path="/generar-resenas" element={<GenerarResenas />} />
-          <Route path="/generar-compras" element={<GenerarCompras />} />
-          <Route path="/empresas" element={<Empresas />} /> {/* Agregar esta ruta */}
-
-
-          {/*MARIELLE*/}
-          <Route path="/sucursales" element={<Sucursales />} /> {/* Ruta para Sucursales */}
-
-
-        </Routes>
-      </Router>
+      {/* Routes expect a Router higher in the tree (wrap <App /> with BrowserRouter in main.jsx) */}
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+        <Route path="/usuarios" element={<Usuarios />} />
+        <Route path="/productos" element={<Productos />} />
+        <Route path="/resenas" element={<Resenas />} />
+        <Route path="/catalogo" element={<Catalogo />} />
+        <Route path="/recibos" element={<Recibos />} />
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/compras" element={<ComprasRealizadas />} />
+        <Route path="/Cupones" element={<Cupones />} />
+        <Route path="/inicio" element={<Inicio />} />
+        <Route path="/quienessomos" element={<QuienesSomos />} />
+        <Route path="/contacto" element={<Contacto />} />
+        <Route path="/HomeAdmin" element={<HomeAdmin />} />
+        <Route path="/carrito" element={<Carrito />} />
+        <Route path="/generar-usuarios" element={<GenerarUsuarios />} />
+        <Route path="/Ofertas" element={<Ofertas />} />
+        <Route path="/cuponeslanding" element={<CuponesLanding />} />
+        <Route path="/generar-resenas" element={<GenerarResenas />} />
+        <Route path="/generar-compras" element={<GenerarCompras />} />
+        <Route path="/empresas" element={<Empresas />} />
+        <Route path="/sucursales" element={<Sucursales />} />
+        {/* fallback: redirigir rutas no reconocidas al login/home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </CarritoProvider>
   );
 };
-
-
-
 
 export default App;

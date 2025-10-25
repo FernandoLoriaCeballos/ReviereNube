@@ -1,22 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Login';
 import Registro from './Registro';
 import Usuarios from './Usuarios';
+import Sucursales from './components/Sucursales.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/usuarios" element={<Usuarios />} />
-        </Routes>
+        <App />
       </BrowserRouter>
     </GoogleOAuthProvider>
   </React.StrictMode>
