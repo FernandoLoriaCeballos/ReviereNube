@@ -397,16 +397,7 @@ function Inventario({ sucursalId }) {
                                 {editandoId !== null ? "Actualizar" : (productoSeleccionado ? "Actualizar stock" : "Agregar")}
                             </button>
 
-                            {editandoId !== null && (
-                                <button
-                                    className="eliminar"
-                                    onClick={() => eliminarProducto(productoSeleccionado._id)}
-                                >
-                                    Eliminar
-                                </button>
-                            )}
-
-                            
+                            {/* Eliminado: botón rojo "Eliminar" que estaba sobrepuesto al botón "Actualizar" */}
                         </div>
 
                         <button className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md" onClick={cerrarYResetearModal}>
@@ -425,7 +416,7 @@ function Inventario({ sucursalId }) {
                 <th className="px-6 py-4 font-semibold">Precio</th>
                 <th className="px-6 py-4 font-semibold">Stock</th>
                 <th className="px-6 py-4 font-semibold">Categoría</th>
-                <th className="px-6 py-4 font-semibold">Empresa</th>
+                <th className="px-6 py-4 font-semibold">Sucursal</th>
                 <th className="px-6 py-4 font-semibold">Foto</th>
                 <th className="px-6 py-4 font-semibold">Acciones</th>
               </tr>

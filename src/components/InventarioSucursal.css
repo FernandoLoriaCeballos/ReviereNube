@@ -201,9 +201,13 @@ h2 {
     color: white;
     border: none;
     padding: 0.3rem 0.6rem;
-    margin-right: 0.3rem;
+    /* Elimina margin-right para usar gap en el contenedor */
     border-radius: 4px;
     cursor: pointer;
+    /* Igualar tamaño al botón eliminar */
+    min-width: 110px;
+    font-weight: bold;
+    font-size: 1rem;
 }
 
 .eliminar {
@@ -213,6 +217,15 @@ h2 {
     padding: 0.3rem 0.6rem;
     border-radius: 4px;
     cursor: pointer;
+    min-width: 110px;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* Espaciado entre los botones de acción en la tabla */
+.px-6.py-4.space-x-2 {
+    display: flex;
+    gap: 12px;
 }
 
 .sin-resultados {
