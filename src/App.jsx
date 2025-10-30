@@ -31,10 +31,15 @@ import Sucursales from "./components/Sucursales"; //Marielle
 const App = () => {
   return (
     <CarritoProvider>
-      {/* Routes expect a Router higher in the tree (wrap <App /> with BrowserRouter in main.jsx) */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
+        
+        {/* Rutas de autenticación empresa/empleado */}
+        <Route path="/login-empresa" element={<LoginEmpresa />} />
+        <Route path="/login-empleado" element={<LoginEmpleado />} />
+        <Route path="/registro-empresa" element={<RegistroEmpresa />} />
+        
         <Route path="/usuarios" element={<Usuarios />} />
         <Route path="/productos" element={<Productos />} />
         <Route path="/resenas" element={<Resenas />} />

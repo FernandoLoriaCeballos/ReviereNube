@@ -16,6 +16,8 @@ const Landing = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [empresas, setEmpresas] = useState([]);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState(0); // 0 = Todas
   
   const navigate = useNavigate();
   const { agregarAlCarrito, isLoggedIn, setIsLoggedIn, userId, setUserId } = useCarrito();
@@ -28,13 +30,21 @@ const Landing = () => {
 
   const fetchData = async () => {
     try {
-      const [productosResponse, ofertasResponse] = await Promise.all([
+      const [productosResponse, ofertasResponse, empresasResponse] = await Promise.all([
         axios.get(`${import.meta.env.VITE_API_URL}/productos`),
         axios.get(`${import.meta.env.VITE_API_URL}/ofertas`),
+        axios.get(`${import.meta.env.VITE_API_URL}/empresas`)
       ]);
 
+      setEmpresas(empresasResponse.data);
+      
       const productosData = productosResponse.data;
-      setProductos(productosData.filter((product) => !product.esPromocion));
+      // Filtrar productos por empresa si hay una seleccionada
+      const productosFiltrados = empresaSeleccionada === 0 
+        ? productosData 
+        : productosData.filter(p => p.id_empresa === empresaSeleccionada);
+      
+      setProductos(productosFiltrados.filter((product) => !product.esPromocion));
 
       const ofertasData = ofertasResponse.data;
       const ofertasConProductos = ofertasData
@@ -57,6 +67,13 @@ const Landing = () => {
     }
   };
 
+  // Función auxiliar para obtener nombre de empresa
+  const getNombreEmpresa = (id_empresa) => {
+    if (!id_empresa) return 'General';
+    const empresa = empresas.find(e => e.id_empresa === id_empresa || e._id === id_empresa);
+    return empresa ? empresa.nombre_empresa : `Empresa ${id_empresa}`;
+  };
+
   useEffect(() => {
     fetchData();
 
@@ -65,7 +82,7 @@ const Landing = () => {
       setShowWelcomeModal(true);
       sessionStorage.removeItem("justLoggedIn");
     }
-  }, [userId]);
+  }, [userId, empresaSeleccionada]);
 
   const handleAgregarAlCarrito = async (producto) => {
     if (!isLoggedIn) {
@@ -102,6 +119,7 @@ const Landing = () => {
         ofertas={ofertas}
         productos={filteredProducts}
         handleAgregarAlCarrito={handleAgregarAlCarrito}
+        getNombreEmpresa={getNombreEmpresa} // Pasar la función al componente hijo
       />
       
       {showWelcomeModal && (
@@ -113,13 +131,6 @@ const Landing = () => {
             >
               ×
             </button>
-            <div>
-              <img
-                src="https://i.imgur.com/VKWh0mU.jpeg"
-                alt="Imagen de bienvenida"
-                className="w-full h-auto rounded-lg"
-              />
-            </div>
           </div>
         </div>
       )}

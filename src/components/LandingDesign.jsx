@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
-import logoFooter from "/src/assets/img/logo_footer.png";
 
-const LandingDesign = ({ ofertas = [], productos = [], handleAgregarAlCarrito }) => {
+const LandingDesign = ({ ofertas = [], productos = [], handleAgregarAlCarrito, getNombreEmpresa }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isHovered, setIsHovered] = useState({});
+
+  // Función de filtrado mejorada
+  const filteredProducts = productos.filter(producto => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      producto.nombre.toLowerCase().includes(searchLower) ||
+      getNombreEmpresa(producto.id_empresa).toLowerCase().includes(searchLower) ||
+      producto.precio.toString().includes(searchLower)
+    );
+  });
+
   const ProductCard = ({ producto }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -66,88 +78,99 @@ const LandingDesign = ({ ofertas = [], productos = [], handleAgregarAlCarrito })
           }
         `}
       </style>
-      <main className="flex-grow bg-gray-50">
-        <div className="bg-gradient-to-r from-orange-50 to-red-100 py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold text-gray-800 mb-4">
-              Bienvenido a nuestra tienda
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Descubre los mejores productos con ofertas increíbles
-            </p>
-          </div>
-        </div>
-
-        <section className="bg-white py-16">
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        {/* Hero Section */}
+        <header className="relative bg-gradient-to-r from-red-500 to-orange-500 py-12">
+          <div className="absolute inset-0 bg-black opacity-10"></div>
           <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-4xl font-bold mb-12 text-center text-red-600">
-              Ofertas Especiales
-            </h2>
-            <div className="flex justify-center flex-wrap gap-8">
-              {ofertas.map((oferta) => (
-                <div
-                  key={oferta.id_producto}
-                  className={`w-80 bg-white border border-gray-200 rounded-lg shadow-xl p-4 m-2 transition-all duration-500 transform hover:scale-105 hover:rotate-1 relative overflow-hidden group hover:shadow-2xl
-                    ${oferta.descuento === Math.max(...ofertas.map(o => o.descuento)) ? 'ring-4 ring-red-500 shadow-2xl shadow-red-500/30 animate-bounce-slow' : ''}`}
-                >
-                  <div className={`absolute top-0 right-0 ${
-                    oferta.descuento === Math.max(...ofertas.map(o => o.descuento))
-                      ? 'bg-gradient-to-r from-red-600 to-orange-500 px-4 py-2 text-lg font-bold animate-pulse'
-                      : 'bg-gradient-to-r from-red-500 to-orange-500 px-3 py-1 text-sm'
-                  } text-white rounded-bl-md font-bold z-10 shadow-md`}>
-                    {oferta.descuento}% OFF
-                  </div>
-                  <div className="relative mb-4 overflow-hidden rounded-md">
-                    <img 
-                      src={oferta.imagen || oferta.foto}
-                      alt={oferta.nombre}
-                      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+            <div className="max-w-4xl mx-auto text-center text-white">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">Descubre productos increíbles</h1>
+              <p className="text-sm md:text-base text-white/90 mb-6">Calidad y una selección pensada para ti.</p>
+                    <input
+                      aria-label="Buscar"
+                      type="text"
+                      placeholder="Busca por producto, sucursal o precio..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-4 py-3 rounded-full text-gray-800 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 z-40 relative"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button
-                        onClick={() => handleAgregarAlCarrito(oferta)}
-                        className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg"
-                      >
-                        <FaShoppingCart />
-                        <span>Agregar al carrito</span>
-                      </button>
+            </div>
+          </div>
+        </header>
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-white rounded-3xl shadow-xl p-8 mb-12">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-3">
+                  Nuestros Productos
+                </h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto"></div>
+              </div>
+
+              {/* Grid más compacto con animación naranja en hover */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredProducts.map((producto) => (
+                  <div 
+                    key={producto._id}
+                    className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_15px_rgba(251,146,60,0.3)] group"
+                    onMouseEnter={() => setIsHovered({...isHovered, [producto._id]: true})}
+                    onMouseLeave={() => setIsHovered({...isHovered, [producto._id]: false})}
+                  >
+                    <div className="relative">
+                      <img 
+                        src={producto.foto} 
+                        alt={producto.nombre} 
+                        className="w-full h-40 object-cover transition-all duration-300 transform group-hover:scale-110" 
+                      />
+                      <div className={`absolute inset-0 bg-gradient-to-r from-orange-500/60 to-red-500/60 flex items-center justify-center transition-opacity duration-300 ${
+                        isHovered[producto._id] ? 'opacity-100' : 'opacity-0'
+                      }`}>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAgregarAlCarrito(producto);
+                          }}
+                          className="bg-white text-gray-800 px-3 py-1.5 rounded-full flex items-center space-x-2 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                        >
+                          <FaShoppingCart className="w-4 h-4 text-orange-500" />
+                          <span className="text-sm font-medium">Agregar al carrito</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-start justify-between mb-1">
+                        <h3 className="text-sm font-bold text-gray-800 group-hover:text-orange-500 transition-colors duration-300 line-clamp-1">
+                          {producto.nombre}
+                        </h3>
+                        <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-0.5 rounded-full shadow-sm ml-2">
+                          {getNombreEmpresa(producto.id_empresa)}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-xs mb-2 line-clamp-2">{producto.descripcion}</p>
+                      <div className="text-lg font-bold text-orange-500">
+                        ${producto.precio.toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                  <h2 className="text-xl font-semibold mb-2 text-gray-800">{oferta.nombre}</h2>
-                  <p className="text-sm text-gray-600 mb-3 font-light">{oferta.descripcion}</p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm line-through text-gray-400 font-light">${oferta.precio}</p>
-                    <p className="text-2xl font-bold text-red-600">${oferta.precioOferta}</p>
+                ))}
+              </div>
+
+              {filteredProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="text-gray-400 text-xl">
+                    No se encontraron productos que coincidan con tu búsqueda.
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </section>
 
-        <section className="bg-gray-50 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-red-600 text-3xl font-bold mb-8 text-center">
-              Productos:
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {productos.map((producto) => (
-                <ProductCard 
-                  key={producto.id_producto}
-                  producto={producto}
-                />
-              ))}
-            </div>
+        {/* Footer Mejorado */}
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-400">© 2024 Todos los derechos reservados.</p>
           </div>
-        </section>
+        </footer>
       </main>
-
-      <footer className="bg-white border-t border-gray-200 text-gray-800 py-8">
-        <div className="container mx-auto text-center">
-          <img src={logoFooter} alt="Logo Footer" className="w-40 mx-auto mb-4" />
-          <p className="text-gray-600 mt-4 font-light">© 2024 Todos los derechos reservados.</p>
-        </div>
-      </footer>
     </>
   );
 };
