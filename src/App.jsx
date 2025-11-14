@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link, Navigate, useNavigate } f
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
 import { CarritoProvider } from "./CarritoContext";
+
 import Registro from "./Registro";
 import Login from "./Login";
 import Usuarios from "./Usuarios";
@@ -30,6 +31,8 @@ import Empresas from "./Empresas";
 import Suscripciones from "./Suscripciones";
 import CheckoutForm from "./checkoutform";
 import "./App.css";
+import Sucursales from "./components/Sucursales"; //Marielle
+
 // Stripe config
 const stripePromise = loadStripe("pk_test_51S8q8MEwPHsvqkshj7Jd7PYSzvSCzGelSEJ3vnIjSIoJrGBRjMbPwOXza4M2L3jXMA3obEpEG9yfkSuQmZcdGmb800r5GI607U");
 
@@ -189,6 +192,9 @@ const App = () => {
             <Route path="/suscripciones" element={<Suscripciones />} />
             <Route path="/checkout" element={<CheckoutForm />} />
             <Route path="/complete" element={<Complete />} />
+            <Route path="/sucursales" element={<Sucursales />} />
+            {/* fallback: redirigir rutas no reconocidas al login/home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CheckoutProvider>
       </Router>

@@ -1,17 +1,70 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import "tailwindcss/tailwind.css";
-import logo from "./assets/img/logo.png";
+import { FcGoogle } from "react-icons/fc";
+import { FaMicrosoft } from "react-icons/fa";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [alertType, setAlertType] = useState(""); // "error" o "success"
+  const [alertType, setAlertType] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const code = urlParams.get("code");
+    const provider = localStorage.getItem("oauth_provider");
+    const redirectUri = "http://localhost:5173/";
+
+    if (code && provider) {
+      setLoading(true);
+      fetch(`${API_URL}/auth/${provider}/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, redirectUri }),
+        credentials: "include",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setLoading(false);
+          localStorage.removeItem("oauth_provider");
+          if (data.token && data.usuario) {
+            Cookies.set("token", data.token, { expires: 7 });
+            Cookies.set("id_usuario", data.usuario._id, { expires: 7 });
+            Cookies.set("rol", data.usuario.rol, { expires: 7 });
+            if (data.usuario.empresa_id) {
+              Cookies.set("id_empresa", data.usuario.empresa_id, { expires: 7 });
+            }
+            switch (data.usuario.rol) {
+              case "superadmin":
+              case "admin_empresa":
+                navigate("/usuarios", { replace: true });
+                break;
+              case "empleado":
+                navigate("/productos", { replace: true });
+                break;
+              default:
+                navigate("/landing", { replace: true });
+            }
+          } else {
+            setMessage("No se pudo autenticar con el proveedor.");
+            setAlertType("error");
+          }
+        })
+        .catch(() => {
+          setLoading(false);
+          localStorage.removeItem("oauth_provider");
+          setMessage("Error en la autenticación social.");
+          setAlertType("error");
+        });
+    }
+  }, [location.search, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,20 +77,14 @@ function Login() {
 
       const data = await response.json();
       setMessage(data.message);
-      console.log("📥 Login response:", data);
 
       if (response.ok) {
         setAlertType("success");
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
-
         if (data.empresa_id) {
           Cookies.set("id_empresa", data.empresa_id, { expires: 7 });
-          console.log("✅ Cookie id_empresa:", data.empresa_id);
-        } else {
-          console.warn("⚠️ No se recibió empresa_id en la respuesta.");
         }
-
         setTimeout(() => {
           switch (data.rol) {
             case "superadmin":
@@ -47,14 +94,12 @@ function Login() {
             case "empleado":
               navigate("/productos");
               break;
-            case "usuario":
             default:
               navigate("/landing");
           }
         }, 1500);
       } else {
         setAlertType("error");
-        console.warn("❌ Login fallido:", data.message);
       }
     } catch (error) {
       console.error("Error en el login:", error);
@@ -63,7 +108,7 @@ function Login() {
     }
   };
 
-  // NUEVO: Función para OAuth
+  // ✅ Solo Google y Microsoft
   const handleSocialLogin = (provider) => {
     let clientId = "";
     let redirectUri = `${window.location.origin}/auth/callback/${provider}`;
@@ -74,50 +119,42 @@ function Login() {
         clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile`;
         break;
-      case "github":
-        clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
-        authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email`;
+
+      case "microsoft":
+        clientId = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
+        authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&response_mode=query&scope=openid%20email%20profile%20offline_access`;
         break;
-      case "linkedin":
-        clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
-        authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=r_liteprofile%20r_emailaddress`;
-        break;
+
       default:
         return;
     }
 
+    localStorage.setItem("oauth_provider", provider);
     window.location.href = authUrl;
   };
 
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 font-['Montserrat']">
-      <img src={logo} alt="Logo" className="w-[116px] mb-8" />
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-xl border border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Inicio de Sesión</h2>
+        <h2 className="text-2xl font-bold text-gray-800 text-center">
+          Inicio de Sesión
+        </h2>
 
         {message && (
-          <div className={`p-4 rounded-lg border-l-4 ${alertType === "error"
-            ? "bg-red-50 border-red-500 text-red-700"
-            : "bg-green-50 border-green-500 text-green-700"
-            } flex items-center`}>
-            <div className="flex-shrink-0 mr-3">
-              {alertType === "error" ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">{message}</p>
-            </div>
+          <div
+            className={`p-4 rounded-lg border-l-4 ${
+              alertType === "error"
+                ? "bg-red-50 border-red-500 text-red-700"
+                : "bg-green-50 border-green-500 text-green-700"
+            } flex items-center`}
+          >
+            <p className="text-sm font-medium flex-1">{message}</p>
             <button
-              onClick={() => { setMessage(""); setAlertType(""); }}
-              className="ml-3 flex-shrink-0 text-lg hover:opacity-70"
+              onClick={() => {
+                setMessage("");
+                setAlertType("");
+              }}
+              className="ml-3 text-lg hover:opacity-70"
             >
               ✕
             </button>
@@ -126,64 +163,53 @@ function Login() {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Email <span className="text-red-500">*</span>
             </label>
             <input
-              id="email"
-              name="email"
               type="email"
               required
-              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="border rounded-lg w-full py-3 px-3 bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="Introduce tu Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Contraseña <span className="text-red-500">*</span>
             </label>
             <input
-              id="password"
-              name="password"
               type="password"
               required
-              className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="border rounded-lg w-full py-3 px-3 bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="Introduce tu Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div>
-            <button
-              type="submit"
-              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
-            >
-              Iniciar Sesión
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md w-full"
+          >
+            Iniciar Sesión
+          </button>
         </form>
 
-        {/* NUEVO: Botones de login social */}
+        {/* ✅ Solo Google y Microsoft */}
         <div className="mt-6 space-y-3">
           <button
             onClick={() => handleSocialLogin("google")}
             className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
           >
-            <img src="/icons/google.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con Google
+            <FcGoogle className="w-5 h-5 mr-2" /> Iniciar sesión con Google
           </button>
+
           <button
-            onClick={() => handleSocialLogin("github")}
-            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white hover:bg-gray-800"
+            onClick={() => handleSocialLogin("microsoft")}
+            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-600 text-white hover:bg-blue-700"
           >
-            <img src="/icons/github.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con GitHub
-          </button>
-          <button
-            onClick={() => handleSocialLogin("linkedin")}
-            className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-blue-700 text-white hover:bg-blue-800"
-          >
-            <img src="/icons/linkedin.svg" className="w-5 h-5 mr-2" /> Iniciar sesión con LinkedIn
+            <FaMicrosoft className="w-5 h-5 mr-2" /> Iniciar sesión con Microsoft
           </button>
         </div>
 
@@ -191,13 +217,24 @@ function Login() {
           <span className="text-red-500">*</span> Campos obligatorios
         </div>
 
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 mt-2">
           <p className="text-sm text-gray-600">
-            ¿No tienes una cuenta? <a href="/registro" className="text-red-500 hover:text-red-600 font-medium">¡Regístrate!</a>
+            ¿No tienes una cuenta?{" "}
+            <a
+              href="/registro"
+              className="text-red-500 hover:text-red-600 font-medium"
+            >
+              ¡Regístrate!
+            </a>
           </p>
           <p className="text-sm text-gray-600">
             ¿No tienes una empresa registrada?{" "}
-            <a href="/registro-empresa" className="text-red-500 hover:text-red-600 font-medium">Regístrala aquí</a>
+            <a
+              href="/registro-empresa"
+              className="text-red-500 hover:text-red-600 font-medium"
+            >
+              Regístrala aquí
+            </a>
           </p>
         </div>
       </div>

@@ -16,8 +16,9 @@ function Productos() {
     precio: "",
     stock: "",
     categoria: "",
-    foto: "",
+    foto: "", // puede ser URL o identificador
   });
+  const [fotoFile, setFotoFile] = useState(null); // nuevo: archivo opcional
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState(""); // "error" o "success"
 
@@ -79,6 +80,7 @@ function Productos() {
   const handleEditClick = (index) => {
     const selectedProducto = productos[index];
     setFormData({ ...selectedProducto, _id: selectedProducto._id });
+    setFotoFile(null); // limpiar file al editar (el backend mostrará foto previa vía formData/url)
     setIsEditing(true);
     setShowForm(true);
     setAlertMessage("");
@@ -96,6 +98,7 @@ function Productos() {
       categoria: "",
       foto: "",
     });
+    setFotoFile(null);
     setIsEditing(false);
     setAlertMessage("");
     setAlertType("");
@@ -110,12 +113,35 @@ function Productos() {
 
   const handleSave = async () => {
     if (!validarCampos()) {
-      return; // Detener la ejecución si la validación falla
+      return;
     }
 
     try {
-      await axios.put(`${API_URL}/productos/${formData._id}`, formData);
-      
+      // Si hay file, usar FormData
+      if (fotoFile) {
+        const fd = new FormData();
+        fd.append("nombre", formData.nombre);
+        fd.append("descripcion", formData.descripcion);
+        fd.append("precio", formData.precio);
+        fd.append("stock", formData.stock);
+        fd.append("categoria", formData.categoria);
+        fd.append("foto", fotoFile);
+
+        await axios.put(`${API_URL}/productos/${formData._id}`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        // Sin archivo, enviar JSON (o FormData con foto como texto)
+        await axios.put(`${API_URL}/productos/${formData._id}`, {
+          nombre: formData.nombre,
+          descripcion: formData.descripcion,
+          precio: formData.precio,
+          stock: formData.stock,
+          categoria: formData.categoria,
+          foto: formData.foto,
+        });
+      }
+
       // Recargar la lista de productos
       const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
@@ -146,6 +172,7 @@ function Productos() {
       categoria: "",
       foto: "",
     });
+    setFotoFile(null);
     setIsEditing(false);
     setShowForm(true);
     setAlertMessage("");
@@ -154,20 +181,37 @@ function Productos() {
 
   const handleAddProducto = async () => {
     if (!validarCampos()) {
-      return; // Detener la ejecución si la validación falla
+      return;
     }
 
     try {
-      await axios.post(`${API_URL}/productos`, formData);
-      
-      // Recargar la lista de productos
+      if (fotoFile) {
+        const fd = new FormData();
+        fd.append("nombre", formData.nombre);
+        fd.append("descripcion", formData.descripcion);
+        fd.append("precio", formData.precio);
+        fd.append("stock", formData.stock);
+        fd.append("categoria", formData.categoria);
+        fd.append("foto", fotoFile);
+
+        await axios.post(`${API_URL}/productos`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        await axios.post(`${API_URL}/productos`, {
+          nombre: formData.nombre,
+          descripcion: formData.descripcion,
+          precio: formData.precio,
+          stock: formData.stock,
+          categoria: formData.categoria,
+          foto: formData.foto,
+        });
+      }
+
       const response = await axios.get(`${API_URL}/productos`);
       setProductos(response.data);
-      
       setAlertMessage('Producto agregado exitosamente.');
       setAlertType("success");
-      
-      // Cerrar el modal después de un breve delay
       setTimeout(() => {
         setShowForm(false);
         setAlertMessage("");
@@ -191,6 +235,11 @@ function Productos() {
         alert("Error al eliminar el producto.");
       }
     }
+  };
+
+  // Nuevo handler para input file en el modal
+  const handleFotoFileChange = (e) => {
+    setFotoFile(e.target.files && e.target.files[0] ? e.target.files[0] : null);
   };
 
   return (
@@ -410,15 +459,27 @@ function Productos() {
                 </div>
                 
                 <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Foto (URL)</label>
-                  <input 
-                    type="url" 
-                    name="foto" 
-                    value={formData.foto} 
-                    onChange={handleChange} 
-                    className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" 
-                    placeholder="URL de la imagen del producto"
+                  <label className="block text-gray-700 text-sm font-bold mb-2">Foto (URL o archivo)</label>
+
+                  {/* File input opcional */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFotoFileChange}
+                    className="mb-2"
                   />
+
+                  <div>
+                    <input 
+                      type="url" 
+                      name="foto" 
+                      value={formData.foto} 
+                      onChange={handleChange} 
+                      className="shadow appearance-none border rounded-lg w-full py-3 px-3 leading-tight bg-gray-50 border-gray-300 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" 
+                      placeholder="URL de la imagen del producto (si no subes archivo)"
+                    />
+                  </div>
+
                   {formData.foto && (
                     <div className="mt-2">
                       <p className="text-sm text-gray-600 mb-1">Vista previa:</p>

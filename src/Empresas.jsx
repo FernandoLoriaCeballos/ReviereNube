@@ -235,7 +235,7 @@ function Empresas() {
           <div className="hidden lg:flex items-center space-x-8">
             <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
             <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
-            <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">EMPRESAS</a>
+            <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">SUCURSALES</a>
             <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
           </div>
         </div>
@@ -254,7 +254,7 @@ function Empresas() {
               <table className="w-full text-sm text-left text-gray-800">
                 <thead className="text-xs uppercase bg-gray-100 text-gray-700 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">ID Empresa</th>
+                    <th className="px-6 py-4 font-semibold">ID Sucursal</th>
                     <th className="px-6 py-4 font-semibold">Logo</th>
                     <th className="px-6 py-4 font-semibold">Nombre</th>
                     <th className="px-6 py-4 font-semibold">Email</th>
@@ -318,7 +318,7 @@ function Empresas() {
               onClick={handleAgregarClick} 
               className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md"
             >
-              Agregar Empresa
+              Agregar Sucursal
             </button>
           </>
         ) : (
@@ -333,7 +333,7 @@ function Empresas() {
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="relative overflow-hidden shadow-2xl bg-white rounded-lg w-[600px] max-w-[90%] border border-gray-200 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center bg-gradient-to-r from-red-500 to-orange-500 px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">{isEditing ? "Editar Empresa" : "Agregar Empresa"}</h2>
+              <h2 className="text-lg font-semibold text-white">{isEditing ? "Editar Sucursal" : "Agregar Sucursal"}</h2> {/* INFO DE LOS MODALES*/}
               <button onClick={handleCloseForm} className="text-white hover:text-gray-200 text-2xl">✕</button>
             </div>
             <div className="p-6">
@@ -370,7 +370,7 @@ function Empresas() {
               <form className="space-y-4">
                 <div>
                   <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Nombre de la Empresa <span className="text-red-500">*</span>
+                    Nombre de la Sucursal <span className="text-red-500">*</span>
                   </label>
                   <input 
                     type="text" 
