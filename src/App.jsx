@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate, useNavigate } from "react-router-dom";
+import { Router, Route, Routes, Link, Navigate, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
 import { CarritoProvider } from "./CarritoContext";
-
 import Registro from "./Registro";
 import Login from "./Login";
 import Usuarios from "./Usuarios";
@@ -155,7 +154,7 @@ const App = () => {
 
   return (
     <CarritoProvider>
-      <Router>
+      {/* <Router> */}
         <CheckoutProvider
           stripe={stripePromise}
           options={{
@@ -197,7 +196,7 @@ const App = () => {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CheckoutProvider>
-      </Router>
+      {/* </Router> */}
     </CarritoProvider>
   );
 };

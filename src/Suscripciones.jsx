@@ -499,7 +499,7 @@ const SuscripcionesView = () => {
           id: 1, 
           tipo: 'basica',
           nombre: 'BÁSICO', 
-          precio: '$300.00', 
+          precio: '$299.99', 
           caracteristicas: [
               '✅ Hasta 50 productos', 
               '✅ Dashboard básico', 
@@ -512,7 +512,7 @@ const SuscripcionesView = () => {
           id: 2, 
           tipo: 'premium',
           nombre: 'PROFESIONAL', 
-          precio: '$600.00', 
+          precio: '$599.99', 
           caracteristicas: [
               '✅ Productos ilimitados',
               '✅ Dashboard avanzado', 
@@ -526,7 +526,7 @@ const SuscripcionesView = () => {
           id: 3, 
           tipo: 'empresarial',
           nombre: 'EMPRESA', 
-          precio: '$900.00', 
+          precio: '$999.99', 
           caracteristicas: [
               '✅ Todo lo del Premium',
               '✅ Soporte 24/7',
