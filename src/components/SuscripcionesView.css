@@ -1,0 +1,203 @@
+/* --- Estilos de la página principal (pueden ser los que ya tenías) --- */
+.pagina-suscripciones {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.suscripciones-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 40px;
+}
+
+.planes-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap; /* Para hacerlo responsive */
+}
+
+/* --- Estilos de las Tarjetas de Plan --- */
+.plan-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 350px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.plan-card-header {
+    /* Altura fija para la cabecera */
+    height: 150px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Efecto de ola en el fondo */
+}
+
+/* --- Gradientes para la cabecera --- */
+.plan-card.basic .plan-card-header {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Naranja/Melocotón */
+}
+.plan-card.standart .plan-card-header {
+    background: linear-gradient(135deg, #00c6ff, #0072ff); /* Azul/Cielo */
+}
+.plan-card.premium .plan-card-header {
+    background: linear-gradient(135deg, #8a2be2, #4b0082); /* Violeta/Índigo */
+}
+
+.plan-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.plan-card .precio {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 5px 0 0 0;
+}
+
+.plan-card .precio span {
+    font-size: 1rem;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+/* --- Contenido y Características --- */
+.plan-card-content {
+    padding: 30px 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.plan-card-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.plan-card-content ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.icon-check {
+    color: #28a745;
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+.icon-cross {
+    color: #dc3545;
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+/* --- Estilos de Botón --- */
+.boton-suscribir {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50px; /* Borde más redondeado */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-top: auto; /* Asegura que el botón esté siempre abajo */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.boton-suscribir:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+}
+
+/* 1. Botón ADQUIRIR (por defecto, usa el color de la tarjeta) */
+/* Los degradados se aplicarán directamente en el JSX o se basarán en la clase del padre */
+
+.plan-card.basic .boton-suscribir:not([style]) {
+    background: linear-gradient(90deg, #ff7e5f, #feb47b); /* Mismo degradado de cabecera */
+}
+.plan-card.standart .boton-suscribir:not([style]) {
+    background: linear-gradient(90deg, #027fb0, #033470); 
+}
+.plan-card.premium .boton-suscribir:not([style]) {
+    background: linear-gradient(90deg, #8a2be2, #4b0082); 
+}
+
+/* 2. Botón CANCELAR SUSCRIPCIÓN (siempre rojo, usamos el style inline para sobrescribir) */
+/* El estilo rojo se manejará con el 'style' inline en React, pero aquí dejamos la base. */
+
+
+/* --- Estilos del Modal de Checkout (Resumen) --- */
+.checkout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.checkout-summary-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.checkout-summary-box h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+/* Estilo para el botón Ir a Pagar */
+.checkout-summary-box button:last-child {
+    background-color: #28a745 !important; 
+}
+
+/* Estilo para el botón Cancelar */
+.checkout-summary-box button:first-of-type {
+    background-color: #dc3545 !important;
+}
