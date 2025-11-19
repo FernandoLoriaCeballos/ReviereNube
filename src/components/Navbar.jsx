@@ -5,7 +5,6 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { CarritoContext } from "/src/CarritoContext";
 import axios from "axios";
 import Cookies from "js-cookie";
-import logo from "/src/assets/img/logo.png";
 
 const Navbar = () => {
   const {
@@ -170,9 +169,6 @@ const Navbar = () => {
     <nav className="bg-white text-gray-800 shadow-lg border-b border-gray-200">
       <div className="container mx-auto px-4 py-4 flex flex-col lg:flex-row justify-between items-center">
         <div className="flex items-center justify-between w-full lg:w-auto">
-          <Link to="/landing">
-            <img src={logo} alt="Logo" className="w-[116px]" />
-          </Link>
           <div className="lg:hidden">
             <button
               onClick={toggleMobileMenu}

@@ -333,16 +333,13 @@ const HomeAdmin = () => {
       </style>
       <nav className="bg-[#111827] text-white">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/HomeAdmin" className="flex items-center">
-            <img src={logo} alt="Logo" className="w-[116px]" />
-          </a>
           <div className="hidden lg:flex items-center space-x-8">
             <a href="/usuarios" className="hover:text-blue-500 uppercase">USUARIOS</a>
             <a href="/productos" className="hover:text-blue-500 uppercase">PRODUCTOS</a>
             <a href="/resenas" className="hover:text-blue-500 uppercase">RESEÑAS</a>
             <a href="/recibos" className="hover:text-blue-500 uppercase">RECIBOS</a>
-            <a href="/Ofertas" className="hover:text-blue-500 uppercase">OFERTAS</a>
-            <a href="/cupones" className="hover:text-blue-500 uppercase">CUPONES</a>
+            {/* <a href="/Ofertas" className="hover:text-blue-500 uppercase">OFERTAS</a>
+            <a href="/cupones" className="hover:text-blue-500 uppercase">CUPONES</a> */}
           </div>
         </div>
       </nav>
@@ -800,7 +797,7 @@ const HomeAdmin = () => {
           </div>
 
           {/* Registro de Usuarios por Género */}
-          <div className="bg-[#1E293B] rounded-lg p-6 text-white shadow-lg">
+          {/* <div className="bg-[#1E293B] rounded-lg p-6 text-white shadow-lg">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-lg font-bold">Registro de Usuarios por Género</h2>
@@ -871,7 +868,7 @@ const HomeAdmin = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
