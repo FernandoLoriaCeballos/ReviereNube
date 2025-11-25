@@ -389,6 +389,8 @@ const HomeAdmin = () => {
             </div>
           </div>
 
+          
+
           <div className="bg-[#1E293B] rounded-lg p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <div className="flex items-center">
               <Star className="w-12 h-12 text-purple-500 mr-4" />

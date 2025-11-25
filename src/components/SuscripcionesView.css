@@ -1,7 +1,8 @@
-/* --- Estilos de la página principal (pueden ser los que ya tenías) --- */
+/* --- Estilos de la página principal --- */
 .pagina-suscripciones {
     background-color: #f8f9fa;
     min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .suscripciones-container {
@@ -15,6 +16,7 @@ h1 {
     font-size: 2.5rem;
     color: #333;
     margin-bottom: 10px;
+    font-weight: 800;
 }
 
 .subtitulo {
@@ -27,7 +29,7 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 30px;
-    flex-wrap: wrap; /* Para hacerlo responsive */
+    flex-wrap: wrap;
 }
 
 /* --- Estilos de las Tarjetas de Plan --- */
@@ -41,15 +43,15 @@ h1 {
     display: flex;
     flex-direction: column;
     transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #eee;
 }
 
 .plan-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px rgba(239, 68, 68, 0.15); /* Sombra rojiza suave al hover */
 }
 
 .plan-card-header {
-    /* Altura fija para la cabecera */
     height: 150px; 
     display: flex;
     flex-direction: column;
@@ -59,36 +61,38 @@ h1 {
     padding: 20px;
     position: relative;
     z-index: 1;
-    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Efecto de ola en el fondo */
+    /* Efecto de ola en el fondo */
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); 
+    
+    /* --- CAMBIO PRINCIPAL: DEGRADADO TIPO "EDITAR" PARA TODOS --- */
+    /* Reemplazamos los colores individuales por el gradiente Rojo -> Naranja */
+    background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
 }
 
-/* --- Gradientes para la cabecera --- */
-.plan-card.basic .plan-card-header {
-    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Naranja/Melocotón */
-}
-.plan-card.standart .plan-card-header {
-    background: linear-gradient(135deg, #00c6ff, #0072ff); /* Azul/Cielo */
-}
-.plan-card.premium .plan-card-header {
-    background: linear-gradient(135deg, #8a2be2, #4b0082); /* Violeta/Índigo */
-}
+/* Ya no necesitamos selectores específicos (.basic, .standart) para el fondo 
+   porque pediste que todos tengan el mismo color del botón editar. 
+   Sin embargo, mantengo las clases por si quieres cambiar iconos u otros detalles luego. */
 
 .plan-card h3 {
     font-size: 1.8rem;
     margin-bottom: 5px;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .plan-card .precio {
     font-size: 2.5rem;
-    font-weight: bold;
+    font-weight: 800;
     margin: 5px 0 0 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .plan-card .precio span {
     font-size: 1rem;
     font-weight: normal;
     margin-left: 5px;
+    opacity: 0.9;
 }
 
 /* --- Contenido y Características --- */
@@ -107,64 +111,60 @@ h1 {
 }
 
 .plan-card-content ul li {
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
     color: #555;
     font-size: 0.95rem;
     display: flex;
     align-items: center;
 }
 
+.plan-card-content ul li:last-child {
+    border-bottom: none;
+}
+
 .icon-check {
-    color: #28a745;
+    color: #ef4444; /* Cambiado a rojo/naranja para combinar con el tema */
     margin-right: 10px;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
 .icon-cross {
-    color: #dc3545;
+    color: #9ca3af; /* Gris para lo que no incluye */
     margin-right: 10px;
-    font-size: 1.1em;
+    font-size: 1.2em;
 }
 
-/* --- Estilos de Botón --- */
+/* --- Estilos de Botón (ADQUIRIR) --- */
 .boton-suscribir {
     padding: 15px 30px;
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 800;
     color: white;
     border: none;
-    border-radius: 50px; /* Borde más redondeado */
+    border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    margin-top: auto; /* Asegura que el botón esté siempre abajo */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin-top: auto;
+    letter-spacing: 0.5px;
+    
+    /* --- CAMBIO PRINCIPAL: DEGRADADO TIPO "EDITAR" --- */
+    background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); /* Sombra rojiza */
 }
 
 .boton-suscribir:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    opacity: 0.9;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    /* Invertir sutilmente o iluminar al hover */
+    background: linear-gradient(90deg, #dc2626 0%, #ea580c 100%);
 }
 
-/* 1. Botón ADQUIRIR (por defecto, usa el color de la tarjeta) */
-/* Los degradados se aplicarán directamente en el JSX o se basarán en la clase del padre */
+/* Eliminamos las reglas específicas de color por tarjeta para el botón, 
+   ya que ahora todos son iguales */
 
-.plan-card.basic .boton-suscribir:not([style]) {
-    background: linear-gradient(90deg, #ff7e5f, #feb47b); /* Mismo degradado de cabecera */
-}
-.plan-card.standart .boton-suscribir:not([style]) {
-    background: linear-gradient(90deg, #027fb0, #033470); 
-}
-.plan-card.premium .boton-suscribir:not([style]) {
-    background: linear-gradient(90deg, #8a2be2, #4b0082); 
-}
-
-/* 2. Botón CANCELAR SUSCRIPCIÓN (siempre rojo, usamos el style inline para sobrescribir) */
-/* El estilo rojo se manejará con el 'style' inline en React, pero aquí dejamos la base. */
-
-
-/* --- Estilos del Modal de Checkout (Resumen) --- */
+/* --- Estilos del Modal de Checkout --- */
 .checkout-modal-overlay {
     position: fixed;
     top: 0;
@@ -176,28 +176,56 @@ h1 {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(2px);
 }
 
 .checkout-summary-box {
     background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     max-width: 400px;
     width: 90%;
     text-align: center;
 }
 
 .checkout-summary-box h2 {
-    color: #333;
+    color: #1f2937;
     margin-bottom: 20px;
-}
-/* Estilo para el botón Ir a Pagar */
-.checkout-summary-box button:last-child {
-    background-color: #28a745 !important; 
+    font-size: 1.5rem;
 }
 
-/* Estilo para el botón Cancelar */
+.checkout-summary-box p {
+    color: #4b5563;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* Botones del Modal */
+.checkout-summary-box button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.checkout-summary-box button:hover {
+    opacity: 0.9;
+}
+
+/* Botón Ir a Pagar (Mantenemos verde para indicar acción segura de pago, o cambiamos a rojo si prefieres) */
+/* Por ahora lo dejo en verde estándar de éxito, pero puedes cambiarlo a #ef4444 si quieres todo rojo */
+.checkout-summary-box button:last-child {
+    background-color: #10b981 !important; /* Verde esmeralda */
+    color: white;
+}
+
+/* Botón Cancelar */
 .checkout-summary-box button:first-of-type {
-    background-color: #dc3545 !important;
+    background-color: #ef4444 !important; /* Rojo alerta */
+    color: white;
 }

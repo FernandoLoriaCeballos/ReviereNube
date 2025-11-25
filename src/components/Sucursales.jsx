@@ -11,8 +11,13 @@ function Sucursales() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // -----------------------------------------------------------
+    // AGREGADO: Estado para controlar la recarga del inventario
+    // -----------------------------------------------------------
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    // useEffect de carga de empresas (Sin cambios)
     useEffect(() => {
-        // Usar la URL de la API
         fetch(`${API_URL}/empresas`)
             .then((res) => {
                 if (!res.ok) throw new Error("Error al obtener empresas");
@@ -28,6 +33,24 @@ function Sucursales() {
             });
     }, []);
 
+    // -----------------------------------------------------------
+    // AGREGADO: Escuchar el evento que manda el Navbar
+    // -----------------------------------------------------------
+    useEffect(() => {
+        const handleUpdate = () => {
+            console.log("Detectada compra en Navbar, recargando inventario...");
+            // Incrementamos la key para forzar remontaje del hijo
+            setRefreshKey(prev => prev + 1); 
+        };
+
+        window.addEventListener("actualizar-inventario", handleUpdate);
+
+        // Limpiar evento al desmontar
+        return () => {
+            window.removeEventListener("actualizar-inventario", handleUpdate);
+        };
+    }, []);
+
     return (
         <div className="sucursales-container">
             <h1>Inventarios por sucursales</h1>
@@ -41,7 +64,7 @@ function Sucursales() {
                 }}
                 value={sucursalId}
             >
-                <option value={0}>Todas</option>
+                <option value={0}>Todas las sucursales</option>
 
                 {loading && <option disabled>Cargando sucursales...</option>}
                 {error && <option disabled>Error al cargar</option>}
@@ -64,7 +87,14 @@ function Sucursales() {
                 {/* tarjeta responsiva que imita el layout de Productos.jsx */}
                 <div className="inventario-card">
                     <div className="table-responsive">
-                        <Inventario sucursalId={sucursalId} />
+                        {/* AGREGADO: key={refreshKey}
+                            Al cambiar refreshKey, React desmonta y monta de nuevo este componente,
+                            lo que dispara su fetch interno y actualiza los stocks.
+                        */}
+                        <Inventario 
+                            key={refreshKey} 
+                            sucursalId={sucursalId} 
+                        />
                     </div>
                 </div>
             </div>
