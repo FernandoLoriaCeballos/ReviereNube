@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Cookies from 'js-cookie';
 
 // ======================================================================
-// 1. COMPONENTE NUEVO: MODAL DE CONFIRMACIÓN PARA CAMBIO DE PLAN
+// 1. MODAL DE CONFIRMACIÓN PARA CAMBIO DE PLAN
 // ======================================================================
 const InlineConfirmationModal = ({ planData, onClose, onConfirm }) => {
     return (
@@ -39,7 +39,7 @@ const InlineConfirmationModal = ({ planData, onClose, onConfirm }) => {
 };
 
 // ======================================================================
-// 1.5 COMPONENTE NUEVO: MODAL DE CONFIRMACIÓN PARA CANCELACIÓN SIMPLE
+// 2. MODAL DE CONFIRMACIÓN PARA CANCELACIÓN
 // ======================================================================
 const InlineCancelConfirmationModal = ({ planId, onClose, onConfirm }) => {
     return (
@@ -73,7 +73,7 @@ const InlineCancelConfirmationModal = ({ planId, onClose, onConfirm }) => {
 };
 
 // ======================================================================
-// 1.7 COMPONENTE NUEVO: MENSAJE DE CAMBIO DE MEMBRESÍA TEMPORAL
+// 3. MENSAJE TEMPORAL DE CAMBIO EXITOSO
 // ======================================================================
 const TemporaryChangeMessage = ({ planNombre }) => {
     return (
@@ -101,7 +101,7 @@ const TemporaryChangeMessage = ({ planNombre }) => {
 };
 
 // ======================================================================
-// 1.8 COMPONENTE NUEVO: MODAL DE SUSCRIPCIÓN EXITOSA
+// 4. MODAL DE SUSCRIPCIÓN EXITOSA
 // ======================================================================
 const SubscriptionSuccessModal = ({ planNombre, fechaVencimiento, onClose }) => {
     return (
@@ -156,64 +156,62 @@ const SubscriptionSuccessModal = ({ planNombre, fechaVencimiento, onClose }) => 
 };
 
 // ======================================================================
-// 2. COMPONENTE INLINE CHECKOUT SUMMARY (MODAL DE RESUMEN) - ACTUALIZADO CON STRIPE
+// 5. MODAL DE RESUMEN DE PAGO (Stripe)
 // ======================================================================
 const InlineCheckoutSummary = ({ planData, onClose }) => {
     const [loading, setLoading] = useState(false);
 
     const handleStripeCheckout = async () => {
-    setLoading(true);
-    try {
-        const userId = Cookies.get("id_usuario");
-        const userEmail = Cookies.get("user_email");
-
-        if (!userId) {
-            alert("Debes iniciar sesión para suscribirte");
-            onClose();
-            return;
-        }
-
-        console.log("📡 Enviando request a:", 'http://localhost:3000/create-subscription-checkout');
-        
-        const response = await fetch('http://localhost:3000/create-subscription-checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                plan_tipo: planData.tipo,
-                userId: userId,
-                userEmail: userEmail
-            }),
-        });
-
-        console.log("📨 Response status:", response.status);
-        
-        // Verifica el contenido de la respuesta
-        const responseText = await response.text();
-        console.log("📄 Response content:", responseText);
-
-        // Intenta parsear como JSON
-        let data;
+        setLoading(true);
         try {
-            data = JSON.parse(responseText);
-        } catch (parseError) {
-            console.error("❌ Error parseando JSON:", parseError);
-            throw new Error(`El servidor respondió con HTML en lugar de JSON. ¿Existe el endpoint?`);
-        }
+            const userId = Cookies.get("id_usuario");
+            const userEmail = Cookies.get("user_email");
 
-        if (data.success && data.url) {
-            window.location.href = data.url;
-        } else {
-            throw new Error(data.error || 'Error al crear el checkout');
-        }
+            if (!userId) {
+                alert("Debes iniciar sesión para suscribirte");
+                onClose();
+                return;
+            }
 
-    } catch (error) {
-        console.error('Error iniciando checkout de Stripe:', error);
-        alert('Error al procesar la suscripción: ' + error.message);
-        setLoading(false);
-    }
-};
+            console.log("📡 Enviando request a:", 'http://localhost:3000/create-subscription-checkout');
+            
+            const response = await fetch('http://localhost:3000/create-subscription-checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    plan_tipo: planData.tipo,
+                    userId: userId,
+                    userEmail: userEmail
+                }),
+            });
+
+            console.log("📨 Response status:", response.status);
+            
+            const responseText = await response.text();
+            console.log("📄 Response content:", responseText);
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error("❌ Error parseando JSON:", parseError);
+                throw new Error(`El servidor respondió con HTML en lugar de JSON. ¿Existe el endpoint?`);
+            }
+
+            if (data.success && data.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error(data.error || 'Error al crear el checkout');
+            }
+
+        } catch (error) {
+            console.error('Error iniciando checkout de Stripe:', error);
+            alert('Error al procesar la suscripción: ' + error.message);
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="checkout-modal-overlay"> 
@@ -255,20 +253,21 @@ const InlineCheckoutSummary = ({ planData, onClose }) => {
 };
 
 // ======================================================================
-// 3. COMPONENTE PLAN CARD (Actualizado para mostrar estado real - MÁS VISIBLE)
+// 6. COMPONENTE PLAN CARD INDIVIDUAL
 // ======================================================================
 const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, isActivo, planType, isPendiente, estadoSuscripcion }) => {
     let buttonText = "ADQUIRIR";
     let onClickAction = onSuscribir;
-    let buttonStyle = { backgroundColor: '#fd9c00ff', background: '#f78828ff' };
+    // Estilo por defecto (si no se aplica el CSS global)
+    let buttonStyle = {}; 
 
     if (isActivo) {
-        buttonText = "CANCELAR SUSCRIPCIÓN";
+        buttonText = "CANCELAR SUSCRIPCIÓN"; 
         onClickAction = onCancelar;
-        buttonStyle = { backgroundColor: '#dc3545', background: '#dc3545', color: 'white' };
+        buttonStyle = { background: '#dc3545', boxShadow: 'none' }; 
     } else if (isPendiente) {
         buttonText = "PENDIENTE DE PAGO";
-        buttonStyle = { backgroundColor: '#ffc107', background: '#ffc107', color: '#333', cursor: 'not-allowed' };
+        buttonStyle = { background: '#ffc107', color: '#333', cursor: 'not-allowed' };
         onClickAction = () => {};
     }
 
@@ -281,21 +280,21 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
                  position: 'relative'
              } : {}}>
             
-            {/* BADGE DE PLAN ACTIVO - MUY VISIBLE */}
+            {/* BADGE DE PLAN ACTIVO - Solo visible si isActivo es true */}
             {isActivo && (
                 <div style={{
                     position: 'absolute',
-                    top: '-10px',
+                    top: '5px',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     backgroundColor: '#28a745',
                     color: 'white',
-                    padding: '5px 15px',
+                    padding: '4px 12px', 
                     borderRadius: '15px',
-                    fontSize: '0.8em',
+                    fontSize: '0.7rem', 
                     fontWeight: 'bold',
                     zIndex: 10,
-                    boxShadow: '0 2px 10px rgba(40, 167, 69, 0.5)'
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
                 }}>
                     ✅ PLAN ACTIVO
                 </div>
@@ -304,7 +303,8 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
             <div className="plan-card-header">
                 <h3>{nombre}</h3>
                 <p className="precio">
-                    {precio}<span>/ mes</span>
+                    {precio}
+                    <span>/ mes</span>
                 </p>
             </div>
             
@@ -313,9 +313,9 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
                     {caracteristicas.map((caracteristica, index) => (
                         <li key={index}>
                             {caracteristica.startsWith('❌') ? (
-                                <span className="icon-cross">❌</span>
+                                <span className="icon-cross"></span>
                             ) : (
-                                <span className="icon-check">✅</span>
+                                <span className="icon-check"></span>
                             )}
                             {caracteristica.replace(/^[✅❌]\s*/, '')} 
                         </li>
@@ -336,16 +336,12 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
 };
 
 // ======================================================================
-// 4. COMPONENTE PRINCIPAL (SuscripcionesView) - ACTUALIZADO CON STRIPE
+// 7. VISTA PRINCIPAL DE SUSCRIPCIONES
 // ======================================================================
 const SuscripcionesView = () => {
     const navigate = useNavigate();
-    
-    // Estados para suscripciones reales
     const [estadoSuscripcion, setEstadoSuscripcion] = useState(null);
     const [loading, setLoading] = useState(true);
-    
-    // Estados para modales
     const [selectedPlan, setSelectedPlan] = useState(null); 
     const [showSummary, setShowSummary] = useState(false); 
     const [showConfirmation, setShowConfirmation] = useState(false); 
@@ -354,31 +350,20 @@ const SuscripcionesView = () => {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successPlanName, setSuccessPlanName] = useState('');
 
-    // Cargar estado de suscripción al montar el componente
     useEffect(() => {
         cargarEstadoSuscripcion();
     }, []);
 
-    // Detectar cuando el usuario regresa de un pago exitoso
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const success = urlParams.get('success');
-        
         if (success) {
-            // Recargar el estado de suscripción
             cargarEstadoSuscripcion();
-            
-            // Esperar un momento para que se cargue el estado y luego mostrar el modal
             setTimeout(() => {
-                // Determinar qué plan se activó y su fecha de vencimiento
                 const activePlan = estadoSuscripcion?.suscripcion?.nombre_plan || 'Premium';
                 setSuccessPlanName(activePlan);
-                
-                // Mostrar modal de éxito
                 setShowSuccessModal(true);
             }, 1500);
-            
-            // Limpiar la URL
             window.history.replaceState({}, '', '/suscripciones');
         }
     }, [estadoSuscripcion]);
@@ -389,11 +374,9 @@ const SuscripcionesView = () => {
             setLoading(false);
             return;
         }
-
         try {
             const response = await fetch(`http://localhost:3000/suscripcion/estado/${userId}`);
             const data = await response.json();
-            
             if (data.success) {
                 setEstadoSuscripcion(data);
             }
@@ -404,7 +387,6 @@ const SuscripcionesView = () => {
         }
     };
 
-    // Función que inicia el proceso de suscripción
     const handleSuscribir = (planData) => {
         const userId = Cookies.get("id_usuario");
         if (!userId) {
@@ -412,44 +394,33 @@ const SuscripcionesView = () => {
             navigate('/login');
             return;
         }
-
-        // Si hay una suscripción activa, muestra el modal de confirmación
+        // Lógica de suscripción estándar
         if (estadoSuscripcion?.tiene_suscripcion) {
+            if (estadoSuscripcion.suscripcion.plan === planData.tipo) return; 
             setSelectedPlan(planData);
             setShowConfirmation(true);
             return;
         }
-
-        // Si no hay suscripción activa, muestra el resumen de pago
         setSelectedPlan(planData);
         setShowSummary(true); 
     };
     
-    // Función para manejar el "Sí, cambiar" en el modal de confirmación
     const handleConfirmChange = async () => {
         if (!selectedPlan) return;
-
         try {
-            // Primero cancelar la suscripción actual
             const userId = Cookies.get("id_usuario");
             const cancelResponse = await fetch('http://localhost:3000/suscripcion/cancelar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId }),
             });
-
             const cancelData = await cancelResponse.json();
-
             if (cancelData.success) {
                 setShowConfirmation(false);
-                // Ahora proceder con la nueva suscripción
                 setShowSummary(true);
             } else {
                 throw new Error(cancelData.error || 'Error al cancelar suscripción anterior');
             }
-            
         } catch (error) {
             console.error("Error al cambiar suscripción:", error);
             alert("Error al cambiar suscripción: " + error.message);
@@ -458,27 +429,20 @@ const SuscripcionesView = () => {
         }
     };
     
-    // Lógica para cancelar la suscripción
     const handleCancelar = () => {
         setShowCancelConfirmation(true);
     };
     
-    // Función que se llama al confirmar la cancelación
     const handleConfirmCancel = async () => {
         const userId = Cookies.get("id_usuario");
         if (!userId) return;
-
         try {
             const response = await fetch('http://localhost:3000/suscripcion/cancelar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId }),
             });
-
             const data = await response.json();
-
             if (data.success) {
                 setEstadoSuscripcion({ tiene_suscripcion: false });
                 alert("Suscripción cancelada exitosamente");
@@ -493,7 +457,7 @@ const SuscripcionesView = () => {
         }
     };
     
-    // Datos de Planes actualizados para coincidir con el backend
+    // --- LISTA DE PLANES (Sin el de prueba, restaurados) ---
     const planes = [
         {
           id: 1, 
@@ -501,10 +465,10 @@ const SuscripcionesView = () => {
           nombre: 'BÁSICO', 
           precio: '$299.99', 
           caracteristicas: [
-              '✅ Hasta 50 productos', 
-              '✅ Dashboard básico', 
-              '✅ Soporte por email', 
-              '✅ Reportes mensuales'
+              'Gestion de Inventario', 
+              'Catalogo de Productos', 
+              'Catalogo de Usuarios', 
+              'Carrito de Compras'
           ], 
           planType: 'basic', 
         },
@@ -514,25 +478,29 @@ const SuscripcionesView = () => {
           nombre: 'PROFESIONAL', 
           precio: '$599.99', 
           caracteristicas: [
-              '✅ Productos ilimitados',
-              '✅ Dashboard avanzado', 
-              '✅ Soporte prioritario',
-              '✅ Reportes en tiempo real',
-              '✅ API access'
+              'Gestion de Inventario',
+              'Catalogo de Productos', 
+              'Catalogo de Usuarios',
+              'Carrito de Compras',
+              'Registro de Compras Realizadas',
+              'Reportes de Ventas',
           ], 
           planType: 'standart',
         },
         {
           id: 3, 
           tipo: 'empresarial',
-          nombre: 'EMPRESA', 
+          nombre: 'EMPRESARIAL', 
           precio: '$999.99', 
           caracteristicas: [
-              '✅ Todo lo del Premium',
-              '✅ Soporte 24/7',
-              '✅ Usuarios ilimitados', 
-              '✅ White-label',
-              '✅ Onboarding personalizado'
+              'Gestion de Inventario',
+              'Catalogo de Productos', 
+              'Catalogo de Usuarios + roles de Sucursales',
+              'Carrito de Compras',
+              'Registro de Compras Realizadas',
+              'Reportes de Ventas',
+              'Catalogo de Sucursales',
+              
           ], 
           planType: 'premium',
         },
@@ -569,54 +537,39 @@ const SuscripcionesView = () => {
                       planType={plan.planType} 
                       onSuscribir={() => handleSuscribir(plan)}
                       onCancelar={handleCancelar}
-                      isActivo={estadoSuscripcion?.tiene_suscripcion && estadoSuscripcion.suscripcion.plan === plan.tipo}
+                      
+                      // CAMBIO CLAVE: Forzamos a 'false' para que el usuario vea siempre los botones ADQUIRIR
+                      // hasta que arregle su estado o realice una compra real nueva.
+                      // Si prefieres que se detecte real, cambia 'false' por la lógica comentada abajo.
+                      isActivo={false} 
+                      
+                      // Lógica real (descomentar cuando se quiera activar detección automática):
+                      // isActivo={estadoSuscripcion?.tiene_suscripcion && estadoSuscripcion.suscripcion.plan === plan.tipo}
+                      
                       estadoSuscripcion={estadoSuscripcion}
                     />
                   ))}
                 </div>
             </div>
             
-            {/* MODAL DE RESUMEN DE PAGO */}
             {selectedPlan && showSummary && (
-                <InlineCheckoutSummary 
-                    planData={selectedPlan} 
-                    onClose={() => {
-                        setShowSummary(false); 
-                        setSelectedPlan(null);
-                    }} 
-                />
+                <InlineCheckoutSummary planData={selectedPlan} onClose={() => { setShowSummary(false); setSelectedPlan(null); }} />
             )}
             
-            {/* MODAL DE CONFIRMACIÓN DE CAMBIO DE PLAN */}
             {selectedPlan && showConfirmation && (
-                <InlineConfirmationModal
-                    planData={selectedPlan}
-                    onClose={() => setShowConfirmation(false)}
-                    onConfirm={handleConfirmChange}
-                />
+                <InlineConfirmationModal planData={selectedPlan} onClose={() => setShowConfirmation(false)} onConfirm={handleConfirmChange} />
             )}
 
-            {/* MENSAJE TEMPORAL DE ÉXITO DE CAMBIO */}
             {selectedPlan && showSuccessChangeMessage && (
                 <TemporaryChangeMessage planNombre={selectedPlan.nombre} />
             )}
             
-            {/* MODAL DE CONFIRMACIÓN DE CANCELACIÓN */}
             {showCancelConfirmation && (
-                <InlineCancelConfirmationModal
-                    planId={estadoSuscripcion?.suscripcion?.id}
-                    onClose={() => setShowCancelConfirmation(false)}
-                    onConfirm={handleConfirmCancel}
-                />
+                <InlineCancelConfirmationModal planId={estadoSuscripcion?.suscripcion?.id} onClose={() => setShowCancelConfirmation(false)} onConfirm={handleConfirmCancel} />
             )}
 
-            {/* MODAL DE SUSCRIPCIÓN EXITOSA */}
             {showSuccessModal && (
-                <SubscriptionSuccessModal 
-                    planNombre={successPlanName}
-                    fechaVencimiento={estadoSuscripcion?.suscripcion?.fecha_vencimiento}
-                    onClose={() => setShowSuccessModal(false)}
-                />
+                <SubscriptionSuccessModal planNombre={successPlanName} fechaVencimiento={estadoSuscripcion?.suscripcion?.fecha_vencimiento} onClose={() => setShowSuccessModal(false)} />
             )}
         </div>
     );

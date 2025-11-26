@@ -1,0 +1,300 @@
+/* --- VARIABLES DE COLOR DE TU MARCA --- */
+:root {
+    --color-primario: #1a202c; 
+    --color-acento: #e53e3e;   
+    --color-fondo-gris: #f7fafc;
+    --color-borde-gris: #e2e8f0;
+    --color-texto-gris: #718096;
+    --color-verde-exito: #38a169;
+    --color-card-rojo: #ef4444;
+    --color-card-negro: #111827;
+    --color-card-naranja: #f97316;
+}
+
+/* Contenedor General */
+.reporte-container {
+    padding: 30px;
+    background-color: var(--color-fondo-gris);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+/* --- BOTÓN REGRESAR --- */
+.boton-regreso-wrapper {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-regresar {
+    background: linear-gradient(to right, #ef4444, #f97316);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-regresar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+    background: linear-gradient(to right, #dc2626, #ea580c);
+}
+
+.titulo-pagina {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 40px; /* Más espacio abajo del título */
+    color: var(--color-primario);
+}
+
+/* --- BARRA DE HERRAMIENTAS (CORREGIDA) --- */
+.toolbar-reporte {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra todo el bloque */
+    gap: 40px; /* Espacio amplio entre el selector de sucursal y los botones */
+    margin-bottom: 40px;
+    align-items: center; /* Alineación vertical perfecta */
+    background: white;
+    padding: 20px 30px;
+    border-radius: 16px; /* Bordes más suaves */
+    border: 1px solid var(--color-borde-gris);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+/* Grupos de filtros (Etiqueta + Control) */
+.filtro-grupo {
+    display: flex;
+    flex-direction: row; /* Alinear horizontalmente: Etiqueta -> Control */
+    align-items: center;
+    gap: 15px; /* Espacio entre la etiqueta y el input */
+}
+
+.filtro-label {
+    font-weight: 700;
+    color: var(--color-primario);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap; /* Evita que el texto se rompa */
+    margin: 0; /* Quitamos margenes extraños */
+}
+
+/* --- SELECTOR DE SUCURSAL --- */
+.select-sucursal {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--color-borde-gris);
+    font-size: 0.95rem;
+    color: #4a5568;
+    background-color: white;
+    cursor: pointer;
+    min-width: 250px; /* Un poco más ancho para que se lea bien */
+    outline: none;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.select-sucursal:focus {
+    border-color: var(--color-acento);
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+/* --- BOTONES DE TIEMPO --- */
+.btn-group {
+    background-color: var(--color-fondo-gris);
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    gap: 5px;
+    border: 1px solid var(--color-borde-gris);
+}
+
+.btn-filtro {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--color-texto-gris);
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-filtro:hover {
+    background-color: #e2e8f0;
+    color: var(--color-primario);
+}
+
+.btn-filtro.activo {
+    background: linear-gradient(to right, #ef4444, #f97316);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* --- RESPONSIVE (Móvil) --- */
+@media (max-width: 768px) {
+    .toolbar-reporte {
+        flex-direction: column; /* En móvil sí apilamos */
+        align-items: stretch;
+        gap: 20px;
+    }
+    
+    .filtro-grupo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .select-sucursal {
+        width: 100%;
+    }
+    
+    .btn-group {
+        overflow-x: auto; /* Scroll horizontal para botones en móvil */
+        width: 100%;
+    }
+}
+
+/* --- Tarjetas de Resumen --- */
+.resumen-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Tarjetas un poco más anchas */
+    gap: 25px;
+    margin-bottom: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-dato {
+    background: white;
+    border: 1px solid var(--color-borde-gris);
+    border-radius: 16px; /* Bordes más redondeados */
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-top: 5px solid transparent; /* Borde superior más grueso */
+    transition: transform 0.2s;
+}
+
+.card-dato:hover {
+    transform: translateY(-2px); /* Efecto flotante sutil */
+}
+
+.card-dato h3 {
+    font-size: 0.85rem;
+    color: var(--color-texto-gris);
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.card-dato p {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--color-primario);
+}
+
+/* Colores de tarjetas */
+.card-dato.verde { border-top-color: var(--color-card-rojo); }
+.card-dato.verde p { color: var(--color-card-rojo); }
+
+.card-dato.azul { border-top-color: var(--color-card-negro); }
+.card-dato.azul p { color: var(--color-card-negro); }
+
+.card-dato.morado { border-top-color: var(--color-card-naranja); }
+.card-dato.morado p { color: var(--color-card-naranja); }
+
+.unidad {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-texto-gris);
+}
+
+/* --- Tabla --- */
+.tabla-card {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--color-borde-gris);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.tabla-header {
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--color-borde-gris);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+}
+
+.tabla-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--color-primario);
+    font-weight: 700;
+}
+
+.resultados-count {
+    font-size: 0.9rem;
+    color: var(--color-texto-gris);
+    font-weight: 500;
+    background: var(--color-fondo-gris);
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.tabla-responsive { overflow-x: auto; }
+.tabla-ventas { width: 100%; border-collapse: collapse; }
+
+.tabla-ventas th {
+    background-color: #f8fafc;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--color-texto-gris);
+    font-weight: 700;
+    padding: 20px 30px;
+    text-align: left;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-borde-gris);
+}
+
+.tabla-ventas td {
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--color-borde-gris);
+    color: var(--color-primario);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.tabla-ventas tr:last-child td { border-bottom: none; }
+.tabla-ventas tr:hover { background-color: #f8fafc; transition: background-color 0.2s; }
+
+.fecha-col { font-weight: 600; white-space: nowrap; color: #4a5568; }
+.precio-col { font-weight: 700; color: var(--color-verde-exito); font-size: 1rem; text-align: right; }
+
+.cliente-info { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.icono-user { background-color: #edf2f7; color: #718096; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.9rem; }
+
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; letter-spacing: 0.02em; }
+.badge.sucursal { background-color: white; color: var(--color-primario); border: 1px solid #cbd5e0; }
+
+/* Ajustes finales de alineación */
+.tabla-ventas th:last-child, .tabla-ventas td:last-child { text-align: right; }
