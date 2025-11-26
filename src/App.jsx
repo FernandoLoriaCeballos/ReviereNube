@@ -31,6 +31,7 @@ import Suscripciones from "./Suscripciones";
 import CheckoutForm from "./checkoutform";
 import "./App.css";
 import Sucursales from "./components/Sucursales"; //Marielle
+import ReporteVentas from "./components/ReporteVentas";
 
 // Stripe config
 const stripePromise = loadStripe("pk_test_51S8q8MEwPHsvqkshj7Jd7PYSzvSCzGelSEJ3vnIjSIoJrGBRjMbPwOXza4M2L3jXMA3obEpEG9yfkSuQmZcdGmb800r5GI607U");
@@ -192,6 +193,7 @@ const App = () => {
             <Route path="/checkout" element={<CheckoutForm />} />
             <Route path="/complete" element={<Complete />} />
             <Route path="/sucursales" element={<Sucursales />} />
+            <Route path="/reporte-ventas" element={<ReporteVentas />} />
             {/* fallback: redirigir rutas no reconocidas al login/home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
