@@ -332,6 +332,7 @@ const Navbar = () => {
         return {
             productos: formatter.format(totalFinal),
             envio: '--',
+            total: formatter.format(totalFinal),
         };
     };
 
@@ -362,13 +363,6 @@ const Navbar = () => {
               onClick={toggleMobileMenu}
             >
               PLANES
-            </Link>
-            <Link
-              to="/compras"
-              className="block lg:inline hover:text-blue-600 uppercase lg:text-center font-medium transition-colors duration-300"
-              onClick={toggleMobileMenu}
-            >
-              MIS COMPRAS
             </Link>
           </div>
           <div className="flex flex-col items-start lg:flex-row lg:space-x-8 space-y-4 lg:space-y-0 w-full lg:w-auto">
@@ -500,37 +494,47 @@ const Navbar = () => {
                         )}
                     </div>
                     
-                    {/* 2. SECCIÓN DE TOTAL Y MÉTODOS DE PAGO */}
-                    <div className="py-6 border-b border-gray-200">
-                        <h2 className="text-gray-800 text-xl font-bold mb-3 text-center">Opciones de Pago</h2>
-                        
-                        {carrito.length > 0 ? (
-                            <>
-                                <div className="flex flex-col items-center space-y-4 w-full">
-                                    <PayPalScriptProvider>
-                                        <PayPalButtons
-                                            createOrder={(data, actions) => {
-                                                const totalPagar = Cookies.get('precio_descuento') || calcularTotal().toFixed(2);
-                                                return actions.order.create({
-                                                    purchase_units: [{ amount: { value: totalPagar } }],
-                                                });
-                                            }}
-                                            onApprove={(data, actions) => {
-                                                return actions.order.capture().then((details) => {
-                                                    console.log("Pago completado por " + details.payer.name.given_name);
-                                                    handleRealizarCompra(); 
-                                                });
-                                            }}
-                                        />
-                                    </PayPalScriptProvider>
-                                </div>
-                            </>
-                        ) : (
-                            <p className="text-gray-600">Agrega productos para ver las opciones de pago.</p>
-                        )}
-                    </div>
-                </div>
+                   {/* 2. SECCIÓN DE TOTAL Y MÉTODOS DE PAGO */}
+<div className="py-6 border-b border-gray-200">
+    <h2 className="text-gray-800 text-xl font-bold mb-5 text-center">Opciones de Pago</h2>
 
+    {carrito.length > 0 ? (
+        <>
+            {/* Contenedor principal centrado y con ancho completo */}
+            <div className="w-full flex justify-center"> 
+                {/* max-w-md evita que los botones se vean demasiado estirados en pantallas gigantes */}
+                <div className="w-full px-4"> 
+                    <PayPalScriptProvider options={{ "clientId": "TU_CLIENT_ID" }}> {/* Asegúrate de tener tus options aquí */}
+                        <PayPalButtons
+                            style={{
+                                layout: "vertical", // Apila los botones (PayPal arriba, Tarjeta abajo)
+                                color: "gold",      // Color clásico de PayPal
+                                shape: "rect",      // Forma rectangular (como en tu foto)
+                                label: "paypal",    // Etiqueta estándar
+                                height: 50          // Altura en pixeles (los hace ver más robustos)
+                            }}
+                            createOrder={(data, actions) => {
+                                const totalPagar = Cookies.get('precio_descuento') || calcularTotal().toFixed(2);
+                                return actions.order.create({
+                                    purchase_units: [{ amount: { value: totalPagar } }],
+                                });
+                            }}
+                            onApprove={(data, actions) => {
+                                return actions.order.capture().then((details) => {
+                                    console.log("Pago completado por " + details.payer.name.given_name);
+                                    handleRealizarCompra();
+                                });
+                            }}
+                        />
+                    </PayPalScriptProvider>
+                </div>
+            </div>
+        </>
+    ) : (
+        <p className="text-gray-600 text-center">Agrega productos para ver las opciones de pago.</p>
+    )}
+</div>
+                </div>
                 {/* 2. Columna Derecha: Resumen de Compra y Botón Checkout */}
                 <div className="w-1/3 pl-10">
                     <div className="pt-6">

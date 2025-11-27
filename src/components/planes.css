@@ -25,11 +25,14 @@ h1 {
     margin-bottom: 40px;
 }
 
+/* --- GRID DE PLANES --- */
 .planes-grid {
     display: flex;
     justify-content: center;
     gap: 30px;
     flex-wrap: wrap;
+    padding-bottom: 20px;
+    align-items: stretch;
 }
 
 /* --- Estilos de las Tarjetas de Plan --- */
@@ -37,8 +40,12 @@ h1 {
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    
+    /* Tamaño original */
     width: 100%;
     max-width: 350px;
+    min-width: 300px;
+    
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -48,11 +55,12 @@ h1 {
 
 .plan-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(239, 68, 68, 0.15); /* Sombra rojiza suave al hover */
+    box-shadow: 0 15px 40px rgba(255, 69, 0, 0.15);
 }
 
+/* --- ENCABEZADO DE TARJETA (BASE) --- */
 .plan-card-header {
-    height: 150px; 
+    height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -61,20 +69,31 @@ h1 {
     padding: 20px;
     position: relative;
     z-index: 1;
-    /* Efecto de ola en el fondo */
     clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); 
-    
-    /* --- CAMBIO PRINCIPAL: DEGRADADO TIPO "EDITAR" PARA TODOS --- */
-    /* Reemplazamos los colores individuales por el gradiente Rojo -> Naranja */
-    background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+    background: #333; /* Fallback */
 }
 
-/* Ya no necesitamos selectores específicos (.basic, .standart) para el fondo 
-   porque pediste que todos tengan el mismo color del botón editar. 
-   Sin embargo, mantengo las clases por si quieres cambiar iconos u otros detalles luego. */
+/* === COLORES DIFERENCIADOS POR PLAN (DEGRADADO NARANJA/ROJO/AMARILLO) === */
+
+/* 1. BÁSICO (Brillante - Original) */
+.plan-card.basic .plan-card-header {
+    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 50%, #ffd700 100%) !important;
+}
+
+/* 2. PROFESIONAL (Más Oscuro - Tonos rojizos profundos) */
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .plan-card-header {
+    background: linear-gradient(135deg, #e65100 0%, #bf360c 50%, #ff6f00 100%) !important;
+}
+
+/* 3. EMPRESARIAL (El Más Oscuro - Tonos quemados) */
+.plan-card.premium .plan-card-header {
+    background: linear-gradient(135deg, #b71c1c 0%, #820e0e 50%, #e65100 100%) !important;
+}
+
 
 .plan-card h3 {
-    font-size: 1.8rem;
+    font-size: 1.8rem; 
     margin-bottom: 5px;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
@@ -82,7 +101,7 @@ h1 {
 }
 
 .plan-card .precio {
-    font-size: 2.5rem;
+    font-size: 2.5rem; 
     font-weight: 800;
     margin: 5px 0 0 0;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -95,7 +114,7 @@ h1 {
     opacity: 0.9;
 }
 
-/* --- Contenido y Características --- */
+/* --- Contenido --- */
 .plan-card-content {
     padding: 30px 25px;
     display: flex;
@@ -123,20 +142,25 @@ h1 {
     border-bottom: none;
 }
 
+/* Iconos Check acordes al tono */
+.plan-card.basic .icon-check { color: #ff4500; }
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .icon-check { color: #d84315; }
+.plan-card.premium .icon-check { color: #b71c1c; }
+
 .icon-check {
-    color: #ef4444; /* Cambiado a rojo/naranja para combinar con el tema */
     margin-right: 10px;
     font-size: 1.2em;
     font-weight: bold;
 }
 
 .icon-cross {
-    color: #9ca3af; /* Gris para lo que no incluye */
+    color: #9ca3af;
     margin-right: 10px;
     font-size: 1.2em;
 }
 
-/* --- Estilos de Botón (ADQUIRIR) --- */
+/* --- BOTONES (ADQUIRIR) CON LOS MISMOS TONOS --- */
 .boton-suscribir {
     padding: 15px 30px;
     font-size: 1.1rem;
@@ -148,21 +172,37 @@ h1 {
     transition: all 0.3s ease-in-out;
     margin-top: auto;
     letter-spacing: 0.5px;
-    
-    /* --- CAMBIO PRINCIPAL: DEGRADADO TIPO "EDITAR" --- */
-    background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); /* Sombra rojiza */
+    width: 100%;
 }
 
-.boton-suscribir:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-    /* Invertir sutilmente o iluminar al hover */
-    background: linear-gradient(90deg, #dc2626 0%, #ea580c 100%);
+/* Botón Básico (Brillante) */
+.plan-card.basic .boton-suscribir {
+    background: linear-gradient(135deg, #ff8c00 0%, #ff4500 50%, #ffd700 100%) !important;
+    box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+}
+.plan-card.basic .boton-suscribir:hover {
+    background: linear-gradient(135deg, #ff4500 0%, #ff8c00 50%, #ffcc00 100%) !important;
 }
 
-/* Eliminamos las reglas específicas de color por tarjeta para el botón, 
-   ya que ahora todos son iguales */
+/* Botón Profesional (Más Oscuro) */
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .boton-suscribir {
+    background: linear-gradient(135deg, #e65100 0%, #bf360c 50%, #ff6f00 100%) !important;
+    box-shadow: 0 4px 15px rgba(191, 54, 12, 0.3);
+}
+.plan-card.standard .boton-suscribir:hover {
+    background: linear-gradient(135deg, #bf360c 0%, #e65100 50%, #ff8f00 100%) !important;
+}
+
+/* Botón Empresarial (El Más Oscuro) */
+.plan-card.premium .boton-suscribir {
+    background: linear-gradient(135deg, #b71c1c 0%, #820e0e 50%, #e65100 100%) !important;
+    box-shadow: 0 4px 15px rgba(130, 14, 14, 0.3);
+}
+.plan-card.premium .boton-suscribir:hover {
+    background: linear-gradient(135deg, #820e0e 0%, #b71c1c 50%, #ef6c00 100%) !important;
+}
+
 
 /* --- Estilos del Modal de Checkout --- */
 .checkout-modal-overlay {
@@ -217,15 +257,12 @@ h1 {
     opacity: 0.9;
 }
 
-/* Botón Ir a Pagar (Mantenemos verde para indicar acción segura de pago, o cambiamos a rojo si prefieres) */
-/* Por ahora lo dejo en verde estándar de éxito, pero puedes cambiarlo a #ef4444 si quieres todo rojo */
 .checkout-summary-box button:last-child {
-    background-color: #10b981 !important; /* Verde esmeralda */
+    background-color: #10b981 !important;
     color: white;
 }
 
-/* Botón Cancelar */
-.checkout-summary-box button:first-of-type {
-    background-color: #ef4444 !important; /* Rojo alerta */
+.checkout-summary-box button:first-of-type { 
+    background-color: #ef4444 !important;
     color: white;
 }
