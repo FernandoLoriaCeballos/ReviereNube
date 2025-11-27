@@ -81,7 +81,8 @@ h1 {
 }
 
 /* 2. PROFESIONAL (Más Oscuro - Tonos rojizos profundos) */
-.plan-card.standart .plan-card-header {
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .plan-card-header {
     background: linear-gradient(135deg, #e65100 0%, #bf360c 50%, #ff6f00 100%) !important;
 }
 
@@ -143,7 +144,8 @@ h1 {
 
 /* Iconos Check acordes al tono */
 .plan-card.basic .icon-check { color: #ff4500; }
-.plan-card.standart .icon-check { color: #d84315; }
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .icon-check { color: #d84315; }
 .plan-card.premium .icon-check { color: #b71c1c; }
 
 .icon-check {
@@ -183,11 +185,12 @@ h1 {
 }
 
 /* Botón Profesional (Más Oscuro) */
-.plan-card.standart .boton-suscribir {
+/* CORREGIDO: standart -> standard */
+.plan-card.standard .boton-suscribir {
     background: linear-gradient(135deg, #e65100 0%, #bf360c 50%, #ff6f00 100%) !important;
     box-shadow: 0 4px 15px rgba(191, 54, 12, 0.3);
 }
-.plan-card.standart .boton-suscribir:hover {
+.plan-card.standard .boton-suscribir:hover {
     background: linear-gradient(135deg, #bf360c 0%, #e65100 50%, #ff8f00 100%) !important;
 }
 
