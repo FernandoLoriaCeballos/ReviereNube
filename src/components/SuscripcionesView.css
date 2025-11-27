@@ -262,7 +262,7 @@ h1 {
     color: white;
 }
 
-.checkout-summary-box button:first-of-type {
+.checkout-summary-box button:first-of-type { 
     background-color: #ef4444 !important;
     color: white;
 }
