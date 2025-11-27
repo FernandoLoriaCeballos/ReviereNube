@@ -258,11 +258,11 @@ h1 {
 }
 
 .checkout-summary-box button:last-child {
-    background-color: #10b981 !important;
+    background-color: #10b981;
     color: white;
 }
 
 .checkout-summary-box button:first-of-type { 
-    background-color: #ef4444 !important;
+    background-color: #ef4444;
     color: white;
 }
