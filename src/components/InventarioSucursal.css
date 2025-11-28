@@ -250,3 +250,32 @@ h2 {
         max-width: 100%;
     }
 }
+
+/* --- BOTÓN REGRESAR --- */
+.boton-regreso-wrapper {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-regresar {
+    background: linear-gradient(to right, #ef4444, #f97316);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-regresar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+    background: linear-gradient(to right, #dc2626, #ea580c);
+}
