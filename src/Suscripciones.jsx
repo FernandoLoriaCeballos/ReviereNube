@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'; 
-import { useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './components/SuscripcionesView.css';
-import Navbar from './components/Navbar'; 
+import Navbar from './components/Navbar';
 import Cookies from 'js-cookie';
 
 // ======================================================================
@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 // ======================================================================
 const InlineConfirmationModal = ({ planData, onClose, onConfirm }) => {
     return (
-        <div className="checkout-modal-overlay"> 
+        <div className="checkout-modal-overlay">
             <div className="checkout-summary-box" style={{ maxWidth: '400px', textAlign: 'center' }}>
                 <h2 style={{ color: '#dc3545' }}>Cambio de Membresía</h2>
                 <div style={{ padding: '20px', margin: '15px 0', backgroundColor: '#fef3f3', border: '1px solid #dc3545', borderRadius: '8px', color: '#333' }}>
@@ -21,13 +21,13 @@ const InlineConfirmationModal = ({ planData, onClose, onConfirm }) => {
                     </p>
                 </div>
 
-                <button 
-                    onClick={onClose} 
+                <button
+                    onClick={onClose}
                     style={{ padding: '10px 20px', marginRight: '15px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#6c757d' }}
                 >
                     No
                 </button>
-                <button 
+                <button
                     onClick={onConfirm}
                     style={{ padding: '10px 20px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#dc3545' }}
                 >
@@ -43,7 +43,7 @@ const InlineConfirmationModal = ({ planData, onClose, onConfirm }) => {
 // ======================================================================
 const InlineCancelConfirmationModal = ({ planId, onClose, onConfirm }) => {
     return (
-        <div className="checkout-modal-overlay"> 
+        <div className="checkout-modal-overlay">
             <div className="checkout-summary-box" style={{ maxWidth: '400px', textAlign: 'center' }}>
                 <h2 style={{ color: '#dc3545' }}>Confirmar Cancelación</h2>
                 <div style={{ padding: '20px', margin: '15px 0', backgroundColor: '#fef3f3', border: '1px solid #dc3545', borderRadius: '8px', color: '#333' }}>
@@ -55,13 +55,13 @@ const InlineCancelConfirmationModal = ({ planId, onClose, onConfirm }) => {
                     </p>
                 </div>
 
-                <button 
-                    onClick={onClose} 
+                <button
+                    onClick={onClose}
                     style={{ padding: '10px 20px', marginRight: '15px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#6c757d' }}
                 >
                     No
                 </button>
-                <button 
+                <button
                     onClick={onConfirm}
                     style={{ padding: '10px 20px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#dc3545' }}
                 >
@@ -77,16 +77,16 @@ const InlineCancelConfirmationModal = ({ planId, onClose, onConfirm }) => {
 // ======================================================================
 const TemporaryChangeMessage = ({ planNombre }) => {
     return (
-        <div className="checkout-modal-overlay"> 
+        <div className="checkout-modal-overlay">
             <div className="checkout-summary-box" style={{ maxWidth: '400px', textAlign: 'center' }}>
                 <h2 style={{ color: '#28a745' }}>Cambio de Membresía</h2>
-                <div style={{ 
-                    padding: '20px', 
-                    margin: '15px 0', 
-                    backgroundColor: '#e9f7ef', 
-                    border: '2px solid #28a745', 
-                    borderRadius: '8px', 
-                    color: '#155724' 
+                <div style={{
+                    padding: '20px',
+                    margin: '15px 0',
+                    backgroundColor: '#e9f7ef',
+                    border: '2px solid #28a745',
+                    borderRadius: '8px',
+                    color: '#155724'
                 }}>
                     <p style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
                         ¡Cambio exitoso al plan "{planNombre}"!
@@ -105,16 +105,16 @@ const TemporaryChangeMessage = ({ planNombre }) => {
 // ======================================================================
 const SubscriptionSuccessModal = ({ planNombre, fechaVencimiento, onClose }) => {
     return (
-        <div className="checkout-modal-overlay"> 
+        <div className="checkout-modal-overlay">
             <div className="checkout-summary-box" style={{ maxWidth: '450px', textAlign: 'center' }}>
                 <h2 style={{ color: '#28a745' }}>¡Suscripción Activada! 🎉</h2>
-                <div style={{ 
-                    padding: '20px', 
-                    margin: '15px 0', 
-                    backgroundColor: '#e9f7ef', 
-                    border: '2px solid #28a745', 
-                    borderRadius: '8px', 
-                    color: '#155724' 
+                <div style={{
+                    padding: '20px',
+                    margin: '15px 0',
+                    backgroundColor: '#e9f7ef',
+                    border: '2px solid #28a745',
+                    borderRadius: '8px',
+                    color: '#155724'
                 }}>
                     <p style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
                         Plan "{planNombre}" activado correctamente
@@ -123,9 +123,9 @@ const SubscriptionSuccessModal = ({ planNombre, fechaVencimiento, onClose }) => 
                         Tu suscripción está ahora activa y podrás disfrutar de todos los beneficios.
                     </p>
                     {fechaVencimiento && (
-                        <p style={{ 
-                            marginTop: '15px', 
-                            fontSize: '0.9em', 
+                        <p style={{
+                            marginTop: '15px',
+                            fontSize: '0.9em',
                             fontWeight: 'bold',
                             padding: '8px',
                             backgroundColor: '#d4edda',
@@ -136,14 +136,14 @@ const SubscriptionSuccessModal = ({ planNombre, fechaVencimiento, onClose }) => 
                     )}
                 </div>
 
-                <button 
+                <button
                     onClick={onClose}
-                    style={{ 
-                        padding: '10px 25px', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '5px', 
-                        cursor: 'pointer', 
+                    style={{
+                        padding: '10px 25px',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
                         backgroundColor: '#28a745',
                         fontSize: '1em'
                     }}
@@ -174,7 +174,7 @@ const InlineCheckoutSummary = ({ planData, onClose }) => {
             }
 
             console.log("📡 Enviando request a:", 'http://localhost:3000/create-subscription-checkout');
-            
+
             const response = await fetch('http://localhost:3000/create-subscription-checkout', {
                 method: 'POST',
                 headers: {
@@ -188,7 +188,7 @@ const InlineCheckoutSummary = ({ planData, onClose }) => {
             });
 
             console.log("📨 Response status:", response.status);
-            
+
             const responseText = await response.text();
             console.log("📄 Response content:", responseText);
 
@@ -214,7 +214,7 @@ const InlineCheckoutSummary = ({ planData, onClose }) => {
     };
 
     return (
-        <div className="checkout-modal-overlay"> 
+        <div className="checkout-modal-overlay">
             <div className="checkout-summary-box">
                 <h2>Resumen de Suscripción</h2>
                 <div style={{ padding: '20px', margin: '15px 0', backgroundColor: '#f4f4f4', borderRadius: '8px', color: '#333' }}>
@@ -225,27 +225,29 @@ const InlineCheckoutSummary = ({ planData, onClose }) => {
                     </p>
                 </div>
 
-                <button 
-                    onClick={onClose} 
-                    disabled={loading}
-                    style={{ padding: '10px 20px', marginRight: '15px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#6c757d' }}
-                >
-                    Cancelar
-                </button>
-                <button 
+
+                <button
                     onClick={handleStripeCheckout}
                     disabled={loading}
-                    style={{ 
-                        padding: '10px 20px', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '5px', 
-                        cursor: loading ? 'not-allowed' : 'pointer', 
-                        backgroundColor: loading ? '#6c757d' : '#007bff',
+                    style={{
+                        padding: '10px 20px',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        backgroundColor: loading ? '#6c757d' : '#CE4104',
                         opacity: loading ? 0.6 : 1
                     }}
                 >
-                    {loading ? 'Procesando...' : 'Continuar a Pago'}
+                    {loading ? 'Procesando...' : 'Continuar Pago'}
+                </button>
+
+                <button
+                    onClick={onClose}
+                    disabled={loading}
+                    style={{ padding: '10px 20px', marginRight: '15px', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', backgroundColor: '#991414' }}
+                >
+                    Cancelar
                 </button>
             </div>
         </div>
@@ -259,27 +261,27 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
     let buttonText = "ADQUIRIR";
     let onClickAction = onSuscribir;
     // Estilo por defecto (si no se aplica el CSS global)
-    let buttonStyle = {}; 
+    let buttonStyle = {};
 
     if (isActivo) {
-        buttonText = "CANCELAR SUSCRIPCIÓN"; 
+        buttonText = "CANCELAR SUSCRIPCIÓN";
         onClickAction = onCancelar;
-        buttonStyle = { background: '#dc3545', boxShadow: 'none' }; 
+        buttonStyle = { background: '#dc3545', boxShadow: 'none' };
     } else if (isPendiente) {
         buttonText = "PENDIENTE DE PAGO";
         buttonStyle = { background: '#ffc107', color: '#333', cursor: 'not-allowed' };
-        onClickAction = () => {};
+        onClickAction = () => { };
     }
 
     return (
-        <div className={`plan-card ${planType} ${isActivo ? 'activo' : ''} ${isPendiente ? 'pendiente' : ''}`} 
-             style={isActivo ? {
-                 border: '3px solid #28a745',
-                 boxShadow: '0 0 20px rgba(40, 167, 69, 0.3)',
-                 transform: 'scale(1.02)',
-                 position: 'relative'
-             } : {}}>
-            
+        <div className={`plan-card ${planType} ${isActivo ? 'activo' : ''} ${isPendiente ? 'pendiente' : ''}`}
+            style={isActivo ? {
+                border: '3px solid #28a745',
+                boxShadow: '0 0 20px rgba(40, 167, 69, 0.3)',
+                transform: 'scale(1.02)',
+                position: 'relative'
+            } : {}}>
+
             {/* BADGE DE PLAN ACTIVO - Solo visible si isActivo es true */}
             {isActivo && (
                 <div style={{
@@ -289,9 +291,9 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
                     transform: 'translateX(-50%)',
                     backgroundColor: '#28a745',
                     color: 'white',
-                    padding: '4px 12px', 
+                    padding: '4px 12px',
                     borderRadius: '15px',
-                    fontSize: '0.7rem', 
+                    fontSize: '0.7rem',
                     fontWeight: 'bold',
                     zIndex: 10,
                     boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
@@ -307,9 +309,9 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
                     <span>/ mes</span>
                 </p>
             </div>
-            
+
             <div className="plan-card-content">
-                <ul> 
+                <ul>
                     {caracteristicas.map((caracteristica, index) => (
                         <li key={index}>
                             {caracteristica.startsWith('❌') ? (
@@ -317,13 +319,13 @@ const PlanCard = ({ nombre, precio, caracteristicas, onSuscribir, onCancelar, is
                             ) : (
                                 <span className="icon-check"></span>
                             )}
-                            {caracteristica.replace(/^[✅❌]\s*/, '')} 
+                            {caracteristica.replace(/^[✅❌]\s*/, '')}
                         </li>
                     ))}
                 </ul>
-                
-                <button 
-                    className="boton-suscribir" 
+
+                <button
+                    className="boton-suscribir"
                     onClick={onClickAction}
                     style={buttonStyle}
                     disabled={isPendiente}
@@ -342,9 +344,9 @@ const SuscripcionesView = () => {
     const navigate = useNavigate();
     const [estadoSuscripcion, setEstadoSuscripcion] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedPlan, setSelectedPlan] = useState(null); 
-    const [showSummary, setShowSummary] = useState(false); 
-    const [showConfirmation, setShowConfirmation] = useState(false); 
+    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [showSummary, setShowSummary] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
     const [showSuccessChangeMessage, setShowSuccessChangeMessage] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -396,15 +398,15 @@ const SuscripcionesView = () => {
         }
         // Lógica de suscripción estándar
         if (estadoSuscripcion?.tiene_suscripcion) {
-            if (estadoSuscripcion.suscripcion.plan === planData.tipo) return; 
+            if (estadoSuscripcion.suscripcion.plan === planData.tipo) return;
             setSelectedPlan(planData);
             setShowConfirmation(true);
             return;
         }
         setSelectedPlan(planData);
-        setShowSummary(true); 
+        setShowSummary(true);
     };
-    
+
     const handleConfirmChange = async () => {
         if (!selectedPlan) return;
         try {
@@ -428,11 +430,11 @@ const SuscripcionesView = () => {
             setSelectedPlan(null);
         }
     };
-    
+
     const handleCancelar = () => {
         setShowCancelConfirmation(true);
     };
-    
+
     const handleConfirmCancel = async () => {
         const userId = Cookies.get("id_usuario");
         if (!userId) return;
@@ -456,53 +458,53 @@ const SuscripcionesView = () => {
             setShowCancelConfirmation(false);
         }
     };
-    
-    // --- LISTA DE PLANES (Sin el de prueba, restaurados) ---
+
+    // --- LISTA DE PLANES (CORREGIDO: standart -> standard) ---
     const planes = [
         {
-          id: 1, 
-          tipo: 'basica',
-          nombre: 'BÁSICO', 
-          precio: '$299.99', 
-          caracteristicas: [
-              'Gestion de Inventario', 
-              'Catalogo de Productos', 
-              'Catalogo de Usuarios', 
-              'Carrito de Compras'
-          ], 
-          planType: 'basic', 
+            id: 1,
+            tipo: 'basica',
+            nombre: 'BÁSICO',
+            precio: '$299.99',
+            caracteristicas: [
+                'Gestion de Inventario',
+                'Catalogo de Productos',
+                'Catalogo de Usuarios',
+                'Carrito de Compras'
+            ],
+            planType: 'basic',
         },
         {
-          id: 2, 
-          tipo: 'premium',
-          nombre: 'PROFESIONAL', 
-          precio: '$599.99', 
-          caracteristicas: [
-              'Gestion de Inventario',
-              'Catalogo de Productos', 
-              'Catalogo de Usuarios',
-              'Carrito de Compras',
-              'Registro de Compras Realizadas',
-              'Reportes de Ventas',
-          ], 
-          planType: 'standart',
+            id: 2,
+            tipo: 'premium',
+            nombre: 'PROFESIONAL',
+            precio: '$599.99',
+            caracteristicas: [
+                'Gestion de Inventario',
+                'Catalogo de Productos',
+                'Catalogo de Usuarios',
+                'Carrito de Compras',
+                'Registro de Compras Realizadas',
+                'Reportes de Ventas',
+            ],
+            planType: 'standard', // CORREGIDO AQUÍ (antes decía standart)
         },
         {
-          id: 3, 
-          tipo: 'empresarial',
-          nombre: 'EMPRESARIAL', 
-          precio: '$999.99', 
-          caracteristicas: [
-              'Gestion de Inventario',
-              'Catalogo de Productos', 
-              'Catalogo de Usuarios + roles de Sucursales',
-              'Carrito de Compras',
-              'Registro de Compras Realizadas',
-              'Reportes de Ventas',
-              'Catalogo de Sucursales',
-              
-          ], 
-          planType: 'premium',
+            id: 3,
+            tipo: 'empresarial',
+            nombre: 'EMPRESARIAL',
+            precio: '$999.99',
+            caracteristicas: [
+                'Gestion de Inventario',
+                'Catalogo de Productos',
+                'Catalogo de Usuarios + roles de Sucursales',
+                'Carrito de Compras',
+                'Registro de Compras Realizadas',
+                'Reportes de Ventas',
+                'Catalogo de Sucursales',
+
+            ],
+            planType: 'premium',
         },
     ];
 
@@ -518,44 +520,44 @@ const SuscripcionesView = () => {
             </div>
         );
     }
-        
+
     return (
         <div className="pagina-suscripciones">
-            <Navbar /> 
-            
+            <Navbar />
+
             <div className="suscripciones-container">
                 <h1>Elige el plan que mejor se adapta a ti</h1>
                 <p className="subtitulo">Disfruta de todo nuestro contenido sin límites.</p>
 
                 <div className="planes-grid">
-                  {planes.map((plan) => (
-                    <PlanCard
-                      key={plan.id}
-                      nombre={plan.nombre}
-                      precio={plan.precio}
-                      caracteristicas={plan.caracteristicas}
-                      planType={plan.planType} 
-                      onSuscribir={() => handleSuscribir(plan)}
-                      onCancelar={handleCancelar}
-                      
-                      // CAMBIO CLAVE: Forzamos a 'false' para que el usuario vea siempre los botones ADQUIRIR
-                      // hasta que arregle su estado o realice una compra real nueva.
-                      // Si prefieres que se detecte real, cambia 'false' por la lógica comentada abajo.
-                      isActivo={false} 
-                      
-                      // Lógica real (descomentar cuando se quiera activar detección automática):
-                      // isActivo={estadoSuscripcion?.tiene_suscripcion && estadoSuscripcion.suscripcion.plan === plan.tipo}
-                      
-                      estadoSuscripcion={estadoSuscripcion}
-                    />
-                  ))}
+                    {planes.map((plan) => (
+                        <PlanCard
+                            key={plan.id}
+                            nombre={plan.nombre}
+                            precio={plan.precio}
+                            caracteristicas={plan.caracteristicas}
+                            planType={plan.planType}
+                            onSuscribir={() => handleSuscribir(plan)}
+                            onCancelar={handleCancelar}
+
+                            // CAMBIO CLAVE: Forzamos a 'false' para que el usuario vea siempre los botones ADQUIRIR
+                            // hasta que arregle su estado o realice una compra real nueva.
+                            // Si prefieres que se detecte real, cambia 'false' por la lógica comentada abajo.
+                            isActivo={false}
+
+                            // Lógica real (descomentar cuando se quiera activar detección automática):
+                            // isActivo={estadoSuscripcion?.tiene_suscripcion && estadoSuscripcion.suscripcion.plan === plan.tipo}
+
+                            estadoSuscripcion={estadoSuscripcion}
+                        />
+                    ))}
                 </div>
             </div>
-            
+
             {selectedPlan && showSummary && (
                 <InlineCheckoutSummary planData={selectedPlan} onClose={() => { setShowSummary(false); setSelectedPlan(null); }} />
             )}
-            
+
             {selectedPlan && showConfirmation && (
                 <InlineConfirmationModal planData={selectedPlan} onClose={() => setShowConfirmation(false)} onConfirm={handleConfirmChange} />
             )}
@@ -563,7 +565,7 @@ const SuscripcionesView = () => {
             {selectedPlan && showSuccessChangeMessage && (
                 <TemporaryChangeMessage planNombre={selectedPlan.nombre} />
             )}
-            
+
             {showCancelConfirmation && (
                 <InlineCancelConfirmationModal planId={estadoSuscripcion?.suscripcion?.id} onClose={() => setShowCancelConfirmation(false)} onConfirm={handleConfirmCancel} />
             )}
