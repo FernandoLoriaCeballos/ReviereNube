@@ -1,25 +1,21 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
-
-const registroEmpresaRouter = require('./routes/registroEmpresa');
+const path = require('path');
 
 const app = express();
-app.use(cors());
 
-// Parse JSON bodies for endpoints that might use JSON
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos de uploads (accesible en /uploads/...)
+// Serve uploads (asegúrate de que la carpeta exista y tenga permisos)
 const UPLOADS_ROOT = path.join(__dirname, 'uploads');
-app.use('/uploads', express.static(UPLOADS_ROOT));
+app.use('/uploads', express.static(UPLOADS_ROOT, { maxAge: '1d' }));
 
-// Registrar la ruta única
+// Rutas
 app.use('/registro/empresa', registroEmpresaRouter);
+app.use('/superset-token', supersetTokenRouter);
 
-// Si no tienes otro listener, añade esto para pruebas locales:
+// Listener
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`API listening on ${PORT}`));

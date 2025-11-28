@@ -19,6 +19,7 @@
     "@react-oauth/google": "^0.12.2",
     "@stripe/react-stripe-js": "^5.4.0",
     "@stripe/stripe-js": "^8.5.2",
+    "@superset-ui/embedded-sdk": "^0.2.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",

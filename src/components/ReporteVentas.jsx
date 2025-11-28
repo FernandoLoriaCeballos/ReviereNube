@@ -133,134 +133,153 @@ function ReporteVentas() {
     };
 
     return (
-        <div className="reporte-container">
-            {/* BOTÓN REGRESAR */}
-            <div className="boton-regreso-wrapper">
-                <button 
-                    className="btn-regresar" 
-                    onClick={() => navigate('/usuarios')}
-                >
-                    Regresar
-                </button>
-            </div>
+        <>
+            {/* --- NAV (insertado) --- */}
+            <nav className="bg-white shadow-md border-b border-gray-200">
+                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                    <a href="/" className="flex items-center">
+                    </a>
+                    <div className="hidden lg:flex items-center space-x-8">
+                        <a href="/homeadmin" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">DASHBOARD</a>
+                        <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
+                        <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
+                        <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">SUCURSALES</a>
+                        <a href="/sucursales" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">INVENTARIO(S)</a>
+                        <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
+                        <a href="/reporte-ventas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">REPORTE DE VENTAS</a>
+                    </div>
+                </div>
+            </nav>
 
-            <h1 className="titulo-pagina">Reporte de Ventas</h1>
-
-            {/* --- BARRA DE HERRAMIENTAS (Filtros) --- */}
-            <div className="toolbar-reporte">
-                
-                {/* --- NUEVO BOTÓN DE ACTUALIZAR --- */}
-                {/* Usa la misma clase btn-regresar para mantener el estilo visual */}
-                <button 
-                    className="btn-regresar" 
-                    onClick={fetchDatosIniciales}
-                    style={{ marginRight: '10px' }} // Separación visual
-                >
-                    Actualizar Tabla
-                </button>
-
-                {/* SELECCIÓN DE SUCURSAL */}
-                <div className="filtro-grupo">
-                    <label className="filtro-label">Sucursal:</label>
-                    <select 
-                        className="select-sucursal"
-                        value={sucursalId}
-                        onChange={(e) => setSucursalId(Number(e.target.value))}
+            <div className="reporte-container">
+                {/* BOTÓN REGRESAR */}
+                <div className="boton-regreso-wrapper">
+                    <button 
+                        className="btn-regresar" 
+                        onClick={() => navigate('/usuarios')}
                     >
-                        <option value={0}>Todas las Sucursales</option>
-                        {empresas.map((emp) => (
-                            <option key={emp.id_empresa} value={emp.id_empresa}>
-                                {emp.nombre_empresa}
-                            </option>
-                        ))}
-                    </select>
+                        Regresar
+                    </button>
                 </div>
 
-                {/* SELECCIÓN DE TIEMPO */}
-                <div className="filtro-grupo">
-                    <label className="filtro-label">Periodo:</label>
-                    <div className="btn-group">
-                        <button className={`btn-filtro ${filtroTiempo === 'dia' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('dia')}>Hoy</button>
-                        <button className={`btn-filtro ${filtroTiempo === 'semana' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('semana')}>Semana</button>
-                        <button className={`btn-filtro ${filtroTiempo === 'mes' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('mes')}>Mes</button>
-                        <button className={`btn-filtro ${filtroTiempo === 'anio' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('anio')}>Año</button>
-                        <button className={`btn-filtro ${filtroTiempo === 'todos' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('todos')}>Histórico</button>
+                <h1 className="titulo-pagina">Reporte de Ventas</h1>
+
+                {/* --- BARRA DE HERRAMIENTAS (Filtros) --- */}
+                <div className="toolbar-reporte">
+                    
+                    {/* --- NUEVO BOTÓN DE ACTUALIZAR --- */}
+                    {/* Usa la misma clase btn-regresar para mantener el estilo visual */}
+                    <button 
+                        className="btn-regresar" 
+                        onClick={fetchDatosIniciales}
+                        style={{ marginRight: '10px' }} // Separación visual
+                    >
+                        Actualizar Tabla
+                    </button>
+
+                    {/* SELECCIÓN DE SUCURSAL */}
+                    <div className="filtro-grupo">
+                        <label className="filtro-label">Sucursal:</label>
+                        <select 
+                            className="select-sucursal"
+                            value={sucursalId}
+                            onChange={(e) => setSucursalId(Number(e.target.value))}
+                        >
+                            <option value={0}>Todas las Sucursales</option>
+                            {empresas.map((emp) => (
+                                <option key={emp.id_empresa} value={emp.id_empresa}>
+                                    {emp.nombre_empresa}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* SELECCIÓN DE TIEMPO */}
+                    <div className="filtro-grupo">
+                        <label className="filtro-label">Periodo:</label>
+                        <div className="btn-group">
+                            <button className={`btn-filtro ${filtroTiempo === 'dia' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('dia')}>Hoy</button>
+                            <button className={`btn-filtro ${filtroTiempo === 'semana' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('semana')}>Semana</button>
+                            <button className={`btn-filtro ${filtroTiempo === 'mes' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('mes')}>Mes</button>
+                            <button className={`btn-filtro ${filtroTiempo === 'anio' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('anio')}>Año</button>
+                            <button className={`btn-filtro ${filtroTiempo === 'todos' ? 'activo' : ''}`} onClick={() => setFiltroTiempo('todos')}>Histórico</button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* TARJETAS DE RESUMEN */}
+                <div className="resumen-cards">
+                    <div className="card-dato verde">
+                        <h3>Ingresos Totales</h3>
+                        <p>${resumen.totalDinero.toFixed(2)}</p>
+                    </div>
+                    <div className="card-dato azul">
+                        <h3>Productos Vendidos</h3>
+                        <p>{resumen.totalItems} <span className="unidad">unidades</span></p>
+                    </div>
+                    <div className="card-dato morado">
+                        <h3>Total Transacciones</h3>
+                        <p>{resumen.totalVentas}</p>
+                    </div>
+                </div>
+
+                {/* TABLA */}
+                <div className="tabla-card">
+                    <div className="tabla-header">
+                        <h3>Historial de Transacciones</h3>
+                        <div className="resultados-count">
+                            {sucursalId === 0 ? "Todas las sucursales" : empresas.find(e => e.id_empresa === sucursalId)?.nombre_empresa} 
+                            {' • '}
+                            {ventasFiltradas.length} registros
+                        </div>
+                    </div>
+
+                    <div className="tabla-responsive">
+                        <table className="tabla-ventas">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Sucursal</th>
+                                    <th>Detalle</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {cargando ? (
+                                    <tr><td colSpan="5" className="text-center">Cargando datos...</td></tr>
+                                ) : ventasFiltradas.length === 0 ? (
+                                    <tr><td colSpan="5" className="text-center">No hay ventas con estos filtros.</td></tr>
+                                ) : (
+                                    ventasFiltradas.map((venta) => (
+                                        <tr key={venta._id || venta.id_recibo}>
+                                            <td className="fecha-col">{formatearFecha(venta.fecha_emi)}</td>
+                                            <td>
+                                                <span className="badge sucursal">
+                                                    {venta.nombre_sucursal || "General / Web"}
+                                                </span>
+                                            </td>
+                                            <td className="detalle-col" title={venta.detalle}>
+                                                {venta.detalle}
+                                            </td>
+                                            <td>
+                                                <div className="cliente-info">
+                                                    <span className="icono-user">👤</span>
+                                                    {venta.nombre_usuario}
+                                                </div>
+                                            </td>
+                                            <td className="precio-col">
+                                                ${venta.precio_total?.toFixed(2)}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            {/* TARJETAS DE RESUMEN */}
-            <div className="resumen-cards">
-                <div className="card-dato verde">
-                    <h3>Ingresos Totales</h3>
-                    <p>${resumen.totalDinero.toFixed(2)}</p>
-                </div>
-                <div className="card-dato azul">
-                    <h3>Productos Vendidos</h3>
-                    <p>{resumen.totalItems} <span className="unidad">unidades</span></p>
-                </div>
-                <div className="card-dato morado">
-                    <h3>Total Transacciones</h3>
-                    <p>{resumen.totalVentas}</p>
-                </div>
-            </div>
-
-            {/* TABLA */}
-            <div className="tabla-card">
-                <div className="tabla-header">
-                    <h3>Historial de Transacciones</h3>
-                    <div className="resultados-count">
-                        {sucursalId === 0 ? "Todas las sucursales" : empresas.find(e => e.id_empresa === sucursalId)?.nombre_empresa} 
-                        {' • '}
-                        {ventasFiltradas.length} registros
-                    </div>
-                </div>
-
-                <div className="tabla-responsive">
-                    <table className="tabla-ventas">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Sucursal</th>
-                                <th>Detalle</th>
-                                <th>Cliente</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cargando ? (
-                                <tr><td colSpan="5" className="text-center">Cargando datos...</td></tr>
-                            ) : ventasFiltradas.length === 0 ? (
-                                <tr><td colSpan="5" className="text-center">No hay ventas con estos filtros.</td></tr>
-                            ) : (
-                                ventasFiltradas.map((venta) => (
-                                    <tr key={venta._id || venta.id_recibo}>
-                                        <td className="fecha-col">{formatearFecha(venta.fecha_emi)}</td>
-                                        <td>
-                                            <span className="badge sucursal">
-                                                {venta.nombre_sucursal || "General / Web"}
-                                            </span>
-                                        </td>
-                                        <td className="detalle-col" title={venta.detalle}>
-                                            {venta.detalle}
-                                        </td>
-                                        <td>
-                                            <div className="cliente-info">
-                                                <span className="icono-user">👤</span>
-                                                {venta.nombre_usuario}
-                                            </div>
-                                        </td>
-                                        <td className="precio-col">
-                                            ${venta.precio_total?.toFixed(2)}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        </>
     );
 }
 

@@ -191,10 +191,10 @@ function Usuarios() {
       {/* Navbar actualizada */}
       <nav className="bg-white shadow-md border-b border-gray-200">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/HomeAdmin" className="flex items-center">
-            <img src={logo} alt="Logo" className="w-[116px]" />
+          <a href="/" className="flex items-center">
           </a>
           <div className="hidden lg:flex items-center space-x-8">
+            <a href="/homeadmin" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">DASHBOARD</a>
             <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
             <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
             <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">SUCURSALES</a>

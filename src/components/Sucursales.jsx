@@ -52,53 +52,72 @@ function Sucursales() {
     }, []);
 
     return (
-        <div className="sucursales-container">
-            <h1>Inventarios por sucursales</h1>
+        <>
+            {/* --- NAV (insertado) --- */}
+            <nav className="bg-white shadow-md border-b border-gray-200">
+                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                    <a href="/" className="flex items-center">
+                    </a>
+                    <div className="hidden lg:flex items-center space-x-8">
+                        <a href="/homeadmin" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">DASHBOARD</a>
+                        <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
+                        <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
+                        <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">SUCURSALES</a>
+                        <a href="/sucursales" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">INVENTARIO(S)</a>
+                        <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
+                        <a href="/reporte-ventas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">REPORTE DE VENTAS</a>
+                    </div>
+                </div>
+            </nav>
 
-            <select
-                className="sucursales-select"
-                onChange={(e) => {
-                    const val = e.target.value;
-                    // convertir a número si es numérico, si no mantener string (p.ej. ObjectId)
-                    setSucursalId(val === "0" ? 0 : (isNaN(val) ? val : Number(val)));
-                }}
-                value={sucursalId}
-            >
-                <option value={0}>Todas las sucursales</option>
+            <div className="sucursales-container">
+                <h1>Inventarios por sucursales</h1>
 
-                {loading && <option disabled>Cargando sucursales...</option>}
-                {error && <option disabled>Error al cargar</option>}
+                <select
+                    className="sucursales-select"
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        // convertir a número si es numérico, si no mantener string (p.ej. ObjectId)
+                        setSucursalId(val === "0" ? 0 : (isNaN(val) ? val : Number(val)));
+                    }}
+                    value={sucursalId}
+                >
+                    <option value={0}>Todas las sucursales</option>
 
-                {!loading &&
-                    !error &&
-                    empresas.map((emp) => {
-                        // preferir id_empresa numérico si existe, sino _id u id
-                        const value = emp.id_empresa ?? emp.id ?? emp._id;
-                        const label = emp.nombre_empresa ?? emp.nombre ?? `Empresa ${value}`;
-                        return (
-                            <option key={value} value={value}>
-                                {label}
-                            </option>
-                        );
-                    })}
-            </select>
+                    {loading && <option disabled>Cargando sucursales...</option>}
+                    {error && <option disabled>Error al cargar</option>}
 
-            <div className="inventario-section">
-                {/* tarjeta responsiva que imita el layout de Productos.jsx */}
-                <div className="inventario-card">
-                    <div className="table-responsive">
-                        {/* AGREGADO: key={refreshKey}
-                            Al cambiar refreshKey, React desmonta y monta de nuevo este componente,
-                            lo que dispara su fetch interno y actualiza los stocks.
-                        */}
-                        <Inventario 
-                            key={refreshKey} 
-                            sucursalId={sucursalId} 
-                        />
+                    {!loading &&
+                        !error &&
+                        empresas.map((emp) => {
+                            // preferir id_empresa numérico si existe, sino _id u id
+                            const value = emp.id_empresa ?? emp.id ?? emp._id;
+                            const label = emp.nombre_empresa ?? emp.nombre ?? `Empresa ${value}`;
+                            return (
+                                <option key={value} value={value}>
+                                    {label}
+                                </option>
+                            );
+                        })}
+                </select>
+
+                <div className="inventario-section">
+                    {/* tarjeta responsiva que imita el layout de Productos.jsx */}
+                    <div className="inventario-card">
+                        <div className="table-responsive">
+                            {/* AGREGADO: key={refreshKey}
+                                Al cambiar refreshKey, React desmonta y monta de nuevo este componente,
+                                lo que dispara su fetch interno y actualiza los stocks.
+                            */}
+                            <Inventario 
+                                key={refreshKey} 
+                                sucursalId={sucursalId} 
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
