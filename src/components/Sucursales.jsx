@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Inventario from "./InventarioSucursal";
 import "./Sucursales.css";
 
@@ -6,6 +7,7 @@ import "./Sucursales.css";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 function Sucursales() {
+    const navigate = useNavigate();
     const [sucursalId, setSucursalId] = useState(0); // 0 = Todas
     const [empresas, setEmpresas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -71,6 +73,16 @@ function Sucursales() {
             </nav>
 
             <div className="sucursales-container">
+                {/* BOTÓN REGRESAR */}
+                <div className="boton-regreso-wrapper">
+                    <button 
+                        className="btn-regresar" 
+                        onClick={() => navigate('/usuarios')}
+                    >
+                        Regresar
+                    </button>
+                </div>
+
                 <h1>Inventarios por sucursales</h1>
 
                 <select

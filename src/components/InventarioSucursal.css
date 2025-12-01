@@ -98,83 +98,137 @@ h2 {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 16px; /* Espaciado en pantallas pequeñas */
 }
 
 .modal-contenido {
     background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 320px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px; /* <-- Aumentado de 320px a 500px para mejor espaciado */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+    max-height: 90vh; /* <-- Limita altura para no exceder pantalla */
+    overflow-y: auto; /* <-- Scroll interno si es necesario */
 }
 
 .modal-contenido h3 {
     margin-bottom: 0.5rem;
     text-align: center;
+    font-size: 1.1rem;
+    color: #1a202c;
 }
 
-.modal-contenido input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.modal-contenido input,
+.modal-contenido textarea {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.modal-contenido input:focus,
+.modal-contenido textarea:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
 
-/* ---- SECCIÓN DE BOTONES CORREGIDA ---- */
+.modal-contenido textarea {
+    resize: vertical;
+    min-height: 70px;
+}
 
-/* El contenedor principal de los botones del modal */
+/* Empresa selector mejorado */
+.empresa-selector {
+    margin: 0.5rem 0;
+}
+
+.empresa-selector label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.empresa-selector select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.empresa-selector select:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.empresa-selector p {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 0.4rem;
+}
+
+/* Botones del modal */
 .modal-botones {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
 }
 
-/* El contenedor para los botones de la fila superior (acciones) */
 .modal-acciones-principales {
     display: flex;
     width: 100%;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
-/* Estilo base para todos los botones dentro del modal */
 .modal-botones button {
-    padding: 0.6rem 1rem;
+    padding: 0.7rem 1.2rem;
     border: none;
     cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
 }
 
-/* Hace que los botones de acción se expandan para llenar el espacio */
 .modal-acciones-principales button {
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-width: 140px;
 }
 
-/* Estilo para el botón principal (Agregar/Actualizar) */
 .modal-acciones-principales button:first-child {
-    background-color: orange;
-    color: white; /* Texto blanco específico para este botón */
+    background-color: #ef4444;
+    color: white;
 }
 
-/* Estilo para el botón de eliminar DENTRO DEL MODAL */
-.modal-botones .eliminar {
-    background-color: red;
-    color: white; /* Texto blanco específico para este botón */
+.modal-acciones-principales button:first-child:hover {
+    background-color: #dc2626;
 }
 
-/* Estilo para el botón de cancelar */
 .modal-botones .cancelar {
-    background-color: #ccc;
-    color: #333; /* Texto oscuro para buen contraste en fondo gris */
+    background-color: #e5e7eb;
+    color: #374151;
     width: 100%;
 }
 
-/* ---- FIN DE LA SECCIÓN CORREGIDA ---- */
-
+.modal-botones .cancelar:hover {
+    background-color: #d1d5db;
+}
 
 /* Tabla */
 .tabla-inventario {
@@ -249,33 +303,40 @@ h2 {
     .filtro input {
         max-width: 100%;
     }
-}
-
-/* --- BOTÓN REGRESAR --- */
-.boton-regreso-wrapper {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.btn-regresar {
-    background: linear-gradient(to right, #ef4444, #f97316);
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
-}
-
-.btn-regresar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
-    background: linear-gradient(to right, #dc2626, #ea580c);
+    
+    .modal-overlay {
+        padding: 12px;
+    }
+    
+    .modal-contenido {
+        max-width: 100%;
+        width: 100%;
+        padding: 1.2rem;
+        gap: 0.7rem;
+        max-height: 95vh;
+    }
+    
+    .modal-contenido h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .modal-contenido input,
+    .modal-contenido textarea {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.9rem;
+    }
+    
+    .modal-botones button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .modal-acciones-principales {
+        flex-direction: column;
+    }
+    
+    .modal-acciones-principales button {
+        width: 100%;
+    }
 }

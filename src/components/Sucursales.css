@@ -1,7 +1,8 @@
 /* Contenedor principal */
 .sucursales-container {
+    /* Ajustado para coincidir con .reporte-container (mismo padding y sensación visual) */
     background: transparent; /* eliminado degradado */
-    padding: 20px;
+    padding: 30px; /* <-- cambiado de 20px a 30px para alinear verticalmente con ReporteVentas */
     border-radius: 12px;
     max-width: 1200px;
     margin: 20px auto;
@@ -67,6 +68,35 @@
 .inventario-card .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* --- BOTÓN REGRESAR --- */
+.boton-regreso-wrapper {
+    margin-bottom: 20px; /* <-- igualado a ReporteVentas.css (antes 15px) */
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-regresar {
+    background: linear-gradient(to right, #ef4444, #f97316);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-regresar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+    background: linear-gradient(to right, #dc2626, #ea580c);
 }
 
 /* Responsive: reducir padding y adaptar tamaños en pantallas pequeñas */

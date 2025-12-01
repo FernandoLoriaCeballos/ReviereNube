@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importación necesaria para la navegación
 import axios from "axios";
 import "./InventarioSucursal.css";
 
@@ -8,8 +7,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // El componente ahora gestiona la lista central de Productos del sistema
 function Inventario({ sucursalId }) {
-    const navigate = useNavigate(); // Hook para la navegación
-
     // sucursalId se mantiene en el componente, pero su lógica de filtrado será limitada
     // ya que no hay un endpoint de filtro /productos?sucursal=X.
 
@@ -255,16 +252,6 @@ function Inventario({ sucursalId }) {
                     ? "Administración de Productos (Central)"
                     : `Inventario (Vista Sucursal ${sucursalId})`}
             </h2>
-            
-            {/* BOTÓN REGRESAR */}
-            <div className="boton-regreso-wrapper">
-                <button
-                    className="btn-regresar"
-                    onClick={() => navigate('/usuarios')}
-                >
-                    Regresar
-                </button>
-            </div>
 
             <div className="acciones-superiores">
                 <button
