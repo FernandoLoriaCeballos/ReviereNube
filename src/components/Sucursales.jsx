@@ -29,7 +29,6 @@ function Sucursales() {
                 const listaEmpresas = Array.isArray(data) ? data : [];
                 setEmpresas(listaEmpresas);
                 
-                // Si es restringido, forzamos que la sucursal seleccionada sea la suya
                 if (esRestringido) {
                     setSucursalId(Number(idEmpresaUsuario));
                 }
@@ -72,11 +71,36 @@ function Sucursales() {
             </nav>
 
             <div className="sucursales-container">
-                {/* Título Principal */}
-                <h1>Gestor de Inventarios</h1>
+                {/* --- NUEVO BOTÓN REGRESAR --- */}
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '15px' }}>
+                    <button
+                        onClick={() => window.location.href = '/usuarios'}
+                        style={{
+                            background: 'linear-gradient(90deg, #FF512F 0%, #F09819 100%)', // Degradado naranja similar a la imagen
+                            color: 'white',
+                            border: 'none',
+                            padding: '10px 25px',
+                            borderRadius: '50px', // Forma de píldora
+                            fontWeight: 'bold',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        Regresar
+                    </button>
+                </div>
+                {/* ----------------------------- */}
 
-                {/* --- AQUÍ ESTÁ EL CAMBIO CLAVE --- */}
-                {/* El selector SOLO se muestra si NO es restringido (es decir, solo para Superadmin) */}
+                {/* MODIFICACIÓN: Título fijo como "Gestor de Inventarios" */}
+                <h1>Inventarios por sucursales</h1>
+
+                {/* Si no es restringido (es Superadmin), mostramos el selector */}
                 {!esRestringido && (
                     <select
                         className="sucursales-select"
@@ -107,7 +131,7 @@ function Sucursales() {
                 <div className="inventario-section">
                     <div className="inventario-card">
                         <div className="table-responsive">
-                            {/* El componente hijo se encarga de mostrar "Inventario: BDN" */}
+                            {/* Aquí dentro se cargará el título "genial" de Inventario: BDN */}
                             <Inventario 
                                 key={refreshKey} 
                                 sucursalId={sucursalId} 

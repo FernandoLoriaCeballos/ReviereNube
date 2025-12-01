@@ -38,20 +38,22 @@ function Login() {
             Cookies.set("token", data.token, { expires: 7 });
             Cookies.set("id_usuario", data.usuario._id, { expires: 7 });
             Cookies.set("rol", data.usuario.rol, { expires: 7 });
+            // Importante: Guardar email para filtros
+            Cookies.set("email", data.usuario.email, { expires: 7 }); 
+            
             if (data.usuario.empresa_id) {
               Cookies.set("id_empresa", data.usuario.empresa_id, { expires: 7 });
             }
-            switch (data.usuario.rol) {
-              case "superadmin":
-              case "admin_empresa":
-                navigate("/usuarios", { replace: true });
-                break;
-              case "empleado":
-                navigate("/productos", { replace: true });
-                break;
-              default:
-                navigate("/landing", { replace: true });
+            
+            // Redirección Social Login
+            if (data.usuario.rol === "superadmin" || data.usuario.rol === "admin_empresa") {
+              navigate("/usuarios", { replace: true });
+            } else if (data.usuario.rol === "empleado") {
+              navigate("/productos", { replace: true });
+            } else {
+              navigate("/landing", { replace: true });
             }
+
           } else {
             setMessage("No se pudo autenticar con el proveedor.");
             setAlertType("error");
@@ -80,24 +82,36 @@ function Login() {
 
       if (response.ok) {
         setAlertType("success");
+        // Guardar Cookies
+        if (data.token) Cookies.set("token", data.token, { expires: 7 });
         Cookies.set("id_usuario", data.id_usuario, { expires: 7 });
         Cookies.set("rol", data.rol, { expires: 7 });
+        Cookies.set("email", email, { expires: 7 }); // Guardamos el email usado
+
         if (data.empresa_id) {
           Cookies.set("id_empresa", data.empresa_id, { expires: 7 });
         }
+        
+        // --- LÓGICA DE REDIRECCIÓN CORREGIDA Y BLINDADA ---
         setTimeout(() => {
-          switch (data.rol) {
-            case "superadmin":
-            case "admin_empresa":
-              navigate("/usuarios");
-              break;
-            case "empleado":
-              navigate("/productos");
-              break;
-            default:
-              navigate("/landing");
+          console.log("Rol detectado:", data.rol); // Debug en consola
+
+          if (data.rol === "superadmin") {
+             navigate("/usuarios");
+          } 
+          else if (data.rol === "admin_empresa") {
+             // ¡ESTA ES LA LÍNEA CLAVE!
+             navigate("/usuarios");
+          } 
+          else if (data.rol === "empleado") {
+             navigate("/productos");
+          } 
+          else {
+             // Si el rol es "usuario" o cualquier otro, va a landing
+             navigate("/landing");
           }
         }, 1500);
+
       } else {
         setAlertType("error");
       }
@@ -108,7 +122,6 @@ function Login() {
     }
   };
 
-  // ✅ Solo Google y Microsoft
   const handleSocialLogin = (provider) => {
     let clientId = "";
     let redirectUri = `${window.location.origin}/auth/callback/${provider}`;
@@ -119,16 +132,13 @@ function Login() {
         clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile`;
         break;
-
       case "microsoft":
         clientId = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
         authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&response_mode=query&scope=openid%20email%20profile%20offline_access`;
         break;
-
       default:
         return;
     }
-
     localStorage.setItem("oauth_provider", provider);
     window.location.href = authUrl;
   };
@@ -196,7 +206,6 @@ function Login() {
           </button>
         </form>
 
-        {/* ✅ Solo Google y Microsoft */}
         <div className="mt-6 space-y-3">
           <button
             onClick={() => handleSocialLogin("google")}

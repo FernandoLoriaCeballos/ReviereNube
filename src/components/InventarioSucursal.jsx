@@ -217,7 +217,8 @@ function Inventario({ sucursalId }) {
 
     return (
         <div className="inventario-container">
-            {/* CABECERA */}
+            {/* --- CABECERA ESTÉTICA CORREGIDA --- */}
+            {/* Se mantiene el diseño bonito pero se recupera el "Inventario: NOMBRE" */}
             <div className="mb-8 pb-4 border-b border-gray-200">
                 <h2 className="text-3xl font-extrabold text-gray-800 tracking-tight flex items-center flex-wrap gap-2">
                     {empresaActualId === 0 ? (
@@ -225,6 +226,7 @@ function Inventario({ sucursalId }) {
                     ) : (
                         <>
                             <span className="text-gray-800">Inventario:</span>
+                            {/* Nombre de la empresa destacado en rojo elegante */}
                             <span className="text-red-600 bg-red-50 px-3 py-1 rounded-md text-2xl">
                                 {getNombreEmpresa(empresaActualId)}
                             </span>
@@ -238,7 +240,6 @@ function Inventario({ sucursalId }) {
                 </p>
             </div>
 
-            {/* BARRA DE ACCIONES */}
             <div className="acciones-superiores">
                 <button
                     className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md"
@@ -270,124 +271,142 @@ function Inventario({ sucursalId }) {
                                 : "Agregar nuevo producto"}
                         </h3>
 
-                        <input type="text" placeholder="Nombre" list="productos-list" value={nuevoProducto.nombre} onChange={(e) => handleNombreChange(e.target.value)} />
-                        <datalist id="productos-list">{productos.map(p => (<option key={p._id} value={p.nombre} />))}</datalist>
-                        <textarea placeholder="Descripción" value={nuevoProducto.descripcion} onChange={(e) => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })} />
-                        <input type="text" placeholder="Categoría" value={nuevoProducto.categoria} onChange={(e) => setNuevoProducto({ ...nuevoProducto, categoria: e.target.value })} />
-                        <input type="number" placeholder="Stock (Cantidad)" value={nuevoProducto.cantidad} onChange={(e) => setNuevoProducto({ ...nuevoProducto, cantidad: e.target.value })} disabled={productoSeleccionado && editandoId === null} />
-                        <input type="number" step="0.01" placeholder="Precio" value={nuevoProducto.precio} onChange={(e) => setNuevoProducto({ ...nuevoProducto, precio: e.target.value })} disabled={productoSeleccionado && editandoId === null} />
+                        <input
+                            type="text"
+                            placeholder="Nombre"
+                            list="productos-list"
+                            value={nuevoProducto.nombre}
+                            onChange={(e) => handleNombreChange(e.target.value)}
+                        />
+                        <datalist id="productos-list">
+                            {productos.map(p => (
+                                <option key={p._id} value={p.nombre} />
+                            ))}
+                        </datalist>
+
+                        <textarea
+                            placeholder="Descripción"
+                            value={nuevoProducto.descripcion}
+                            onChange={(e) => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Categoría"
+                            value={nuevoProducto.categoria}
+                            onChange={(e) => setNuevoProducto({ ...nuevoProducto, categoria: e.target.value })}
+                        />
+                        <input
+                            type="number"
+                            placeholder="Stock (Cantidad)"
+                            value={nuevoProducto.cantidad}
+                            onChange={(e) => setNuevoProducto({ ...nuevoProducto, cantidad: e.target.value })}
+                            disabled={productoSeleccionado && editandoId === null}
+                        />
+                        <input
+                            type="number"
+                            step="0.01"
+                            placeholder="Precio"
+                            value={nuevoProducto.precio}
+                            onChange={(e) => setNuevoProducto({ ...nuevoProducto, precio: e.target.value })}
+                            disabled={productoSeleccionado && editandoId === null}
+                        />
 
                         {!esRestringido && (
                             <div className="empresa-selector">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Empresa(s)</label>
-                                <select multiple value={Array.isArray(nuevoProducto.id_empresa) ? nuevoProducto.id_empresa : [nuevoProducto.id_empresa].filter(Boolean)} onChange={(e) => { const values = Array.from(e.target.selectedOptions, option => option.value); setNuevoProducto({ ...nuevoProducto, id_empresa: values.length === 1 ? values[0] : values }); }} className="w-full p-2 border rounded mb-4 min-h-[100px]" disabled={empresaActualId !== 0}>
-                                    {empresas.map((emp) => (<option key={emp._id} value={emp.id_empresa || emp._id}>{emp.nombre_empresa}</option>))}
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Empresa(s)
+                                </label>
+                                <select
+                                    multiple
+                                    value={Array.isArray(nuevoProducto.id_empresa) ? nuevoProducto.id_empresa : [nuevoProducto.id_empresa].filter(Boolean)}
+                                    onChange={(e) => {
+                                        const values = Array.from(e.target.selectedOptions, option => option.value);
+                                        setNuevoProducto({
+                                            ...nuevoProducto,
+                                            id_empresa: values.length === 1 ? values[0] : values
+                                        });
+                                    }}
+                                    className="w-full p-2 border rounded mb-4 min-h-[100px]"
+                                    disabled={empresaActualId !== 0}
+                                >
+                                    {empresas.map((emp) => (
+                                        <option key={emp._id} value={emp.id_empresa || emp._id}>
+                                            {emp.nombre_empresa}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         )}
 
                         {productoSeleccionado && editandoId === null && (
                             <div style={{ marginTop: 8 }}>
-                                <label style={{ fontSize: 12, display: "block", marginBottom: 4 }}>Cantidad a aumentar</label>
-                                <input type="number" min="0" value={aumentarCantidad} onChange={(e) => setAumentarCantidad(e.target.value)} />
+                                <label style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
+                                    Cantidad a aumentar
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={aumentarCantidad}
+                                    onChange={(e) => setAumentarCantidad(e.target.value)}
+                                />
                             </div>
                         )}
 
                         <div className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md">
-                            <button onClick={handleSubmit} disabled={!esRestringido && !nuevoProducto.id_empresa && empresaActualId === 0} style={{ display: "block", margin: "0 auto" }}>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={!esRestringido && !nuevoProducto.id_empresa && empresaActualId === 0}
+                                style={{ display: "block", margin: "0 auto" }}
+                            >
                                 {editandoId !== null ? "Actualizar" : (productoSeleccionado ? "Actualizar stock" : "Agregar")}
                             </button>
                         </div>
-                        <button className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md" onClick={cerrarYResetearModal}>Cancelar</button>
+
+                        <button className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md" onClick={cerrarYResetearModal}>
+                            Cancelar
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* TABLA MEJORADA Y MÁS GRANDE */}
-            <div className="w-full overflow-hidden rounded-lg shadow-sm border border-gray-200 mt-6">
-                <table className="w-full text-base text-left text-gray-800">
-                    <thead className="text-sm uppercase bg-gray-100 text-gray-700 border-b border-gray-200">
-                        <tr>
-                            <th className="px-6 py-4 font-bold text-gray-600">Nombre</th>
-                            <th className="px-6 py-4 font-bold text-gray-600">Descripción</th>
-                            <th className="px-6 py-4 font-bold text-gray-600">Precio</th>
-                            <th className="px-6 py-4 font-bold text-gray-600 text-center">Stock</th>
-                            <th className="px-6 py-4 font-bold text-gray-600">Categoría</th>
-                            <th className="px-6 py-4 font-bold text-gray-600 text-center">Sucursal</th>
-                            <th className="px-6 py-4 font-bold text-gray-600 text-center">Foto</th>
-                            <th className="px-6 py-4 font-bold text-gray-600 text-center">Acciones</th>
+            <table className="w-full text-sm text-left text-gray-800">
+                <thead className="text-xs uppercase bg-gray-100 text-gray-700 border-b border-gray-200">
+                    <tr>
+                        <th className="px-6 py-4 font-semibold">Nombre</th>
+                        <th className="px-6 py-4 font-semibold">Descripción</th>
+                        <th className="px-6 py-4 font-semibold">Precio</th>
+                        <th className="px-6 py-4 font-semibold">Stock</th>
+                        <th className="px-6 py-4 font-semibold">Categoría</th>
+                        <th className="px-6 py-4 font-semibold">Sucursal</th>
+                        <th className="px-6 py-4 font-semibold">Foto</th>
+                        <th className="px-6 py-4 font-semibold">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {productosFiltrados.map((producto) => (
+                        <tr key={producto._id} className="border-b border-gray-200 hover:bg-gray-50 transition duration-200">
+                            <td className="px-6 py-4 font-medium whitespace-nowrap">{producto.nombre}</td>
+                            <td className="px-6 py-4 max-w-xs truncate" title={producto.descripcion}>{producto.descripcion}</td>
+                            <td className="px-6 py-4 font-medium text-green-600">${Number(producto.precio).toFixed(2)}</td>
+                            <td className="px-6 py-4">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${producto.stock > 10 ? 'bg-green-100 text-green-800' : producto.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                                    {producto.stock} unidades
+                                </span>
+                            </td>
+                            <td className="px-6 py-4"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">{producto.categoria}</span></td>
+                            <td className="px-6 py-4"><span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">{getNombreEmpresa(producto.id_empresa)}</span></td>
+                            <td className="px-6 py-4">
+                                {producto.foto ? <img src={producto.foto} alt={producto.nombre} className="w-12 h-12 object-cover rounded-lg border border-gray-300" /> : <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center"><span className="text-gray-500 text-xs">Sin foto</span></div>}
+                            </td>
+                            <td className="px-6 py-4 space-x-2">
+                                <button onClick={() => editarProducto(producto)} className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold py-2 px-4 rounded-lg shadow-md">Editar</button>
+                                <button onClick={() => eliminarProducto(producto._id)} className="bg-gradient-to-r from-red-600 to-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-md">Eliminar</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {productosFiltrados.map((producto) => (
-                            <tr key={producto._id} className="hover:bg-gray-50 transition duration-150">
-                                {/* Celdas con más padding y texto base */}
-                                <td className="px-6 py-4 font-medium text-gray-900 break-words max-w-[250px]">
-                                    {producto.nombre}
-                                </td>
-                                <td className="px-6 py-4 text-gray-500 break-words max-w-[300px] text-sm" title={producto.descripcion}>
-                                    {producto.descripcion}
-                                </td>
-                                <td className="px-6 py-4 font-semibold text-green-600 whitespace-nowrap text-lg">
-                                    ${Number(producto.precio).toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                        producto.stock > 10 ? 'bg-green-100 text-green-800' : 
-                                        producto.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                                        'bg-red-100 text-red-800'
-                                    }`}>
-                                        {producto.stock}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                        {producto.categoria}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-purple-50 text-purple-700 border border-purple-100">
-                                        {getNombreEmpresa(producto.id_empresa)}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <div className="flex justify-center">
-                                        {producto.foto ? (
-                                            <img src={producto.foto} alt={producto.nombre} className="h-12 w-12 rounded-lg object-cover border border-gray-200 shadow-sm" />
-                                        ) : (
-                                            <div className="h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
-                                                <span className="text-xs text-gray-400">N/A</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <div className="flex items-center justify-center space-x-3">
-                                        <button 
-                                            onClick={() => editarProducto(producto)} 
-                                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
-                                        >
-                                            Editar
-                                        </button>
-                                        <button 
-                                            onClick={() => eliminarProducto(producto._id)} 
-                                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {productosFiltrados.length === 0 && !cargando && (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No se encontraron productos.</p>
-                </div>
-            )}
+                    ))}
+                </tbody>
+            </table>
+            {productosFiltrados.length === 0 && !cargando && <p className="sin-resultados">No se encontraron productos.</p>}
         </div>
     );
 }
