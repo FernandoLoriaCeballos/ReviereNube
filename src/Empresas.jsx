@@ -252,19 +252,19 @@ function Empresas() {
 
         {rolActual === "superadmin" ? (
           <>
-            <div className="relative overflow-x-auto shadow-xl rounded-lg bg-white w-full sm:w-auto mb-8 border border-gray-200">
-              <table className="w-full text-sm text-left text-gray-800">
-                <thead className="text-xs uppercase bg-gray-100 text-gray-700 border-b border-gray-200">
+            <div className="relative overflow-x-auto shadow-xl rounded-lg bg-white w-full mb-8 border border-gray-200">
+              <table className="w-full min-w-max text-sm text-left text-gray-800">
+                <thead className="text-xs uppercase bg-gray-100 text-gray-700 border-b border-gray-200 sticky top-0">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">ID Sucursal</th>
-                    <th className="px-6 py-4 font-semibold">Logo</th>
-                    <th className="px-6 py-4 font-semibold">Nombre</th>
-                    <th className="px-6 py-4 font-semibold">Email</th>
-                    <th className="px-6 py-4 font-semibold">Contraseña</th>
-                    <th className="px-6 py-4 font-semibold">Descripción</th>
-                    <th className="px-6 py-4 font-semibold">Teléfono</th>
-                    <th className="px-6 py-4 font-semibold">Fecha de Creación</th>
-                    <th className="px-6 py-4 font-semibold">Acciones</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">ID Sucursal</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Logo</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Nombre</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Email</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Contraseña</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Descripción</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Teléfono</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Fecha de Creación</th>
+                    <th className="px-6 py-4 font-semibold whitespace-nowrap">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -275,7 +275,7 @@ function Empresas() {
                           {empresa.id_empresa}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {empresa.logo ? (
                           <img 
                             src={empresa.logo} 
@@ -289,14 +289,14 @@ function Empresas() {
                         )}
                       </td>
                       <td className="px-6 py-4 font-medium whitespace-nowrap">{empresa.nombre_empresa}</td>
-                      <td className="px-6 py-4">{empresa.email}</td>
-                      <td className="px-6 py-4 font-mono text-sm">{"•".repeat(empresa.password.length)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{empresa.email}</td>
+                      <td className="px-6 py-4 font-mono text-sm whitespace-nowrap">{"•".repeat(empresa.password.length)}</td>
                       <td className="px-6 py-4 max-w-xs truncate" title={empresa.descripcion}>
                         {empresa.descripcion}
                       </td>
-                      <td className="px-6 py-4">{empresa.telefono}</td>
-                      <td className="px-6 py-4">{new Date(empresa.fecha_creacion).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 space-x-2">
+                      <td className="px-6 py-4 whitespace-nowrap">{empresa.telefono}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{new Date(empresa.fecha_creacion).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 space-x-2 whitespace-nowrap">
                         <button 
                           onClick={() => handleEditClick(index)} 
                           className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md"
