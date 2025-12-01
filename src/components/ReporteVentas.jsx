@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axios from "axios";
+import Cookies from "js-cookie"; 
 import "./ReporteVentas.css";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Usamos una asignación segura para evitar errores de compilación en algunos entornos
+const API_URL = 'http://localhost:3000';
 
 function ReporteVentas() {
     const navigate = useNavigate(); 
     
+    // --- LÓGICA DE SEGURIDAD ---
+    const rolUsuario = Cookies.get("rol");
+    const idEmpresaUsuario = Cookies.get("id_empresa");
+
+    // Es restringido si NO es superadmin y tiene id_empresa
+    const esRestringido = rolUsuario !== "superadmin" && idEmpresaUsuario;
+
     // Datos crudos
     const [ventas, setVentas] = useState([]); 
-    const [empresas, setEmpresas] = useState([]); // Lista de sucursales
+    const [empresas, setEmpresas] = useState([]); 
     
     // Datos filtrados y visualización
     const [ventasFiltradas, setVentasFiltradas] = useState([]); 
@@ -18,7 +27,8 @@ function ReporteVentas() {
     
     // Estados de los filtros
     const [filtroTiempo, setFiltroTiempo] = useState("todos"); 
-    const [sucursalId, setSucursalId] = useState(0); // 0 = Todas
+    // Si es restringido, iniciamos fijo en su empresa. Si es superadmin, en 0 (Todas)
+    const [sucursalId, setSucursalId] = useState(esRestringido ? Number(idEmpresaUsuario) : 0);
 
     const [resumen, setResumen] = useState({
         totalDinero: 0,
@@ -37,27 +47,30 @@ function ReporteVentas() {
     }, [ventas, filtroTiempo, sucursalId]);
 
     const fetchDatosIniciales = async () => {
-        // Opcional: Poner cargando en true si quieres feedback visual al actualizar
-        // setCargando(true); 
         try {
             console.log("🔄 Cargando datos...");
-            // Cargar ventas y empresas en paralelo
             const [resVentas, resEmpresas] = await Promise.all([
                 axios.get(`${API_URL}/recibos`),
                 axios.get(`${API_URL}/empresas`)
             ]);
 
-            const dataVentas = Array.isArray(resVentas.data) ? resVentas.data : [];
+            let dataVentas = Array.isArray(resVentas.data) ? resVentas.data : [];
             const dataEmpresas = Array.isArray(resEmpresas.data) ? resEmpresas.data : [];
+
+            // --- DOBLE SEGURIDAD: FILTRADO EN MEMORIA ---
+            // Si es restringido, eliminamos de la memoria cualquier venta ajena
+            if (esRestringido) {
+                const miEmpresaId = Number(idEmpresaUsuario);
+                dataVentas = dataVentas.filter(v => Number(v.id_empresa) === miEmpresaId);
+                // Aseguramos que el estado sucursalId sea el correcto
+                setSucursalId(miEmpresaId);
+            }
 
             setVentas(dataVentas);
             setEmpresas(dataEmpresas);
-            // setCargando(false);
             console.log("✅ Datos actualizados");
         } catch (error) {
             console.error("Error al cargar datos:", error);
-            // setVentas([]);
-            // setCargando(false);
         }
     };
 
@@ -91,11 +104,7 @@ function ReporteVentas() {
 
         // 2. FILTRO POR SUCURSAL
         if (sucursalId !== 0) {
-            filtradas = filtradas.filter(v => {
-                // v.id_empresa viene del backend (puede ser null si es venta general)
-                // Comparamos convirtiendo a número para asegurar
-                return Number(v.id_empresa) === Number(sucursalId);
-            });
+            filtradas = filtradas.filter(v => Number(v.id_empresa) === Number(sucursalId));
         }
 
         setVentasFiltradas(filtradas);
@@ -132,9 +141,15 @@ function ReporteVentas() {
         });
     };
 
+    // Función auxiliar para obtener nombre de mi empresa
+    const getNombreMiEmpresa = () => {
+        if (!idEmpresaUsuario) return "";
+        const emp = empresas.find(e => e.id_empresa === Number(idEmpresaUsuario));
+        return emp ? emp.nombre_empresa : "";
+    };
+
     return (
         <>
-            {/* --- NAV (insertado) --- */}
             <nav className="bg-white shadow-md border-b border-gray-200">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     <a href="/" className="flex items-center">
@@ -152,7 +167,6 @@ function ReporteVentas() {
             </nav>
 
             <div className="reporte-container">
-                {/* BOTÓN REGRESAR */}
                 <div className="boton-regreso-wrapper">
                     <button 
                         className="btn-regresar" 
@@ -162,39 +176,41 @@ function ReporteVentas() {
                     </button>
                 </div>
 
-                <h1 className="titulo-pagina">Reporte de Ventas</h1>
+                <h1 className="titulo-pagina">
+                    {/* Título dinámico: Si es restringido muestra la empresa, si no, genérico */}
+                    {esRestringido 
+                        ? `Reporte de Ventas: ${getNombreMiEmpresa()}` 
+                        : "Reporte de Ventas"}
+                </h1>
 
-                {/* --- BARRA DE HERRAMIENTAS (Filtros) --- */}
                 <div className="toolbar-reporte">
-                    
-                    {/* --- NUEVO BOTÓN DE ACTUALIZAR --- */}
-                    {/* Usa la misma clase btn-regresar para mantener el estilo visual */}
                     <button 
                         className="btn-regresar" 
                         onClick={fetchDatosIniciales}
-                        style={{ marginRight: '10px' }} // Separación visual
+                        style={{ marginRight: '10px' }}
                     >
                         Actualizar Tabla
                     </button>
 
-                    {/* SELECCIÓN DE SUCURSAL */}
-                    <div className="filtro-grupo">
-                        <label className="filtro-label">Sucursal:</label>
-                        <select 
-                            className="select-sucursal"
-                            value={sucursalId}
-                            onChange={(e) => setSucursalId(Number(e.target.value))}
-                        >
-                            <option value={0}>Todas las Sucursales</option>
-                            {empresas.map((emp) => (
-                                <option key={emp.id_empresa} value={emp.id_empresa}>
-                                    {emp.nombre_empresa}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Selector de Sucursal: Solo visible para Superadmin */}
+                    {!esRestringido && (
+                        <div className="filtro-grupo">
+                            <label className="filtro-label">Sucursal:</label>
+                            <select 
+                                className="select-sucursal"
+                                value={sucursalId}
+                                onChange={(e) => setSucursalId(Number(e.target.value))}
+                            >
+                                <option value={0}>Todas las Sucursales</option>
+                                {empresas.map((emp) => (
+                                    <option key={emp.id_empresa} value={emp.id_empresa}>
+                                        {emp.nombre_empresa}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
-                    {/* SELECCIÓN DE TIEMPO */}
                     <div className="filtro-grupo">
                         <label className="filtro-label">Periodo:</label>
                         <div className="btn-group">
@@ -207,7 +223,6 @@ function ReporteVentas() {
                     </div>
                 </div>
 
-                {/* TARJETAS DE RESUMEN */}
                 <div className="resumen-cards">
                     <div className="card-dato verde">
                         <h3>Ingresos Totales</h3>
@@ -223,12 +238,15 @@ function ReporteVentas() {
                     </div>
                 </div>
 
-                {/* TABLA */}
                 <div className="tabla-card">
                     <div className="tabla-header">
                         <h3>Historial de Transacciones</h3>
                         <div className="resultados-count">
-                            {sucursalId === 0 ? "Todas las sucursales" : empresas.find(e => e.id_empresa === sucursalId)?.nombre_empresa} 
+                            {/* Mostrar texto correcto según el rol */}
+                            {esRestringido 
+                                ? getNombreMiEmpresa()
+                                : (sucursalId === 0 ? "Todas las sucursales" : empresas.find(e => e.id_empresa === sucursalId)?.nombre_empresa)
+                            } 
                             {' • '}
                             {ventasFiltradas.length} registros
                         </div>
