@@ -504,7 +504,7 @@ const Navbar = () => {
             <div className="w-full flex justify-center"> 
                 {/* max-w-md evita que los botones se vean demasiado estirados en pantallas gigantes */}
                 <div className="w-full px-4"> 
-                    <PayPalScriptProvider options={{ "clientId": "TU_CLIENT_ID" }}> {/* Asegúrate de tener tus options aquí */}
+                    <PayPalScriptProvider options={{ "clientId": "test" }}> {/* Asegúrate de tener tus options aquí */}
                         <PayPalButtons
                             style={{
                                 layout: "vertical", // Apila los botones (PayPal arriba, Tarjeta abajo)
