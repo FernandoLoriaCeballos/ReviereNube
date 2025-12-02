@@ -28,7 +28,7 @@ import LoginEmpleado from "./LoginEmpleado";
 import RegistroEmpresa from "./RegistroEmpresa";
 import Empresas from "./Empresas";
 import Suscripciones from "./Suscripciones";
-import CheckoutForm from "./checkoutform";
+import CheckoutForm from "./CheckoutForm";
 import "./App.css";
 import Sucursales from "./components/Sucursales"; //Marielle
 import ReporteVentas from "./components/ReporteVentas";
