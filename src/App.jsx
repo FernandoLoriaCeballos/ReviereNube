@@ -69,7 +69,7 @@ const Complete = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/session-status?session_id=${sessionId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/session-status?session_id=${sessionId}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("No se pudo obtener el estado de la sesión");
         return await res.json();
@@ -138,7 +138,7 @@ const Complete = () => {
 // Componente principal App
 const App = () => {
  const promise = useMemo(() => {
-  return fetch("http://localhost:3000/create-checkout-session", { method: "POST" })
+  return fetch(`${import.meta.env.VITE_API_URL}/create-checkout-session`, { method: "POST" })
     .then(async (res) => {
       if (!res.ok) throw new Error("Error al crear sesión de checkout");
       const clientSecret = await res.json();
