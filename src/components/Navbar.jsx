@@ -162,7 +162,7 @@ const Navbar = () => {
     }
 
     const checkoutData = {
-      items: carrito.map(producto => ({
+      productos: carrito.map(producto => ({ // <--- ¡CAMBIA ESTO A "productos"!
         id_producto: producto.id_producto,
         nombre: producto.nombre,
         precio: producto.precio,
