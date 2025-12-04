@@ -152,8 +152,8 @@ const Navbar = () => {
 
   const handleCheckoutClick = async () => {
   try {
-    console.log('🛒 Carrito actual:', carrito);
-    console.log('👤 User ID:', Cookies.get("id_usuario"));
+    console.log(' Carrito actual:', carrito);
+    console.log(' User ID:', Cookies.get("id_usuario"));
     
     if (!carrito || carrito.length === 0) {
       setModalMessage("El carrito está vacío");
@@ -175,7 +175,7 @@ const Navbar = () => {
 
     console.log('📤 Enviando al backend:', checkoutData);
 
-    const response = await fetch('http://localhost:3000/create-checkout-session', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/create-checkout-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -187,12 +187,12 @@ const Navbar = () => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Error response:', errorText);
+      console.error(' Error response:', errorText);
       throw new Error(`Error del servidor: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('✅ Respuesta del backend:', data);
+    console.log(' Respuesta del backend:', data);
 
     if (data.url) {
       window.location.href = data.url;
@@ -200,7 +200,7 @@ const Navbar = () => {
       throw new Error('No se recibió URL de checkout');
     }
   } catch (error) {
-    console.error('❌ Error al iniciar el pago:', error);
+    console.error(' Error al iniciar el pago:', error);
     setModalMessage(`Error: ${error.message}`);
     setShowModal(true);
   }
