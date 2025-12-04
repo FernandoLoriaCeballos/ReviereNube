@@ -5,7 +5,7 @@ import { embedDashboard } from "@superset-ui/embedded-sdk";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const SUPERSET_DOMAIN = import.meta.env.VITE_SUPERSET_DOMAIN || "http://localhost:8088";
-const DASHBOARD_ID = import.meta.env.VITE_SUPERSET_RESOURCE_ID || "9b6e3665-11f8-4e27-8af7-7b132d5f4a55";
+const DASHBOARD_ID = import.meta.env.VITE_SUPERSET_RESOURCE_ID || "9b6e3665-11f8-4e27-8af7-7b132d5f4a55"; 
 
 export default function HomeAdmin() {
   const mountRef = useRef(null);
@@ -26,13 +26,14 @@ export default function HomeAdmin() {
     const load = async () => {
       try {
         await embedDashboard({
-          id: DASHBOARD_ID,
+          id: DASHBOARD_ID, 
           supersetDomain: SUPERSET_DOMAIN.replace(/\/$/, ""),
           mountPoint: mountRef.current,
           fetchGuestToken: async () => {
             try {
               // usar API_URL (tu backend) para pedir el guest token
-              const resp = await axios.get("http://localhost:3000/superset-token");
+              //const resp = await axios.get("http://localhost:3000/superset-token");
+              const resp = await axios.get(`${API_URL}/superset-token`);
               const token = resp?.data?.token;
               if (!token) {
                 console.error("/superset-token responded without token:", resp.data);
@@ -155,9 +156,9 @@ export default function HomeAdmin() {
         ref={mountRef}
         style={{
           position: "relative",                // no fixed: queda en el flujo debajo del nav
-          marginTop: "64px",                   // espacio bajo el nav (ajusta si tu nav es más alto)
+          marginTop: "72px",                   // espacio bajo el nav (ajusta si tu nav es más alto)
           width: "100%",
-          height: "calc(100vh - 70px)",        // ocupa el resto de la pantalla
+          height: "calc(100vh - 72px)",        // ocupa el resto de la pantalla
           overflow: "hidden",
           background: "#fff",
           margin: 0,
