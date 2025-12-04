@@ -55,34 +55,37 @@ const Navbar = () => {
     const query = new URLSearchParams(location.search);
     
     // Verificar si venimos de Stripe con éxito
-    if (query.get("success") === "true") {
-      const idUsuario = Cookies.get("id_usuario");
+    if (query.get("success") === "true" && query.get("session_id")) {
+      const sessionId = query.get("session_id");
 
-      if (idUsuario) {
-        // Llamamos a la NUEVA ruta que limpia el carrito y baja el stock en BD
-        axios.post(`${import.meta.env.VITE_API_URL}/finalizar-compra-stripe`, {
-            id_usuario: idUsuario
-        })
-        .then(() => {
-            // 1. Limpiar el carrito VISUALMENTE (Contexto)
-            vaciarCarrito();
+      // Llamar al backend para validar y RESTAR EL STOCK
+      const confirmarPagoStripe = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/confirmar-pago-stripe`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: sessionId })
+          });
+
+          if (response.ok) {
+            // Limpiar el carrito visualmente (backend ya lo hizo)
+            await vaciarCarrito();
             
-            // 2. Avisar a otros componentes que actualicen el inventario
+            // Avisar a la tabla de inventarios que se actualice
             window.dispatchEvent(new Event("actualizar-inventario"));
 
-            // 3. Mostrar confirmación
-            setModalMessage("¡Pago confirmado! Tu pedido ha sido procesado.");
+            setModalMessage("¡Pago con Stripe confirmado exitosamente!");
             setShowModal(true);
             
-            // 4. Limpiar la URL para que no se ejecute de nuevo al recargar
+            // Limpiar la URL para que no se ejecute de nuevo al recargar
             navigate("/landing", { replace: true });
-        })
-        .catch(error => {
-            console.error("Error finalizando la compra:", error);
-            setModalMessage("Hubo un error registrando tu compra en el sistema.");
-            setShowModal(true);
-        });
-      }
+          }
+        } catch (error) {
+          console.error("Error confirmando Stripe:", error);
+        }
+      };
+
+      confirmarPagoStripe();
     }
   }, [location, navigate, vaciarCarrito]);
   // ----------------------------------------------------------------------------------
