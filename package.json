@@ -13,6 +13,7 @@
     "@faker-js/faker": "^9.0.3",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/react-paypal-js": "^8.7.0",
+    "@preset-sdk/embedded": "^0.3.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-select": "^2.1.2",
@@ -62,4 +63,3 @@
     "vite": "^5.4.20"
   }
 }
-

@@ -1,171 +1,163 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { embedDashboard } from "@superset-ui/embedded-sdk";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-const SUPERSET_DOMAIN = import.meta.env.VITE_SUPERSET_DOMAIN || "http://localhost:8088";
-const DASHBOARD_ID = import.meta.env.VITE_SUPERSET_RESOURCE_ID || "9b6e3665-11f8-4e27-8af7-7b132d5f4a55"; 
+const PRESET_GUEST_TOKEN_URL = "https://api.app.preset.io/v1/teams/165a4f44/workspaces/025175db/guest-token/";
+const DASHBOARD_ID = "9eaf168a-2729-403e-81aa-eb6f7c488c9e";
+const SUPERSET_DOMAIN = "https://025175db.us2a.app.preset.io";
 
 export default function HomeAdmin() {
-  const mountRef = useRef(null);
-  const navigate = useNavigate(); // NUEVO: hook para navegar al hacer click
+  const navigate = useNavigate();
+  const [embedError, setEmbedError] = useState("");
+  const [embedUrl, setEmbedUrl] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const getUrlParams = () => {
+    async function loadEmbed() {
       try {
-        const params = Object.fromEntries(new URLSearchParams(window.location.search));
-        return Object.keys(params).length ? params : undefined;
-      } catch {
-        return undefined;
-      }
-    };
-
-    const load = async () => {
-      try {
-        await embedDashboard({
-          id: DASHBOARD_ID, 
-          supersetDomain: SUPERSET_DOMAIN.replace(/\/$/, ""),
-          mountPoint: mountRef.current,
-          fetchGuestToken: async () => {
-            try {
-              // usar API_URL (tu backend) para pedir el guest token
-              //const resp = await axios.get("http://localhost:3000/superset-token");
-              const resp = await axios.get(`${API_URL}/superset-token`);
-              const token = resp?.data?.token;
-              if (!token) {
-                console.error("/superset-token responded without token:", resp.data);
-                const e = new Error("No guest token returned from backend");
-                e.detail = resp.data;
-                throw e;
+        setLoading(true);
+        // Llama directamente al endpoint de Preset Cloud
+        const resp = await fetch(PRESET_GUEST_TOKEN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          // Si necesitas autenticación, agrega el header Authorization aquí
+          body: JSON.stringify({
+            user: {
+              username: "auth0|693267f239cf93e2f1d92bc2",
+              first_name: "sharis",
+              last_name: "gomez"
+            },
+            resources: [
+              {
+                type: "dashboard",
+                id: DASHBOARD_ID
               }
-              return token; // devolver el guest token (string)
-            } catch (err) {
-              console.error("Error fetching guest token from backend:", err.response?.status ?? err.message, err.response?.data ?? "");
-              const e = new Error("Failed to fetch guest token");
-              e.detail = { status: err.response?.status ?? null, body: err.response?.data ?? err.message };
-              throw e;
-            }
-          },
-          dashboardUiConfig: {
-            hideTitle: true,
-            hideTab: false,
-            filters: { visible: true, expanded: true },
-            urlParams: getUrlParams(),
-          },
-          iframeSandboxExtras: ["allow-same-origin", "allow-scripts", "allow-popups", "allow-forms", "allow-top-navigation"],
-          referrerPolicy: "same-origin",
+            ],
+            rls: []
+          })
         });
 
-        if (!cancelled) console.log("Dashboard embebido correctamente.");
-      } catch (err) {
-        console.error("Error embebiendo dashboard:", err);
-        const status = err.detail?.status ?? err.response?.status ?? null;
-        const body = err.detail?.body ?? err.response?.data ?? err.message ?? "";
-        if (status === 404) {
-          alert("Error 404: /superset-token no encontrado en el backend. Implementa GET /superset-token (login -> guest_token).");
-        } else {
-          alert(`Error al cargar dashboard. Revisa consola. Detalle: status=${status} body=${JSON.stringify(body)}`);
+        const data = await resp.json();
+
+        if (!resp.ok || !data.token) {
+          const backendError =
+            data?.error?.message ||
+            data?.error ||
+            (data?.errors && Array.isArray(data.errors)
+              ? data.errors.map(e => e.message).join(" | ")
+              : JSON.stringify(data));
+          throw new Error(backendError);
         }
-        console.warn("Si ves 'Refused to display' en consola revisa X-Frame-Options en Superset o la configuración del proxy.");
+
+        // Arma la URL del dashboard con el guest token
+        const dashboardUrl = `${SUPERSET_DOMAIN}/superset/dashboard/${DASHBOARD_ID}/?standalone=1&guest_token=${data.token}`;
+        setEmbedUrl(dashboardUrl);
+        setEmbedError("");
+      } catch (err) {
+        setEmbedUrl("");
+        setEmbedError(
+          err.message?.includes("Not authorized")
+            ? "No autorizado: Verifica permisos, dashboard_id y credenciales."
+            : `Error al cargar el dashboard: ${err.message}`
+        );
+      } finally {
+        setLoading(false);
       }
-    };
+    }
 
-    load();
-
-    return () => {
-      cancelled = true;
-      // opcional: limpiar mountPoint si es necesario
-      try { if (mountRef.current) mountRef.current.innerHTML = ""; } catch {}
-    };
+    loadEmbed();
   }, []);
 
   return (
-    <>
-      {/* --- NAV insertado --- */}
-      <nav className="bg-white shadow-md border-b border-gray-200">
+    <div style={{ minHeight: "100vh", background: "#f9fafb" }}>
+      <nav className="bg-white shadow-md border-b border-gray-200" style={{ position: "sticky", top: 0, zIndex: 100 }}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/" className="flex items-center">
-          </a>
           <div className="hidden lg:flex items-center space-x-8">
-            <a href="/homeadmin" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">DASHBOARD</a>
-            <a href="/usuarios" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">USUARIOS</a>
-            <a href="/productos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">PRODUCTOS</a>
-            <a href="/empresas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">SUCURSALES</a>
-            <a href="/sucursales" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">INVENTARIO(S)</a>
-            <a href="/recibos" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">RECIBOS</a>
-            <a href="/reporte-ventas" className="text-gray-700 hover:text-red-500 transition duration-300 uppercase font-medium">REPORTE DE VENTAS</a>
+            <a href="/homeadmin" className="text-gray-700 hover:text-red-500">DASHBOARD</a>
+            <a href="/usuarios" className="text-gray-700 hover:text-red-500">USUARIOS</a>
+            <a href="/productos" className="text-gray-700 hover:text-red-500">PRODUCTOS</a>
+            <a href="/empresas" className="text-gray-700 hover:text-red-500">SUCURSALES</a>
+            <a href="/sucursales" className="text-gray-700 hover:text-red-500">INVENTARIO(S)</a>
+            <a href="/recibos" className="text-gray-700 hover:text-red-500">RECIBOS</a>
+            <a href="/reporte-ventas" className="text-gray-700 hover:text-red-500">REPORTE DE VENTAS</a>
           </div>
         </div>
-      </nav>
-
-      {/* Estilos del botón inyectados localmente */}
-      <style>{`
-        /* --- BOTÓN REGRESAR --- */
-        .boton-regreso-wrapper {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 10010;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: flex-end;
-            padding: 0;
-            background: transparent;
-        }
-        
-        .btn-regresar {
-            background: linear-gradient(to right, #ef4444, #f97316);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
-        }
-        
-        .btn-regresar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
-            background: linear-gradient(to right, #dc2626, #ea580c);
-        }
-      `}</style>
-
-      {/* NUEVO: botón regresar */}
-      <div className="boton-regreso-wrapper">
-        <button
-          className="btn-regresar"
-          onClick={() => navigate('/usuarios')}
-        >
-          Regresar
-        </button>
-      </div>
-
-      {/* Ajustado: el contenedor ya no es full-screen fixed para que el nav quede visible.
-          NAV_HEIGHT: ajustar si tu nav tiene otra altura (ej. 64 o 72). */}
-      <div
-        id="superset-container"
-        ref={mountRef}
+      </nav>  
+      <button
+        className="btn-regresar"
+        onClick={() => navigate("/usuarios")}
         style={{
-          position: "relative",                // no fixed: queda en el flujo debajo del nav
-          marginTop: "72px",                   // espacio bajo el nav (ajusta si tu nav es más alto)
-          width: "100%",
-          height: "calc(100vh - 72px)",        // ocupa el resto de la pantalla
-          overflow: "hidden",
-          background: "#fff",
-          margin: 0,
-          padding: 0,
-          zIndex: 1,                            // bajo el botón que tiene z-index mayor
+          position: "fixed",
+          top: 24,
+          left: 24,
+          zIndex: 200,
+          background: "linear-gradient(to right, #ef4444, #f97316)",
+          color: "#fff",
+          border: "none",
+          padding: "10px 24px",
+          borderRadius: "50px",
+          fontWeight: 700,
+          cursor: "pointer",
+          boxShadow: "0 4px 6px rgba(239,68,68,0.2)",
+          fontSize: "1rem",
+          transition: "all 0.3s"
         }}
-      />
-    </>
+        onMouseOver={e => (e.currentTarget.style.transform = "scale(1.05)")}
+        onMouseOut={e => (e.currentTarget.style.transform = "scale(1)")}
+      >
+        Regresar
+      </button>
+      <div
+        style={{
+          width: "100%",
+          height: "calc(100vh - 72px)",
+          marginTop: "72px",
+          background: "#fff",
+          display: "flex",
+          alignItems: "stretch",
+          justifyContent: "center"
+        }}
+      >
+        {embedError ? (
+          <div style={{
+            color: "#b91c1c",
+            textAlign: "center",
+            margin: "auto",
+            fontWeight: 600,
+            fontSize: "1.2rem",
+            maxWidth: 480,
+            background: "#fff0f0",
+            borderRadius: 8,
+            padding: 32,
+            boxShadow: "0 2px 8px rgba(239,68,68,0.08)"
+          }}>
+            {embedError}
+          </div>
+        ) : loading ? (
+          <div style={{
+            textAlign: "center",
+            margin: "auto",
+            color: "#444",
+            fontWeight: 500,
+            fontSize: "1.1rem"
+          }}>
+            Cargando dashboard...
+          </div>
+        ) : (
+          embedUrl && (
+            <iframe
+              src={embedUrl}
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+                background: "#fff"
+              }}
+              title="Dashboard Embed"
+              allowFullScreen
+            />
+          )
+        )}
+      </div>
+    </div>
   );
 }
